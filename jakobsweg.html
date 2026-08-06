@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jakobsweg — Camino Portugués (Zentralroute) | Barvenko</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ===== Guide page specific ===== */
+        :root { --accent: #8a5a38; --accent-dark: #6b452b; --line: #e3ddd5; --text: #33302c; --text-soft: #45413b; }
+
+        /* Kräftigere, besser lesbare Grundschrift nur auf dieser Seite */
+        body { font-weight: 400; color: var(--text); }
+
+        .guide-hero {
+            position: relative;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            background:
+                linear-gradient(135deg, rgba(70,50,35,0.72), rgba(120,90,60,0.55)),
+                linear-gradient(to bottom, #c9b39c 0%, #8a6f57 60%, #5c4732 100%);
+            padding: 8rem 1.5rem 4rem;
+        }
+        .guide-hero-content h1 {
+            font-size: clamp(2.4rem, 6vw, 4.5rem);
+            letter-spacing: 0.06em;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+        }
+        .guide-hero-content .kicker {
+            font-size: 0.8rem;
+            letter-spacing: 0.35em;
+            text-transform: uppercase;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        .guide-hero-content .lead {
+            font-size: clamp(1.05rem, 1.7vw, 1.25rem);
+            max-width: 640px;
+            margin: 0 auto 2rem;
+            font-weight: 400;
+            line-height: 1.7;
+        }
+        .guide-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+        }
+        .guide-badge {
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 40px;
+            padding: 0.5rem 1.1rem;
+            font-size: 0.72rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .guide-wrap { max-width: 1000px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* Table of contents */
+        .guide-toc {
+            background: #f0eeeb;
+            padding: 3rem 1.5rem;
+        }
+        .guide-toc h2 { text-align: center; font-size: clamp(1.8rem,4vw,2.6rem); margin-bottom: 2rem; }
+        .guide-toc-grid {
+            max-width: 1000px; margin: 0 auto;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 0.8rem;
+        }
+        .guide-toc-grid a {
+            display: block;
+            background: #fff;
+            border: 1px solid var(--line);
+            padding: 1rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text);
+            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+        }
+        .guide-toc-grid a:hover { border-color: var(--accent); opacity: 1; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
+        .guide-toc-grid a span { color: var(--accent); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-right: 0.5rem; }
+
+        .guide-section { padding: 4.5rem 0; border-bottom: 1px solid var(--line); }
+        .guide-section h2 {
+            font-size: clamp(1.9rem, 4vw, 3rem);
+            letter-spacing: 0.03em;
+            margin-bottom: 0.4rem;
+            text-align: center;
+        }
+        .guide-section .section-sub { text-align: center; color: var(--accent); font-size: 0.82rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2.5rem; }
+        .guide-section h3 { font-size: 1.6rem; margin: 2rem 0 0.8rem; color: var(--accent-dark); }
+        .guide-section p { color: var(--text-soft); font-size: 1.02rem; line-height: 1.75; margin-bottom: 1rem; }
+        .guide-section ul { list-style: none; margin: 0 0 1.2rem; }
+        .guide-section ul li { position: relative; padding-left: 1.4rem; font-size: 1rem; line-height: 1.7; color: var(--text-soft); margin-bottom: 0.55rem; }
+        .guide-section ul li::before { content: "🐚"; position: absolute; left: 0; font-size: 0.8rem; }
+
+        /* Tables */
+        .guide-table-wrap { overflow-x: auto; margin: 1.5rem 0; }
+        table.guide-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; min-width: 520px; color: var(--text); }
+        table.guide-table th, table.guide-table td { text-align: left; padding: 0.75rem 0.85rem; border-bottom: 1px solid var(--line); }
+        table.guide-table th { background: #eae5de; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; font-size: 0.74rem; color: var(--text); }
+        table.guide-table tr:hover td { background: #faf7f3; }
+
+        /* Info boxes */
+        .infobox { border-left: 3px solid var(--accent); background: #f5efe7; padding: 1rem 1.3rem; margin: 1.3rem 0; font-size: 0.98rem; line-height: 1.7; color: var(--text-soft); border-radius: 0 6px 6px 0; }
+        .infobox.warn { border-color: #c0562f; background: #fbf0ec; }
+        .infobox.tip { border-color: #5c8a5c; background: #eef5ee; }
+        .infobox strong { color: #2c2c2c; }
+
+        /* Stage accordions */
+        .stage { border: 1px solid var(--line); border-radius: 8px; margin-bottom: 1rem; overflow: hidden; background: #fff; transition: box-shadow 0.3s ease; }
+        .stage[open] { box-shadow: 0 8px 26px rgba(0,0,0,0.07); }
+        .stage summary { list-style: none; cursor: pointer; padding: 1.2rem 1.5rem; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .stage summary::-webkit-details-marker { display: none; }
+        .stage summary:hover { background: #faf7f3; }
+        .stage .day-num { font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; color: var(--accent); min-width: 2.4rem; }
+        .stage .day-title { flex: 1 1 200px; }
+        .stage .day-title strong { display: block; font-size: 1.1rem; font-weight: 600; color: var(--text); }
+        .stage .day-title span { font-size: 0.82rem; color: #6a655d; letter-spacing: 0.04em; }
+        .stage .day-meta { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .stage .chip { background: #eae5de; border-radius: 30px; padding: 0.28rem 0.7rem; font-size: 0.74rem; font-weight: 500; letter-spacing: 0.04em; color: #4a463f; }
+        .stage .chip.hard { background: #f6e2da; color: #b5471f; }
+        .stage .chip.easy { background: #e6efe4; color: #4f7a4f; }
+        .stage-body { padding: 0.5rem 1.5rem 1.8rem; border-top: 1px solid var(--line); }
+        .stage-body h4 { font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent-dark); margin: 1.3rem 0 0.5rem; }
+        .stage-body p { font-size: 0.98rem; line-height: 1.7; }
+        .stage-body ul li { font-size: 0.96rem; }
+
+        .external-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0; }
+        .external-links a {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            border: 1px solid var(--accent); color: var(--accent-dark); font-weight: 500;
+            padding: 0.5rem 0.95rem; border-radius: 30px; font-size: 0.85rem; letter-spacing: 0.02em;
+            transition: all 0.3s ease;
+        }
+        .external-links a:hover { background: var(--accent); color: #fff; opacity: 1; }
+
+        .guide-cta { text-align: center; padding: 4rem 1.5rem; background: #f0eeeb; }
+        .guide-cta a.btn {
+            display: inline-block; margin-top: 1rem; border: 1px solid #2c2c2c; padding: 0.9rem 2rem;
+            font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; color: #2c2c2c;
+            transition: all 0.3s ease;
+        }
+        .guide-cta a.btn:hover { background: #2c2c2c; color: #fff; opacity: 1; }
+
+        .back-to-top {
+            position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+        }
+        .back-to-top.show { opacity: 1; pointer-events: auto; }
+
+        .disclaimer { font-size: 0.9rem; color: #6a655d; line-height: 1.7; max-width: 800px; margin: 2rem auto 0; text-align: center; }
+        .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2.5rem; }
+        @media (max-width: 700px){ .cols-2 { grid-template-columns: 1fr; } }
+
+        /* Booking-Direktlinks */
+        .book-link { color: var(--accent-dark); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+        .book-link:hover { opacity: 1; color: var(--accent); }
+        .book-note { color: #6a655d; font-size: 0.82rem; white-space: normal; }
+    </style>
+
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html#hero" class="nav-logo">BARVENKO</a>
+        <div class="nav-links">
+            <a href="index.html#about">Über mich</a>
+            <a href="index.html#gallery">Galerie</a>
+            <a href="index.html#adventures">Abenteuer</a>
+            <a href="#toc">Reiseführer</a>
+            <a href="index.html#contact">Kontakt</a>
+        </div>
+        <button class="nav-toggle" aria-label="Menü öffnen">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- Hero -->
+    <header id="top" class="guide-hero">
+        <div class="guide-hero-content">
+            <p class="kicker">Pilger-Reiseführer</p>
+            <h1>Jakobsweg<br>Camino Portugués</h1>
+            <p class="lead">Die klassische <strong>Zentralroute</strong> von Porto nach Santiago de Compostela — 14 Etappen für Einsteiger, Tag für Tag geplant. 01.–14. September 2026 · ≈ 229 km.</p>
+            <div class="guide-badges">
+                <span class="guide-badge">14 Etappen</span>
+                <span class="guide-badge">≈ 229 km</span>
+                <span class="guide-badge">Porto → Santiago</span>
+                <span class="guide-badge">Für Anfänger</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Table of Contents -->
+    <section id="toc" class="guide-toc">
+        <h2>Inhalt</h2>
+        <div class="guide-toc-grid">
+            <a href="#gesamtroute"><span>01</span>Gesamtroute &amp; Überblick</a>
+            <a href="#etappen"><span>02</span>Die 14 Etappen</a>
+            <a href="#uebernachtungen"><span>03</span>Übernachtungen</a>
+            <a href="#karten"><span>04</span>Karten</a>
+            <a href="#bilder"><span>05</span>Bilder-Galerie</a>
+            <a href="#packliste"><span>06</span>Packliste</a>
+            <a href="#kosten"><span>07</span>Kostenübersicht</a>
+            <a href="#sicherheit"><span>08</span>Sicherheit</a>
+            <a href="#ernaehrung"><span>09</span>Ernährung</a>
+            <a href="#vorbereitung"><span>10</span>Training &amp; Vorbereitung</a>
+            <a href="#tipps"><span>11</span>100+ Profi-Tipps</a>
+            <a href="#quellen"><span>12</span>Quellen &amp; Hinweise</a>
+        </div>
+    </section>
+
+    <div class="guide-wrap">
+
+    <!-- 1. Gesamtroute -->
+    <section id="gesamtroute" class="guide-section">
+        <h2>Gesamtroute</h2>
+        <p class="section-sub">Camino Portugués · Zentralroute</p>
+
+        <div class="guide-table-wrap">
+        <table class="guide-table">
+            <tr><th>Kennzahl</th><th>Wert</th></tr>
+            <tr><td>Start</td><td>Kathedrale Porto (Sé), Portugal</td></tr>
+            <tr><td>Ziel</td><td>Kathedrale Santiago de Compostela, Galicien</td></tr>
+            <tr><td>Gesamtlänge</td><td>≈ 229–260 km (je nach Messung)</td></tr>
+            <tr><td>Etappen</td><td>14 Tage (01.–14.09.2026)</td></tr>
+            <tr><td>Ø Tagesdistanz</td><td>≈ 16,4 km (8–22 km)</td></tr>
+            <tr><td>Höchster Punkt</td><td>Alto da Portela Grande (~410 m), Tag 6</td></tr>
+            <tr><td>Grenze</td><td>Valença → Tui (Brücke über den Minho), Tag 7</td></tr>
+            <tr><td>Schwierigkeit gesamt</td><td>★★☆ mittel — gut für Einsteiger</td></tr>
+        </table>
+        </div>
+
+        <div class="infobox warn"><strong>Zeitumstellung:</strong> Beim Grenzübertritt nach Spanien (Tui) die Uhr <strong>+1 Stunde</strong> vorstellen! Ab dann gelten spanische Öffnungs-/Essenszeiten.</div>
+
+        <h3>Etappenübersicht</h3>
+        <div class="guide-table-wrap">
+        <table class="guide-table">
+            <tr><th>Tag</th><th>Datum</th><th>Von → Nach</th><th>km</th><th>Gehzeit</th><th>▲ Hm</th><th>Grad</th></tr>
+            <tr><td>1</td><td>01.09</td><td>Porto → Vairão</td><td>18</td><td>4,5 h</td><td>+180</td><td>★★☆</td></tr>
+            <tr><td>2</td><td>02.09</td><td>Vairão → São Pedro de Rates</td><td>12</td><td>3,0 h</td><td>+120</td><td>★☆☆</td></tr>
+            <tr><td>3</td><td>03.09</td><td>Rates → Barcelos</td><td>11</td><td>2,75 h</td><td>+90</td><td>★☆☆</td></tr>
+            <tr><td>4</td><td>04.09</td><td>Barcelos → Balugães</td><td>17</td><td>4,25 h</td><td>+230</td><td>★★☆</td></tr>
+            <tr><td>5</td><td>05.09</td><td>Balugães → Ponte de Lima</td><td>16</td><td>4,0 h</td><td>+180</td><td>★★☆</td></tr>
+            <tr><td>6</td><td>06.09</td><td>Ponte de Lima → Rubiães</td><td>18</td><td>5,0 h</td><td>+540</td><td>★★★</td></tr>
+            <tr><td>7</td><td>07.09</td><td>Rubiães → Tui 🇪🇸</td><td>19</td><td>4,75 h</td><td>+170</td><td>★★☆</td></tr>
+            <tr><td>8</td><td>08.09</td><td>Tui → O Porriño</td><td>18</td><td>4,5 h</td><td>+140</td><td>★★☆</td></tr>
+            <tr><td>9</td><td>09.09</td><td>O Porriño → Redondela</td><td>16</td><td>4,0 h</td><td>+260</td><td>★★☆</td></tr>
+            <tr><td>10</td><td>10.09</td><td>Redondela → Pontevedra</td><td>20</td><td>5,0 h</td><td>+330</td><td>★★☆</td></tr>
+            <tr><td>11</td><td>11.09</td><td>Pontevedra → Caldas de Reis</td><td>21</td><td>5,25 h</td><td>+290</td><td>★★☆</td></tr>
+            <tr><td>12</td><td>12.09</td><td>Caldas de Reis → Padrón</td><td>19</td><td>4,75 h</td><td>+260</td><td>★★☆</td></tr>
+            <tr><td>13</td><td>13.09</td><td>Padrón → O Milladoiro</td><td>16</td><td>4,0 h</td><td>+300</td><td>★★☆</td></tr>
+            <tr><td>14</td><td>14.09</td><td>O Milladoiro → Santiago 🎉</td><td>8</td><td>2,0 h</td><td>+120</td><td>★☆☆</td></tr>
+        </table>
+        </div>
+
+        <div class="infobox tip"><strong>Warum diese Aufteilung?</strong> Die ersten Tage sind bewusst kurz (Schuhe &amp; Füße einlaufen), der schwerste Tag (Serra da Labruja, Tag 6) liegt in der Wochenmitte, und der letzte Tag ist kurz &amp; triumphal — du erreichst Santiago entspannt am Vormittag.</div>
+
+        <h3>Beste Reisezeit &amp; Wetter</h3>
+        <p><strong>September</strong> ist ideal: warm, stabil, weniger Pilger als im Hochsommer, alle Herbergen geöffnet. Tagsüber 22–27 °C, nachts 12–17 °C. Portugal-Teil meist trocken; in Galicien jederzeit kurze Schauer möglich — Poncho griffbereit.</p>
+        <div class="external-links">
+            <a href="https://www.ipma.pt" target="_blank" rel="noopener">Wetter Portugal (IPMA) ↗</a>
+            <a href="https://www.aemet.es" target="_blank" rel="noopener">Wetter Galicien (AEMET) ↗</a>
+        </div>
+    </section>
+
+    <!-- 2. Etappen -->
+    <section id="etappen" class="guide-section">
+        <h2>Die 14 Etappen</h2>
+        <p class="section-sub">Zum Aufklappen anklicken</p>
+
+        <!-- Tag 1 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">1</span>
+                <span class="day-title"><strong>Porto → Vairão</strong><span>01.09.2026</span></span>
+                <span class="day-meta"><span class="chip">18 km</span><span class="chip">4,5 h</span><span class="chip">+180 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Start an der Kathedrale (1. Stempel!). Der Stadtausgang durch die Vororte ist der unschönste Teil des ganzen Weges — viele fahren die ersten ~8–10 km mit der Metro (Linie B/C) bis Vilar do Pinheiro/Modivas. Ab dann ländlich: Eukalyptuswäldchen, erste gelbe Pfeile, Ziel ist das ruhige Vairão mit altem Kloster.</p>
+                <h4>Highlights</h4>
+                <ul><li>⛪ Kathedrale Porto (Sé) &amp; Miradouro da Sé — Panorama zum Start</li><li>🏛️ Mosteiro de Vairão (altes Benediktinerkloster)</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Cafés in Porto, Rio Tinto, Maia · 🛒 Supermärkte in Maia/Moreira · 🏧 Multibanco reichlich in Porto/Maia · 💊 Apotheken in Porto/Maia</li></ul>
+                <h4>Achtung &amp; Tipp</h4>
+                <ul><li>⚠️ Viel Verkehr &amp; Straßenquerungen im Stadtausgang</li><li>💡 Metro für die tristen ersten km spart die Füße — kein „Betrug", die Compostela zählt erst ab Tui</li></ul>
+                <h4>Fotospots</h4>
+                <ul><li>📸 Miradouro da Sé · erste gelbe Pfeile · Kloster Vairão im Abendlicht</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 2 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">2</span>
+                <span class="day-title"><strong>Vairão → São Pedro de Rates</strong><span>02.09.2026</span></span>
+                <span class="day-meta"><span class="chip">12 km</span><span class="chip">3,0 h</span><span class="chip">+120 Hm</span><span class="chip easy">★☆☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Ein kurzer, sanfter Tag durch typische Minho-Landschaft: Maisfelder, Weinreben (Vinho Verde), Waldstücke. Perfekt, um die Füße weiter einzulaufen. Ziel ist das mittelalterliche Rates mit einer der bedeutendsten romanischen Kirchen Nordportugals.</p>
+                <h4>Highlights</h4>
+                <ul><li>⛪ Igreja de São Pedro de Rates (romanisch, 11.–13. Jh., Nationaldenkmal)</li><li>🏛️ Mittelalterlicher Dorfkern, römische Spuren bei Alvarelhos</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Bar in Arcos (km 6) &amp; Rates · 🛒 kleiner Mini-Mercado in Rates · 🚰 Brunnen in Arcos/Rates</li></ul>
+                <h4>Achtung &amp; Tipp</h4>
+                <ul><li>⚠️ Kein verlässlicher Geldautomat in Rates — Bargeld vorher ziehen!</li><li>💡 Kurzen Tag zur Regeneration nutzen: Füße kontrollieren, Blasenpflege üben</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/sao-pedro-rates-barcelos" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 3 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">3</span>
+                <span class="day-title"><strong>Rates → Barcelos</strong><span>03.09.2026</span></span>
+                <span class="day-meta"><span class="chip">11 km</span><span class="chip">2,75 h</span><span class="chip">+90 Hm</span><span class="chip easy">★☆☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Wieder ein kurzer, leichter Tag ins lebendige Barcelos am Fluss Cávado — eine der charmantesten Städte der Route. Halber Ruhetag zum Sightseeing. Der 03.09.2026 ist ein Donnerstag: großer Wochenmarkt!</p>
+                <h4>Highlights</h4>
+                <ul><li>🐓 Galo de Barcelos (Hahn-Legende) &amp; Cruzeiro do Senhor do Galo</li><li>🌉 Mittelalterliche Brücke über den Cávado · ⛪ Igreja Matriz, Templo do Bom Jesus</li><li>🛍️ Feira de Barcelos (donnerstags, berühmt für Keramik)</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Viele Cafés · 🛒 Pingo Doce, Continente, Lidl · 🏧 viele Automaten (aufstocken!) · 💊 mehrere Apotheken</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Drei kurze Tage in Folge gewöhnen den Körper schonend an die Belastung</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/sao-pedro-rates-barcelos" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 4 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">4</span>
+                <span class="day-title"><strong>Barcelos → Balugães (Casa Fernanda)</strong><span>04.09.2026</span></span>
+                <span class="day-meta"><span class="chip">17 km</span><span class="chip">4,25 h</span><span class="chip">+230 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Erste richtige Etappe durch sanft hügelige Agrarlandschaft: Weinreben, Mais, kleine Höfe, Kapellen. Leicht bergauf. Kurz vor dem Ziel die legendäre Casa Fernanda — eine der herzlichsten Pilgerunterkünfte des Camino (gemeinsames Abendessen).</p>
+                <h4>Highlights</h4>
+                <ul><li>🌉 Barcelos-Brücke beim Start · ⛪ Wegkapellen &amp; Cruzeiros · 🏡 Casa Fernanda (ein Erlebnis!)</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Bar in Vila Boa/Lijó · 🛒 in Barcelos Proviant kaufen (unterwegs wenig) · ⚠️ kein Automat unterwegs</li></ul>
+                <h4>Achtung &amp; Tipp</h4>
+                <ul><li>⚠️ Einige Asphalt-/Straßenabschnitte mit Verkehr</li><li>💡 Casa Fernanda ist klein &amp; begehrt — unbedingt vorab reservieren!</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/barcelos-ponte-lima" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 5 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">5</span>
+                <span class="day-title"><strong>Balugães → Ponte de Lima</strong><span>05.09.2026</span></span>
+                <span class="day-meta"><span class="chip">16 km</span><span class="chip">4,0 h</span><span class="chip">+180 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Wunderschöne Etappe in eine der schönsten Kleinstädte Portugals — Ponte de Lima, angeblich die älteste Stadt des Landes. Über sanfte Hügel und Pinienwald hinab ins Tal des Rio Lima, Einlauf über die berühmte mittelalterliche Brücke.</p>
+                <h4>Highlights</h4>
+                <ul><li>🌉 Ponte de Lima (teils römische Steinbrücke) · ⛪ Igreja Matriz · 🏛️ Torre da Cadeia Velha · 🌳 Platanen-Flusspromenade</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ viele Cafés/Weinlokale · 🛒 Pingo Doce, Continente · 🏧 mehrere Automaten · 💊 Apotheken (Blasenpflaster für morgen!)</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Morgen ist die schwerste Etappe — heute kohlenhydratreich essen, früh schlafen, Sachen bereitlegen</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/barcelos-ponte-lima" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 6 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">6</span>
+                <span class="day-title"><strong>Ponte de Lima → Rubiães</strong><span>06.09.2026 · Königsetappe</span></span>
+                <span class="day-meta"><span class="chip">18 km</span><span class="chip">5,0 h</span><span class="chip hard">+540 Hm</span><span class="chip hard">★★★</span></span>
+            </summary>
+            <div class="stage-body">
+                <div class="infobox warn"><strong>Die schwerste Etappe:</strong> Aufstieg über die Serra da Labruja zum Alto da Portela Grande (~410 m), danach steiler, felsiger Abstieg.</div>
+                <h4>Strecke</h4>
+                <p>Erste ~8 km flach bis Revolta, dann stetiger Anstieg zur Serra da Labruja über grobe Granitblöcke. Oben Gedenkkreuz &amp; Weitblick. Der Abstieg nach Rubiães ist steil, felsig, rutschig — hier passieren die meisten Stürze.</p>
+                <h4>Highlights</h4>
+                <ul><li>🏛️ Römische Meilensteine (Via XIX) bei Rubiães · ✝️ Cruzeiro am Alto da Portela Grande · 🌉 mittelalterliche Brücke im Abstieg</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Revolta (km 8) = letzte gute Verpflegung vor dem Berg · ⚠️ kein Supermarkt/Automat — Proviant &amp; Wasser (2 L) mitnehmen</li></ul>
+                <h4>Achtung &amp; Tipp</h4>
+                <ul><li>⚠️⚠️ Steiler Abstieg = höchste Sturzgefahr; bei Nässe sehr rutschig</li><li>💡 Wanderstöcke nutzen, früh starten, am Gipfel Pause, Tempo raus — heute zählt Ankommen, nicht Zeit</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/ponte-lima-rubiaes" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 7 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">7</span>
+                <span class="day-title"><strong>Rubiães → Tui 🇪🇸</strong><span>07.09.2026 · Grenzübertritt</span></span>
+                <span class="day-meta"><span class="chip">19 km</span><span class="chip">4,75 h</span><span class="chip">+170 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <div class="infobox warn"><strong>Grenze Portugal → Spanien!</strong> Uhr +1 Stunde vorstellen. Ab Tui beginnt der Compostela-Countdown (letzte ~115 km) — jetzt täglich min. 2 Stempel sammeln!</div>
+                <h4>Strecke</h4>
+                <p>Nach dem Berg entspannt &amp; überwiegend abwärts. Über São Bento und Paços zur Grenzfestung Valença, dann der magische Moment: über die Eisenbrücke Ponte Internacional über den Minho nach Tui in Galicien.</p>
+                <h4>Highlights</h4>
+                <ul><li>🏰 Fortaleza de Valença (begehbare Wälle) · 🌉 Grenzbrücke über den Minho · ⛪ Kathedrale von Tui (wehrhaft, romanisch-gotisch)</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Cafés in Valença &amp; Tui (erste Tapas!) · 🛒 Supermärkte · 🏧 Automaten · 💊 Apotheken (beides Euro-Zone)</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Zeitumstellung nicht vergessen — sonst Herbergs-Check-in verpasst</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/rubiaes-tui" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 8 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">8</span>
+                <span class="day-title"><strong>Tui → O Porriño</strong><span>08.09.2026</span></span>
+                <span class="day-meta"><span class="chip">18 km</span><span class="chip">4,5 h</span><span class="chip">+140 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Erster voller Tag in Galicien. Zwei Varianten: die <strong>naturnahe Variante</strong> (empfohlen) entlang des Flüsschens Louro durch schönen Wald — nur ~2 km länger, aber viel schöner und schattiger — oder die kürzere Route durch Industriegebiet.</p>
+                <h4>Highlights</h4>
+                <ul><li>⛪ San Bartolomé de Rebordáns · 🌳 Waldweg am Louro · 🌉 Ponte das Febres (Telmo-Legende) · 🏛️ Jugendstil-Rathaus von O Porriño</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Frühstück in Tui, Bar in Orbenlle · 🛒 Mercadona, Gadis, Froiz in O Porriño · 🏧/💊 in Tui &amp; O Porriño</li></ul>
+                <h4>Achtung &amp; Tipp</h4>
+                <ul><li>⚠️ Abzweigung Naturvariante beachten (Karte/App bereithalten)</li><li>💡 Flacher Tag — ideal für Gehtechnik &amp; gleichmäßiges Tempo</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/tui-porrino" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 9 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">9</span>
+                <span class="day-title"><strong>O Porriño → Redondela</strong><span>09.09.2026</span></span>
+                <span class="day-meta"><span class="chip">16 km</span><span class="chip">4,0 h</span><span class="chip">+260 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Wieder ländlicher &amp; schöner. Über das Straßendorf Mos allmählich bergauf zum Alto de Santiaguiño, dann hinab nach Redondela, der „Stadt der Viadukte". Erster Blick aufs Meer (Ría de Vigo)!</p>
+                <h4>Highlights</h4>
+                <ul><li>⛪ Capela de Santiaguiño de Antas · 🏛️ Pazo de Mos · 🚂 Eisenbahn-Viadukte über Redondela</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ legendäre Bar/Herberge in Mos (km 6, Stempel!) · 🛒 Supermärkte in O Porriño/Redondela · 🏧/💊 vorhanden</li></ul>
+                <h4>Achtung &amp; Tipp</h4>
+                <ul><li>⚠️ Ab Redondela Zusammenfluss mit dem Küstenweg → mehr Pilger, früh ankommen/reservieren</li><li>💡 Blasen früh versorgen — Halbzeit der Galicien-Woche</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/porrino-redondela" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 10 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">10</span>
+                <span class="day-title"><strong>Redondela → Pontevedra</strong><span>10.09.2026</span></span>
+                <span class="day-meta"><span class="chip">20 km</span><span class="chip">5,0 h</span><span class="chip">+330 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Abwechslungsreich entlang der Ría de Vigo &amp; durch stille Wälder. Über Arcade (berühmt für Austern!) und die mittelalterliche Ponte Sampaio, dann Waldanstiege bis in die eleganteste Altstadt Galiciens: Pontevedra (autofrei, Granitgassen).</p>
+                <h4>Highlights</h4>
+                <ul><li>🌉 Ponte Sampaio · 🦪 Arcade · ⛪ Santuario da Peregrina (muschelförmig!) · 🏛️ Praza da Ferrería &amp; Praza da Leña</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Bars in Arcade (km 7) · 🛒 Mercadona, Gadis, Froiz · 🏧 viele Automaten · 💊 mehrere Apotheken</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Abends ausgiebige Tapas-Runde auf den Plätzen — du hast über 150 km in den Beinen!</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/redondela-pontevedra" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 11 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">11</span>
+                <span class="day-title"><strong>Pontevedra → Caldas de Reis</strong><span>11.09.2026</span></span>
+                <span class="day-meta"><span class="chip">21 km</span><span class="chip">5,25 h</span><span class="chip">+290 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Längste Etappe der Galicien-Woche, aber sehr lohnend: viel Wald, alte Römerwege, Bäche und typische Weiler mit hórreos (Kornspeicher auf Stelzen). Ziel ist das Thermalstädtchen Caldas de Reis — Füße im warmen Quellwasser baden!</p>
+                <h4>Highlights</h4>
+                <ul><li>🌾 hórreos in den Weilern · 🌳 Römerweg-Abschnitte · ♨️ Thermalquellen (Fonte das Burgas) · 🌳 Carballeira-Baumpark</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Bars in San Amaro/Barro (km 6–9) · 🛒 Supermärkte · 🚰 viele Brunnen · 🏧/💊 vorhanden</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Kräfte einteilen, regelmäßig trinken; warmes Thermal-Fußbad zur Regeneration nutzen</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/pontevedra-caldas-reis" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 12 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">12</span>
+                <span class="day-title"><strong>Caldas de Reis → Padrón</strong><span>12.09.2026</span></span>
+                <span class="day-meta"><span class="chip">19 km</span><span class="chip">4,75 h</span><span class="chip">+260 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Ruhige, grüne Etappe durch Wälder und entlang von Bächen nach Padrón — einer der historisch wichtigsten Orte des Jakobswegs. Hier landete der Legende nach das Steinboot mit dem Leichnam des Apostels Jakobus.</p>
+                <h4>Highlights</h4>
+                <ul><li>⛪ Igrexa de Santiago (legendärer „Pedrón"-Stein unter dem Altar) · ⛪ Santuario da Escravitude · 🌶️ Pimientos de Padrón</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Bars in O Pino/Carracedo · 🛒 Supermärkte in Pontecesures/Padrón · 🏧/💊 in Padrón</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Unbedingt Pimientos de Padrón mit grobem Salz probieren</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/caldas-reis-padron" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 13 -->
+        <details class="stage">
+            <summary>
+                <span class="day-num">13</span>
+                <span class="day-title"><strong>Padrón → O Milladoiro</strong><span>13.09.2026</span></span>
+                <span class="day-meta"><span class="chip">16 km</span><span class="chip">4,0 h</span><span class="chip">+300 Hm</span><span class="chip">★★☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <h4>Strecke</h4>
+                <p>Vorletzte Etappe bis an die Schwelle von Santiago. Über Iria Flavia (uralter Bischofssitz) und mehrere Dörfer stetig bergauf nach O Milladoiro, einem Vorort auf einer Anhöhe — morgen nur noch ~8 km bis zur Kathedrale.</p>
+                <h4>Highlights</h4>
+                <ul><li>⛪ Colexiata de Iria Flavia · 🏛️ Fundación Camilo José Cela · 🏛️ Pazo de Faramello · 📸 erster Fernblick Richtung Santiago</li></ul>
+                <h4>Versorgung</h4>
+                <ul><li>☕ Bars in A Escravitude/Teo · 🛒 Gadis, Froiz, Mercadona in O Milladoiro · 🏧/💊 vorhanden</li></ul>
+                <h4>Tipp</h4>
+                <ul><li>💡 Kurz vor Santiago halten = morgen früh, ausgeruht &amp; zur besten Zeit an der Kathedrale ankommen. Herberge vorab reservieren.</li></ul>
+                <div class="external-links"><a href="https://www.gronze.com/etapa/padron-santiago" target="_blank" rel="noopener">Etappe auf Gronze ↗</a></div>
+            </div>
+        </details>
+
+        <!-- Tag 14 -->
+        <details class="stage" open>
+            <summary>
+                <span class="day-num">14</span>
+                <span class="day-title"><strong>O Milladoiro → Santiago de Compostela 🎉</strong><span>14.09.2026 · ZIEL</span></span>
+                <span class="day-meta"><span class="chip">8 km</span><span class="chip">2,0 h</span><span class="chip">+120 Hm</span><span class="chip easy">★☆☆</span></span>
+            </summary>
+            <div class="stage-body">
+                <div class="infobox tip"><strong>Der Zieltag!</strong> Durch den Torbogen unter dem Pazo de Xelmírez trittst du auf die Praza do Obradoiro — vor die Kathedrale, das Grab des Apostels. Du hast es geschafft!</div>
+                <h4>Ablauf am Zieltag</h4>
+                <ul><li>Früh starten (7–8 Uhr) → Ankunft am Vormittag, gutes Licht</li><li>Pilgermesse i.d.R. 12:00 &amp; 19:30 Uhr (Botafumeiro-Zeiten prüfen)</li><li>Compostela abholen im Pilgerbüro (Rúa Carretas 33) — Pilgerpass mit 2 Stempeln/Tag ab Tui</li></ul>
+                <h4>Highlights</h4>
+                <ul><li>⛪ Kathedrale &amp; Pórtico da Gloria · 🏛️ Praza do Obradoiro · 🌳 Parque da Alameda (bester Kathedralen-Blick) · 🏛️ Mercado de Abastos</li></ul>
+                <h4>Genuss</h4>
+                <ul><li>🍰 Tarta de Santiago · 🐙 Pulpo á feira</li></ul>
+                <div class="external-links">
+                    <a href="https://oficinadelperegrino.com" target="_blank" rel="noopener">Pilgerbüro Santiago ↗</a>
+                    <a href="https://www.gronze.com/etapa/padron-santiago" target="_blank" rel="noopener">Etappe auf Gronze ↗</a>
+                </div>
+            </div>
+        </details>
+    </section>
+
+    <!-- 3. Übernachtungen -->
+    <section id="uebernachtungen" class="guide-section">
+        <h2>Übernachtungen</h2>
+        <p class="section-sub">Beste Pilgerherbergen · max. 20 €</p>
+        <div class="infobox warn"><strong>Wichtig:</strong> Preise, Telefonnummern &amp; Betrieb ändern sich laufend. Die tagesaktuelle, kostenlose Quelle für ALLE Herbergen (mit Preis, Telefon, Ausstattung, Bewertung) ist Gronze — dort jede Etappe anklicken.</div>
+        <div class="external-links">
+            <a href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener">Alle Herbergen auf Gronze ↗</a>
+            <a href="https://www.booking.com" target="_blank" rel="noopener">Booking.com ↗</a>
+        </div>
+        <div class="guide-table-wrap">
+        <table class="guide-table">
+            <tr><th>Tag</th><th>Ort</th><th>Empfohlene Unterkunft</th><th>Richtpreis*</th></tr>
+            <tr><td>1</td><td>Vairão</td><td>Casa da Laura / Albergue Mosteiro de Vairão</td><td>~10–15 €</td></tr>
+            <tr><td>2</td><td>São Pedro de Rates</td><td>Albergue de Peregrinos de Rates (kommunal)</td><td>~5–8 €</td></tr>
+            <tr><td>3</td><td>Barcelos</td><td>Albergue de Peregrinos de Barcelos (zentral)</td><td>~5–10 €</td></tr>
+            <tr><td>4</td><td>Balugães</td><td>Casa Fernanda (inkl. Abendessen — vorab reservieren!)</td><td>~15–20 €</td></tr>
+            <tr><td>5</td><td>Ponte de Lima</td><td>Albergue de Peregrinos (am Fluss)</td><td>~5–10 €</td></tr>
+            <tr><td>6</td><td>Rubiães</td><td>Albergue de Peregrinos de Rubiães</td><td>~5–8 €</td></tr>
+            <tr><td>7</td><td>Tui</td><td>Albergue de Peregrinos (Xunta) / Ideas Peregrinas</td><td>~8–18 €</td></tr>
+            <tr><td>8</td><td>O Porriño</td><td>Albergue de Peregrinos (Xunta)</td><td>~8–10 €</td></tr>
+            <tr><td>9</td><td>Redondela</td><td>Albergue de Peregrinos (hist. Casa da Torre)</td><td>~8–10 €</td></tr>
+            <tr><td>10</td><td>Pontevedra</td><td>Albergue (Xunta) / Slow City Hostel</td><td>~8–20 €</td></tr>
+            <tr><td>11</td><td>Caldas de Reis</td><td>Albergue de Peregrinos (Xunta)</td><td>~8–10 €</td></tr>
+            <tr><td>12</td><td>Padrón</td><td>Albergue de Peregrinos (Xunta) / Corredoiras</td><td>~8–18 €</td></tr>
+            <tr><td>13</td><td>O Milladoiro</td><td>Albergue Milladoiro (vorab reservieren)</td><td>~15–20 €</td></tr>
+            <tr><td>14</td><td>Santiago</td><td>Seminario Menor / The Last Stamp</td><td>~12–22 €</td></tr>
+        </table>
+        </div>
+        <p>*Richtpreise Dorm-Bett p.P. (Stand ~2024/25) — vor Reise auf Gronze verifizieren. Öffentliche Xunta-Herbergen (ab Tui) sind am günstigsten, aber nicht reservierbar → früh ankommen. Viele Herbergen ohne Bettwäsche: eigener Hüttenschlafsack Pflicht. Meist nur Barzahlung.</p>
+
+        <h3>Warum Booking teurer ist — und wie du günstig buchst</h3>
+        <div class="infobox warn"><strong>Wichtig:</strong> Meine Preise (8–20 €) sind <strong>Schlafsaal-Betten in Pilgerherbergen (Albergues)</strong>. Booking.com zeigt dir aber vor allem <strong>Hotels &amp; Privatzimmer</strong> — die kosten 40–90 €. Die günstigen Pilgerbetten bucht man <strong>direkt per Telefon/WhatsApp</strong>, oder sie sind <strong>öffentlich (Xunta) und gar nicht buchbar</strong> (first come, früh ankommen). Deshalb der Preisunterschied.</div>
+        <div class="infobox tip"><strong>So wird Booking günstig:</strong> In den Links unten ist bereits <strong>1 Gast</strong> gesetzt und <strong>nach Preis sortiert</strong> (günstigste zuerst). Filtere zusätzlich links auf <strong>„Unterkunftsart → Hostels"</strong> und <strong>„Nur Schlafsaal/Bett im Mehrbettzimmer"</strong>, um echte Albergue-Preise zu sehen.</div>
+
+        <h3>Direkt buchen für deine Daten (01.–14.09.2026)</h3>
+        <div class="guide-table-wrap">
+        <table class="guide-table">
+            <tr><th>Nacht</th><th>Ort</th><th>Preise &amp; buchen (deine Daten)</th><th>Pilgerherberge + Telefon finden</th></tr>
+            <tr>
+                <td>01.09</td><td>Vairão</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Vair%C3%A3o&checkin=2026-09-01&checkout=2026-09-02&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 01.→02.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20Vair%C3%A3o%20Vilarinho" target="_blank" rel="noopener">Auf Karte ↗</a> · <a class="book-link" href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener">Gronze ↗</a></td>
+            </tr>
+            <tr>
+                <td>02.09</td><td>São Pedro de Rates</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=S%C3%A3o+Pedro+de+Rates&checkin=2026-09-02&checkout=2026-09-03&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 02.→03.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20S%C3%A3o%20Pedro%20de%20Rates" target="_blank" rel="noopener">Auf Karte ↗</a> · <span class="book-note">kommunal, oft first-come</span></td>
+            </tr>
+            <tr>
+                <td>03.09</td><td>Barcelos</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Barcelos&checkin=2026-09-03&checkout=2026-09-04&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 03.→04.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20Barcelos" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>04.09</td><td>Balugães</td>
+                <td><span class="book-note"><strong>Casa Fernanda</strong> — nur telefonisch/WhatsApp vorab!</span></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Casa%20Fernanda%20Lugar%20do%20Corgo%20Balugaes" target="_blank" rel="noopener">Casa Fernanda auf Karte ↗</a> · <a class="book-link" href="https://www.gronze.com/etapa/barcelos-ponte-lima" target="_blank" rel="noopener">Gronze ↗</a></td>
+            </tr>
+            <tr>
+                <td>05.09</td><td>Ponte de Lima</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Ponte+de+Lima&checkin=2026-09-05&checkout=2026-09-06&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 05.→06.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20Ponte%20de%20Lima" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>06.09</td><td>Rubiães</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Rubi%C3%A3es&checkin=2026-09-06&checkout=2026-09-07&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 06.→07.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20Rubi%C3%A3es" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>07.09</td><td>Tui</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Tui&checkin=2026-09-07&checkout=2026-09-08&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 07.→08.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20Tui" target="_blank" rel="noopener">Auf Karte ↗</a> · <span class="book-note">Xunta = first-come</span></td>
+            </tr>
+            <tr>
+                <td>08.09</td><td>O Porriño</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=O+Porri%C3%B1o&checkin=2026-09-08&checkout=2026-09-09&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 08.→09.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20O%20Porri%C3%B1o" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>09.09</td><td>Redondela</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Redondela&checkin=2026-09-09&checkout=2026-09-10&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 09.→10.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20Redondela" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>10.09</td><td>Pontevedra</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Pontevedra&checkin=2026-09-10&checkout=2026-09-11&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 10.→11.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20Pontevedra%20Slow%20City%20Hostel" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>11.09</td><td>Caldas de Reis</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Caldas+de+Reis&checkin=2026-09-11&checkout=2026-09-12&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 11.→12.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20Caldas%20de%20Reis" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>12.09</td><td>Padrón</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Padr%C3%B3n&checkin=2026-09-12&checkout=2026-09-13&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 12.→13.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20de%20Peregrinos%20Padr%C3%B3n" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>13.09</td><td>O Milladoiro</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=O+Milladoiro&checkin=2026-09-13&checkout=2026-09-14&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 13.→14.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20O%20Milladoiro" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+            <tr>
+                <td>14.09</td><td>Santiago de Compostela</td>
+                <td><a class="book-link" href="https://www.booking.com/searchresults.html?ss=Santiago+de+Compostela&checkin=2026-09-14&checkout=2026-09-15&group_adults=1&no_rooms=1&group_children=0&order=price" target="_blank" rel="noopener">Booking 14.→15.09 ↗</a></td>
+                <td><a class="book-link" href="https://www.google.com/maps/search/?api=1&query=Albergue%20Seminario%20Menor%20Santiago%20de%20Compostela" target="_blank" rel="noopener">Auf Karte ↗</a></td>
+            </tr>
+        </table>
+        </div>
+        <div class="infobox"><strong>Bester Preis-Tipp:</strong> Ruf die Herberge über den „Auf Karte"-Link (Google Maps zeigt Telefon/WhatsApp) 1–2 Tage vorher an und frage nach einem Bett („¿Tenéis cama para peregrino?" / „Tem cama para peregrino?"). Das ist fast immer günstiger als Booking. Zusätzliche Albergue-Portale: <a class="book-link" href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener">Gronze ↗</a>, <a class="book-link" href="https://www.hostelworld.com/" target="_blank" rel="noopener">Hostelworld ↗</a>.</div>
+    </section>
+
+
+    <!-- 4. Karten -->
+    <section id="karten" class="guide-section">
+        <h2>Karten</h2>
+        <p class="section-sub">Interaktiv &amp; druckfreundlich</p>
+        <p>Die beste kostenlose, interaktive Karte mit Route, Höhenprofilen &amp; Herbergen bietet Gronze. Für Offline-Navigation empfehlen sich Apps mit heruntergeladenen Karten + GPX-Tracks.</p>
+        <div class="external-links">
+            <a href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener">Gesamtkarte (Gronze) ↗</a>
+            <a href="https://hiking.waymarkedtrails.org" target="_blank" rel="noopener">Waymarked Trails ↗</a>
+            <a href="https://opentopomap.org" target="_blank" rel="noopener">OpenTopoMap ↗</a>
+            <a href="https://www.wikiloc.com" target="_blank" rel="noopener">GPX-Tracks (Wikiloc) ↗</a>
+        </div>
+        <div class="infobox tip"><strong>Tipp:</strong> Lade eine Offline-App (Buen Camino / Wise Pilgrim) + die GPX-Tracks herunter. Zum Drucken: Karte im Browser öffnen → Strg+P → „Als PDF speichern" (Querformat, Hintergrundgrafiken an).</div>
+    </section>
+
+    <!-- 5. Bilder -->
+    <section id="bilder" class="guide-section">
+        <h2>Bilder-Galerie</h2>
+        <p class="section-sub">Motive &amp; frei lizenzierte Bezugsquellen</p>
+        <p>Zu den schönsten Motiven der Route findest du hier kuratierte, überwiegend frei lizenzierte Bildquellen (Wikimedia Commons, gemeinfrei/Creative Commons) — Lizenz vor Verwendung prüfen.</p>
+        <div class="cols-2">
+            <div>
+                <h3>Portugal &amp; Minho</h3>
+                <div class="external-links">
+                    <a href="https://commons.wikimedia.org/wiki/Category:S%C3%A9_do_Porto" target="_blank" rel="noopener">Kathedrale Porto ↗</a>
+                    <a href="https://commons.wikimedia.org/wiki/Category:Barcelos" target="_blank" rel="noopener">Hahn von Barcelos ↗</a>
+                    <a href="https://commons.wikimedia.org/wiki/Category:Ponte_de_Lima" target="_blank" rel="noopener">Ponte de Lima ↗</a>
+                    <a href="https://commons.wikimedia.org/wiki/Category:Serra_da_Labruja" target="_blank" rel="noopener">Serra da Labruja ↗</a>
+                </div>
+            </div>
+            <div>
+                <h3>Galicien &amp; Ziel</h3>
+                <div class="external-links">
+                    <a href="https://commons.wikimedia.org/wiki/Category:Catedral_de_Tui" target="_blank" rel="noopener">Kathedrale Tui ↗</a>
+                    <a href="https://commons.wikimedia.org/wiki/Category:Pontevedra" target="_blank" rel="noopener">Pontevedra Altstadt ↗</a>
+                    <a href="https://commons.wikimedia.org/wiki/Category:H%C3%B3rreos_de_Galicia" target="_blank" rel="noopener">Hórreos ↗</a>
+                    <a href="https://commons.wikimedia.org/wiki/Category:Cathedral_of_Santiago_de_Compostela" target="_blank" rel="noopener">Kathedrale Santiago ↗</a>
+                </div>
+            </div>
+        </div>
+        <div class="external-links" style="margin-top:1.5rem">
+            <a href="https://unsplash.com/s/photos/camino-portugues" target="_blank" rel="noopener">Unsplash (kostenlos) ↗</a>
+            <a href="https://www.pexels.com/search/santiago%20de%20compostela/" target="_blank" rel="noopener">Pexels (kostenlos) ↗</a>
+        </div>
+    </section>
+
+    <!-- 6. Packliste -->
+    <section id="packliste" class="guide-section">
+        <h2>Packliste</h2>
+        <p class="section-sub">Für Einsteiger · Zielgewicht 6–8 kg</p>
+        <p><strong>Faustregel:</strong> max. 10 % deines Körpergewichts. Kennzeichnung: ✅ unbedingt · 🟡 optional · ⛔ nicht nötig.</p>
+        <div class="cols-2">
+            <div>
+                <h3>Schuhe &amp; Füße ✅</h3>
+                <ul><li>✅ Eingelaufene, gut gedämpfte Wander-/Trailschuhe (½ Nr. größer)</li><li>✅ Leichte Sandalen/Crocs für abends</li><li>✅ 3 Paar Merino-/Synthetik-Socken (keine Baumwolle!)</li><li>🟡 Liner-Socken gegen Blasen</li></ul>
+                <h3>Kleidung</h3>
+                <ul><li>✅ 2 Funktions-Shirts, 1 Langarm, Wanderhose + kurze Hose</li><li>✅ Leichte Fleece-/Daunenjacke, 3× Funktionsunterwäsche</li><li>✅ Sonnenhut/Cap/Buff · ⛔ Jeans &amp; Baumwoll-Hoodies</li></ul>
+                <h3>Regen ✅</h3>
+                <ul><li>✅ Regenponcho (deckt Rucksack mit) + Rucksack-Regenhülle</li></ul>
+            </div>
+            <div>
+                <h3>Rucksack &amp; Schlafen</h3>
+                <ul><li>✅ Rucksack 30–40 L mit Hüftgurt · ✅ Trekkingstöcke</li><li>✅ Hüttenschlafsack (viele Herbergen ohne Bettwäsche)</li><li>✅ Ohrstöpsel + Schlafmaske · ✅ Stirnlampe</li></ul>
+                <h3>Medikamente &amp; Hygiene ✅</h3>
+                <ul><li>✅ Blasenpflaster + Leukotape (das Wichtigste!)</li><li>✅ Schmerzmittel, Mini-Erste-Hilfe, persönliche Medikamente</li><li>✅ Sonnencreme LSF 30–50, feste Seife, Mikrofaser-Handtuch</li><li>🟡 Elektrolyt-/Magnesiumtabletten</li></ul>
+                <h3>Technik &amp; Dokumente ✅</h3>
+                <ul><li>✅ Smartphone + Powerbank (10.000 mAh) · Steckdose = wie DE</li><li>✅ Perso/Pass, Pilgerpass, EHIC-Karte, Bargeld, Kreditkarte</li></ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. Kosten -->
+    <section id="kosten" class="guide-section">
+        <h2>Kostenübersicht</h2>
+        <p class="section-sub">14 Tage · 3 Budgets</p>
+        <div class="guide-table-wrap">
+        <table class="guide-table">
+            <tr><th>Budget</th><th>pro Tag</th><th>+ An-/Rückreise &amp; Einmalkosten</th><th>Gesamt (Richtwert)</th></tr>
+            <tr><td>💰 Sparbudget</td><td>~25–30 €</td><td>+ ~120 €</td><td>≈ 450–550 €</td></tr>
+            <tr><td>💶 Durchschnitt</td><td>~40–50 €</td><td>+ ~250 €</td><td>≈ 850–950 €</td></tr>
+            <tr><td>💳 Komfort</td><td>~75–110 €</td><td>+ ~450 €</td><td>≈ 1.600–1.800 €</td></tr>
+        </table>
+        </div>
+        <ul>
+            <li>Pilgerpass ~2–3 € · Compostela-Urkunde 3 €</li>
+            <li>Menú del peregrino (3 Gänge inkl. Wein) ~10–15 € = bestes Preis-Leistungs-Essen</li>
+            <li>Immer 100–150 € Notreserve (bar + Karte) einplanen</li>
+            <li>Viele Dörfer/Herbergen nur Bar — Bargeld in größeren Orten ziehen</li>
+        </ul>
+        <div class="infobox">Flüge nach Porto &amp; ab Santiago (SCQ) früh buchen; Rückreise auch per Bus (ALSA) oder Bahn (Renfe) möglich. Alle Preise sind Richtwerte — vor Reise prüfen.</div>
+    </section>
+
+    <!-- 8. Sicherheit -->
+    <section id="sicherheit" class="guide-section">
+        <h2>Sicherheit</h2>
+        <p class="section-sub">Notruf · Blasen · Gesundheit</p>
+        <div class="infobox warn"><strong>Notruf: 112</strong> — gilt in Portugal UND Spanien, mehrsprachig, funktioniert auch ohne Netz/Guthaben. Standort möglichst genau nennen (Ort, Wegmarke, km-Stein in Galicien).</div>
+        <h3>Die größten Risiken (und Vorbeugung)</h3>
+        <ul>
+            <li>Blasen → eingelaufene Schuhe, Merino-Socken, bei Reibung SOFORT abkleben</li>
+            <li>Überlastung → langsam starten (dieser Plan!), Pausen, notfalls Ruhetag</li>
+            <li>Knie/Abstieg (Tag 6) → Wanderstöcke, kurze Schritte</li>
+            <li>Sonne → Hut, Creme LSF 30–50, Mittagshitze meiden</li>
+            <li>Regen Galicien → Poncho, rutschige Granitwege langsam</li>
+            <li>Diebstahl (gering) → Wertsachen am Körper/ins Bett</li>
+        </ul>
+        <h3>Blasen behandeln</h3>
+        <p>Kleine Blase: mit Blasenpflaster abdecken (nicht aufstechen). Große, pralle Blase: desinfizieren, seitlich mit steriler Nadel öffnen, Haut belassen, desinfizieren, abkleben, täglich kontrollieren.</p>
+        <h3>Bei Erschöpfung</h3>
+        <p>Anhalten, Schatten, trinken + essen (Elektrolyte, Zucker), Füße hoch. Geht es nicht besser: Etappe per Bus/Taxi kürzen — kein Versagen. Die N-550 und Bahn begleiten die Route in Galicien.</p>
+        <div class="external-links"><a href="https://ec.europa.eu/112" target="_blank" rel="noopener">Über den Euronotruf 112 ↗</a></div>
+    </section>
+
+    <!-- 9. Ernährung -->
+    <section id="ernaehrung" class="guide-section">
+        <h2>Ernährung</h2>
+        <p class="section-sub">Essen · Trinken · Elektrolyte</p>
+        <div class="cols-2">
+            <div>
+                <h3>Mahlzeiten</h3>
+                <ul>
+                    <li><strong>Frühstück:</strong> Café + Brot/Haferflocken + Obst (Cafés öffnen ~7 Uhr)</li>
+                    <li><strong>Unterwegs:</strong> Bocadillo, Tortilla, Empanada; Snacks: Nüsse, Riegel, Obst</li>
+                    <li><strong>Abends:</strong> Menú del peregrino (KH + Protein); galicisch: Pulpo á feira, Caldo galego</li>
+                </ul>
+            </div>
+            <div>
+                <h3>Wasser &amp; Elektrolyte</h3>
+                <ul>
+                    <li>1,5–2 L/Tag, an heißen/langen Tagen bis 3 L</li>
+                    <li>Regelmäßig trinken, nicht erst bei Durst; Brunnen (fonte/fuente) nutzen</li>
+                    <li>Vor café-losen Etappen (Tag 6) Flaschen füllen</li>
+                    <li>Elektrolyt-/Magnesiumtabletten gegen Krämpfe</li>
+                </ul>
+            </div>
+        </div>
+        <div class="infobox tip"><strong>Vor dem Bergtag (Tag 6):</strong> abends bewusst kohlenhydratreich (Nudeln/Reis/Kartoffeln) essen und gut trinken.</div>
+    </section>
+
+    <!-- 10. Vorbereitung -->
+    <section id="vorbereitung" class="guide-section">
+        <h2>Training &amp; Vorbereitung</h2>
+        <p class="section-sub">8-Wochen-Plan</p>
+        <div class="guide-table-wrap">
+        <table class="guide-table">
+            <tr><th>Woche</th><th>Gehen</th><th>Longwalk</th><th>Rucksack</th><th>Ziel</th></tr>
+            <tr><td>1</td><td>3× 30–40 Min</td><td>5–6 km</td><td>leicht</td><td>Gewöhnung</td></tr>
+            <tr><td>2</td><td>3× 45 Min</td><td>8 km</td><td>3–4 kg</td><td>Ausdauer</td></tr>
+            <tr><td>3</td><td>3× 60 Min</td><td>10–12 km</td><td>5 kg</td><td>Distanz</td></tr>
+            <tr><td>4</td><td>3× 60 Min (Hügel)</td><td>14 km</td><td>6 kg</td><td>Hügel</td></tr>
+            <tr><td>5</td><td>3× 70 Min</td><td>16 km</td><td>7 kg</td><td>Rucksack testen</td></tr>
+            <tr><td>6</td><td>3× 75 Min + Treppen</td><td>18 km</td><td>7–8 kg</td><td>Berg simulieren</td></tr>
+            <tr><td>7</td><td>2 Tage hintereinander</td><td>2× 15 km</td><td>8 kg</td><td>Mehrtages-Test</td></tr>
+            <tr><td>8</td><td>2× 45 Min locker</td><td>8 km</td><td>leicht</td><td>Erholen (Taper)</td></tr>
+        </table>
+        </div>
+        <ul>
+            <li><strong>Schuhe einlaufen</strong> ab Woche 1 (mind. 50–80 km) — der wichtigste Punkt</li>
+            <li>Krafttraining 2×/Woche: Kniebeugen, Ausfallschritte, Wadenheben, Planke</li>
+            <li>Täglich dehnen: Waden, Oberschenkel, Achillessehne, Fußsohle</li>
+            <li>Abstiegs-/Treppentraining für Tag 6</li>
+        </ul>
+        <div class="infobox tip"><strong>Wenig Zeit?</strong> Priorisiere: 1) Schuhe einlaufen, 2) 1 langer Gehtag/Woche mit Rucksack, 3) Abstiegstraining.</div>
+    </section>
+
+    <!-- 11. Profi-Tipps -->
+    <section id="tipps" class="guide-section">
+        <h2>Profi-Tipps</h2>
+        <p class="section-sub">Erfahrungswissen kompakt</p>
+        <div class="cols-2">
+            <div>
+                <h3>Füße &amp; Blasen</h3>
+                <ul><li>Bei kleinster Reibung sofort abkleben — nie „durchhalten"</li><li>Keine Baumwollsocken; 2 Paar (Liner + Wandersocke)</li><li>Bei Pausen Schuhe aus, Füße lüften; Zehennägel kurz</li><li>Vaseline an Reibungsstellen</li></ul>
+                <h3>Rucksack</h3>
+                <ul><li>Weniger ist mehr — max. 10 % Körpergewicht</li><li>Schweres nah an den Rücken, Regenponcho nach oben</li><li>Hüftgurt trägt 70 % — fest auf die Hüften</li></ul>
+                <h3>Gehen</h3>
+                <ul><li>Langsam starten, eigenen Rhythmus finden</li><li>Früh los, Mittagshitze meiden</li><li>Bergab kurze Schritte + Stöcke (Knie schonen)</li><li>Trinken bevor du Durst hast</li></ul>
+            </div>
+            <div>
+                <h3>Herbergen</h3>
+                <ul><li>Früh ankommen sichert Betten (ab Galicien)</li><li>Ohrstöpsel gegen Schnarcher, Stirnlampe statt Deckenlicht</li><li>Wäsche direkt nach Ankunft waschen</li><li>Bargeld bereithalten (oft keine Karte)</li></ul>
+                <h3>Pilgerpass &amp; Compostela</h3>
+                <ul><li>Pilgerpass in Porto besorgen, 1. Stempel an der Kathedrale</li><li>Ab Tui min. 2 Stempel/Tag (Pflicht für Compostela)</li><li>Letzte ≥100 km zu Fuß = Compostela (ab Tui erfüllt)</li></ul>
+                <h3>Gesundheit</h3>
+                <ul><li>112 speichern, EHIC + Versicherung dabei</li><li>Zeitumstellung in Tui (+1 h) nicht vergessen</li><li>Bei Erschöpfung: Etappe kürzen ist kein Versagen</li></ul>
+            </div>
+        </div>
+        <div class="infobox tip"><strong>Und immer:</strong> ein freundliches „Buen Camino" öffnet Türen und Herzen. Vergleiche dich nicht — jeder geht seinen eigenen Weg. 🐚</div>
+    </section>
+
+    <!-- 12. Quellen -->
+    <section id="quellen" class="guide-section" style="border-bottom:none">
+        <h2>Quellen &amp; Hinweise</h2>
+        <p class="section-sub">Aktualität &amp; Nachweise</p>
+        <div class="infobox warn"><strong>Bitte beachten:</strong> Preise, Telefonnummern, Öffnungszeiten und der Betrieb von Herbergen ändern sich laufend und können nicht garantiert werden. Verifiziere solche Angaben unmittelbar vor Reisebeginn (v.a. über Gronze).</div>
+        <h3>Hauptquellen</h3>
+        <div class="external-links">
+            <a href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener">Gronze — Etappen &amp; Herbergen ↗</a>
+            <a href="https://oficinadelperegrino.com" target="_blank" rel="noopener">Pilgerbüro Santiago ↗</a>
+            <a href="https://www.csj.org.uk" target="_blank" rel="noopener">Confraternity of St James ↗</a>
+            <a href="https://commons.wikimedia.org" target="_blank" rel="noopener">Wikimedia Commons ↗</a>
+            <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap ↗</a>
+        </div>
+        <p class="disclaimer">Dieser Reiseführer wurde für die private Nutzung erstellt. Bilder werden nicht direkt eingebettet, sondern über frei zugängliche Bezugsquellen verlinkt. Kartendaten © OpenStreetMap-Mitwirkende.</p>
+    </section>
+
+    </div><!-- /guide-wrap -->
+
+    <!-- CTA -->
+    <section class="guide-cta">
+        <h2 style="font-size:clamp(1.8rem,4vw,2.6rem)">Bereit für den Weg?</h2>
+        <p style="color:#555;max-width:520px;margin:0.8rem auto 0">Buen Camino! Zurück zur Startseite oder direkt zu weiteren Abenteuern.</p>
+        <a href="index.html#adventures" class="btn">Zurück zu den Abenteuern</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
+        <p><a href="index.html">barvenko.de</a></p>
+    </footer>
+
+    <a href="#top" class="back-to-top" aria-label="Nach oben">↑</a>
+
+    <script>
+        // Mobile nav toggle
+        const toggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        toggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            toggle.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                toggle.classList.remove('active');
+            });
+        });
+        // Navbar background on scroll (guide page always has light bg, keep scrolled style)
+        const navbar = document.querySelector('.navbar');
+        const onScroll = () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+            document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
+        };
+        window.addEventListener('scroll', onScroll);
+        onScroll();
+    </script>
+
+</body>
+</html>
