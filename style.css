@@ -343,6 +343,14 @@ img {
     transition: transform 0.4s ease, box-shadow 0.4s ease;
 }
 
+.adventure-feature--jakobsweg {
+    background:
+        linear-gradient(135deg, rgba(70,50,35,0.82), rgba(120,90,60,0.68)),
+        url('images/jakobsweg/deko-bergpfad.png');
+    background-size: cover;
+    background-position: center 25%;
+}
+
 .adventure-feature:hover {
     opacity: 1;
     transform: translateY(-3px);
