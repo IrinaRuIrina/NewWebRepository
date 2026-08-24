@@ -559,3 +559,10 @@ img {
         padding: 5rem 1.5rem;
     }
 }
+
+.stage-img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 0.75rem 0 1rem;
+    display: block;
+}
