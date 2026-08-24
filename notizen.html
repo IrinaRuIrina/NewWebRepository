@@ -48,15 +48,26 @@
         .note-empty { text-align: center; padding: 3rem 1rem; color: #9a927e; }
 
         .note-feed { display: flex; flex-direction: column; gap: 0.9rem; }
-        .note { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; position: relative; }
+        .note { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1rem 1.1rem; position: relative; cursor: pointer; }
+        .note:hover { border-color: var(--accent); }
         .note-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
         .note-cat { font-size: 0.68rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-dark); background: #ece7da; padding: 0.2rem 0.6rem; border-radius: 999px; }
         .note-date { font-size: 0.7rem; color: #9a927e; margin-top: 0.3rem; }
-        .note-del { border: none; background: transparent; color: #b3a992; font-size: 0.95rem; cursor: pointer; padding: 0.2rem; }
-        .note-del:hover { color: var(--danger); }
+        .note-actions { display: flex; gap: 0.2rem; flex-shrink: 0; }
+        .note-del, .note-edit { border: none; background: transparent; color: #b3a992; font-size: 0.9rem; cursor: pointer; padding: 0.3rem; border-radius: 6px; }
+        .note-del:hover { color: var(--danger); background: #f1e5e0; }
+        .note-edit:hover { color: var(--accent-dark); background: #ece7da; }
         .note-text { white-space: pre-wrap; line-height: 1.6; color: var(--text); margin: 0.4rem 0 0; }
+        .note-text-preview {
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+            overflow: hidden; white-space: pre-wrap; line-height: 1.6; color: var(--text); margin: 0.4rem 0 0;
+        }
+        .note-more { font-size: 0.75rem; color: var(--accent-dark); margin-top: 0.3rem; }
         .note-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; margin-top: 0.7rem; }
         .note-photos img { width: 100%; height: 100px; object-fit: cover; border-radius: 8px; cursor: zoom-in; }
+        .detail-cat { font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-dark); background: #ece7da; padding: 0.25rem 0.7rem; border-radius: 999px; }
+        .detail-date { font-size: 0.72rem; color: #9a927e; margin: 0.5rem 0 1rem; }
+        .detail-text { white-space: pre-wrap; line-height: 1.7; color: var(--text); }
 
         .fab { position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%); background: var(--accent); color: #fff; border: none; font-family: inherit; font-size: 0.85rem; font-weight: 500; padding: 0.85rem 1.6rem; border-radius: 999px; box-shadow: 0 6px 20px rgba(40,35,20,0.25); cursor: pointer; z-index: 10; }
         .fab:hover { background: var(--accent-dark); }
@@ -108,7 +119,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import {
-            getFirestore, collection, addDoc, deleteDoc, doc,
+            getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
             onSnapshot, query, orderBy, serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
         import {
@@ -163,24 +174,70 @@
                 return;
             }
             feed.innerHTML = `<div class="note-feed">${shown.map(n => `
-                <article class="note">
+                <article class="note" data-open="${esc(n.id)}">
                     <div class="note-head">
                         <div><span class="note-cat">${esc(n.category)}</span><div class="note-date">${esc(formatDate(n.createdAt))}</div></div>
-                        <button class="note-del" data-del="${esc(n.id)}" aria-label="Löschen">✕</button>
+                        <div class="note-actions">
+                            <button class="note-edit" data-edit="${esc(n.id)}" aria-label="Bearbeiten">✏️</button>
+                            <button class="note-del" data-del="${esc(n.id)}" aria-label="Löschen">✕</button>
+                        </div>
                     </div>
-                    ${n.text ? `<p class="note-text">${esc(n.text)}</p>` : ""}
+                    ${n.text ? `<p class="note-text-preview">${esc(n.text)}</p><p class="note-more">Weiterlesen →</p>` : ""}
                     ${(n.photos || []).length ? `<div class="note-photos">${n.photos.map(p => `<img src="${p}" alt="Foto">`).join("")}</div>` : ""}
                 </article>`).join("")}</div>`;
 
-            feed.querySelectorAll("[data-del]").forEach(btn => {
-                btn.addEventListener("click", async () => {
-                    if (!confirm("Notiz wirklich löschen?")) return;
-                    btn.disabled = true;
-                    try { await deleteDoc(doc(db, "private_notes", btn.getAttribute("data-del"))); }
-                    catch (e) { alert("Löschen fehlgeschlagen: " + e.message); btn.disabled = false; }
+            feed.querySelectorAll("[data-open]").forEach(card => {
+                card.addEventListener("click", (e) => {
+                    if (e.target.closest("[data-del],[data-edit],img")) return;
+                    const note = notes.find(n => n.id === card.getAttribute("data-open"));
+                    if (note) openDetailView(note);
                 });
             });
+            feed.querySelectorAll("[data-edit]").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const note = notes.find(n => n.id === btn.getAttribute("data-edit"));
+                    if (note) openNoteForm(note);
+                });
+            });
+            feed.querySelectorAll("[data-del]").forEach(btn => {
+                btn.addEventListener("click", (e) => { e.stopPropagation(); deleteNote(btn.getAttribute("data-del"), btn); });
+            });
             feed.querySelectorAll(".note-photos img").forEach(img => {
+                img.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    document.getElementById("lightbox-img").src = img.src;
+                    document.getElementById("lightbox").classList.add("show");
+                });
+            });
+        }
+
+        async function deleteNote(id, triggerBtn) {
+            if (!confirm("Notiz wirklich löschen?")) return;
+            if (triggerBtn) triggerBtn.disabled = true;
+            try {
+                await deleteDoc(doc(db, "private_notes", id));
+                closeBackdrop();
+            } catch (e) {
+                alert("Löschen fehlgeschlagen: " + e.message);
+                if (triggerBtn) triggerBtn.disabled = false;
+            }
+        }
+
+        function openDetailView(note) {
+            const photos = (note.photos || []).map(p => `<img src="${p}" alt="Foto">`).join("");
+            const div = openBackdrop(`
+                <span class="detail-cat">${esc(note.category)}</span>
+                <div class="detail-date">${esc(formatDate(note.createdAt))}</div>
+                ${note.text ? `<p class="detail-text">${esc(note.text)}</p>` : ""}
+                ${photos ? `<div class="note-photos" style="margin-top:1rem">${photos}</div>` : ""}
+                <div class="sheet-actions">
+                    <button type="button" class="btn-secondary" id="detail-edit">Bearbeiten</button>
+                    <button type="button" class="btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">Löschen</button>
+                </div>`);
+            div.querySelector("#detail-edit").addEventListener("click", () => openNoteForm(note));
+            div.querySelector("#detail-del").addEventListener("click", (e) => deleteNote(note.id, e.target));
+            div.querySelectorAll(".note-photos img").forEach(img => {
                 img.addEventListener("click", () => {
                     document.getElementById("lightbox-img").src = img.src;
                     document.getElementById("lightbox").classList.add("show");
@@ -286,14 +343,13 @@
             });
         }
 
-        document.getElementById("fab").addEventListener("click", () => {
-            draftPhotos = [];
+        function openNoteForm(existingNote) {
             const div = openBackdrop(`
-                <h2>Neue Notiz</h2>
+                <h2>${existingNote ? "Notiz bearbeiten" : "Neue Notiz"}</h2>
                 <div class="field"><label for="n-cat">Kategorie</label>
-                    <select id="n-cat">${CATEGORIES.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}</select>
+                    <select id="n-cat">${CATEGORIES.map(c => `<option value="${esc(c)}" ${existingNote && existingNote.category === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>
                 </div>
-                <div class="field"><label for="n-text">Text</label><textarea id="n-text" placeholder="Schreib, was dir gerade wichtig ist …"></textarea></div>
+                <div class="field"><label for="n-text">Text</label><textarea id="n-text" placeholder="Schreib, was dir gerade wichtig ist …">${existingNote ? esc(existingNote.text || "") : ""}</textarea></div>
                 <div class="field"><label>Foto (optional)</label>
                     <label class="photo-picker">📷 Foto hinzufügen<input type="file" id="n-photos" accept="image/*" multiple></label>
                     <div class="preview-grid" id="n-preview"></div>
@@ -303,7 +359,9 @@
                     <button type="button" class="btn-secondary" id="n-cancel">Abbrechen</button>
                     <button type="button" class="btn btn-primary" id="n-save">Speichern</button>
                 </div>`);
+            draftPhotos = existingNote ? (existingNote.photos || []).slice() : [];
             const previewEl = div.querySelector("#n-preview");
+            renderPreviewGrid(previewEl);
             div.querySelector("#n-cancel").addEventListener("click", closeBackdrop);
             div.querySelector("#n-photos").addEventListener("change", async (e) => {
                 for (const f of Array.from(e.target.files || [])) {
@@ -320,7 +378,11 @@
                 if (!text && !draftPhotos.length) { errEl.textContent = "Bitte Text oder Foto hinzufügen."; errEl.classList.add("show"); return; }
                 btn.disabled = true; btn.textContent = "Speichere …";
                 try {
-                    await addDoc(collection(db, "private_notes"), { category, text, photos: draftPhotos.slice(), createdAt: serverTimestamp() });
+                    if (existingNote) {
+                        await updateDoc(doc(db, "private_notes", existingNote.id), { category, text, photos: draftPhotos.slice() });
+                    } else {
+                        await addDoc(collection(db, "private_notes"), { category, text, photos: draftPhotos.slice(), createdAt: serverTimestamp() });
+                    }
                     closeBackdrop();
                 } catch (e) {
                     errEl.textContent = "Speichern fehlgeschlagen: " + e.message;
@@ -328,7 +390,9 @@
                     btn.disabled = false; btn.textContent = "Speichern";
                 }
             });
-        });
+        }
+
+        document.getElementById("fab").addEventListener("click", () => openNoteForm(null));
 
         document.getElementById("lightbox").addEventListener("click", function () { this.classList.remove("show"); });
     </script>
