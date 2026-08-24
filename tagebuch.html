@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Reisetagebuch — Camino Portugués | Barvenko</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --accent: #8a5a38; --accent-dark: #6b452b; --line: #e3ddd5; --text: #33302c; --text-soft: #45413b; --bg: #f6f1ea; --surface: #fffdfa; --danger: #a8422c; }
+        body { font-weight: 400; color: var(--text); background: var(--bg); }
+
+        .diary-hero {
+            min-height: 40vh; display: flex; align-items: center; justify-content: center; text-align: center;
+            color: #fff; padding: 7rem 1.5rem 3rem;
+            background: linear-gradient(135deg, rgba(70,50,35,0.72), rgba(120,90,60,0.55)), url('images/jakobsweg/deko-bergpfad.png');
+            background-size: cover; background-position: center 30%;
+        }
+        .diary-hero .kicker { font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.9; margin-bottom: 1rem; }
+        .diary-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 5vw, 3rem); letter-spacing: 0.03em; }
+
+        .diary-wrap { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.2rem 6rem; }
+
+        .diary-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .diary-count { font-size: 0.82rem; color: #6a655d; }
+        .diary-auth-status { font-size: 0.78rem; color: #6a655d; }
+        .diary-auth-status button { background: none; border: none; color: var(--accent-dark); text-decoration: underline; cursor: pointer; font-size: inherit; padding: 0; }
+
+        .diary-empty { text-align: center; padding: 3.5rem 1rem; color: #948c7d; }
+        .diary-empty .shell { font-size: 2.2rem; display: block; margin-bottom: 0.8rem; }
+
+        .diary-feed { display: flex; flex-direction: column; gap: 1.1rem; }
+        .diary-entry {
+            background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
+            padding: 1.1rem 1.2rem 1.2rem; box-shadow: 0 2px 10px rgba(60,45,25,0.08); position: relative;
+        }
+        .diary-entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
+        .diary-entry-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 1.35rem; }
+        .diary-entry-date { font-size: 0.72rem; letter-spacing: 0.03em; color: #948c7d; margin-top: 0.2rem; }
+        .diary-entry-del { border: none; background: transparent; color: #b3a992; font-size: 1rem; cursor: pointer; padding: 0.3rem; border-radius: 6px; flex-shrink: 0; }
+        .diary-entry-del:hover { color: var(--danger); background: #eadfcd; }
+        .diary-entry-text { color: var(--text-soft); white-space: pre-wrap; margin: 0.5rem 0 0; line-height: 1.6; }
+        .diary-entry-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.5rem; margin-top: 0.8rem; }
+        .diary-entry-photos img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); cursor: zoom-in; display: block; }
+
+        .diary-fab {
+            position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
+            background: var(--accent); color: #fff; border: none; font-family: 'Montserrat', sans-serif;
+            font-size: 0.85rem; font-weight: 500; letter-spacing: 0.02em; padding: 0.85rem 1.6rem;
+            border-radius: 999px; box-shadow: 0 6px 20px rgba(60,45,25,0.25); cursor: pointer;
+            display: none; align-items: center; gap: 0.5rem; z-index: 10;
+        }
+        .diary-fab.show { display: flex; }
+        .diary-fab:hover { background: var(--accent-dark); }
+
+        .diary-backdrop {
+            position: fixed; inset: 0; background: rgba(20,15,8,0.45); z-index: 20;
+            display: none; align-items: flex-end; justify-content: center;
+        }
+        .diary-backdrop.show { display: flex; }
+        .diary-sheet {
+            background: #fff; width: 100%; max-width: 640px; border-radius: 18px 18px 0 0;
+            padding: 1.4rem 1.2rem 1.6rem; max-height: 88vh; overflow-y: auto; box-shadow: 0 -8px 30px rgba(60,45,25,0.2);
+        }
+        .diary-sheet h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--accent-dark); margin-bottom: 1rem; }
+        .diary-field { margin-bottom: 1rem; }
+        .diary-field label { display: block; font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.4rem; }
+        .diary-field input[type="text"], .diary-field input[type="email"], .diary-field input[type="password"], .diary-field textarea {
+            width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.8rem;
+            font-family: inherit; font-size: 1rem; background: #fff; color: var(--text); box-sizing: border-box;
+        }
+        .diary-field textarea { resize: vertical; min-height: 6rem; }
+        .diary-photo-picker { border: 1.5px dashed var(--line); border-radius: 10px; padding: 1rem; text-align: center; cursor: pointer; color: var(--text-soft); font-size: 0.85rem; display: block; }
+        .diary-photo-picker input { display: none; }
+        .diary-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; margin-top: 0.7rem; }
+        .diary-preview-item { position: relative; }
+        .diary-preview-item img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; display: block; }
+        .diary-preview-remove { position: absolute; top: -6px; right: -6px; width: 22px; height: 22px; border-radius: 50%; background: var(--danger); color: #fff; border: none; font-size: 0.8rem; cursor: pointer; }
+        .diary-sheet-actions { display: flex; gap: 0.7rem; margin-top: 1.2rem; }
+        .diary-btn { flex: 1; border-radius: 10px; padding: 0.8rem 1rem; font-size: 0.9rem; font-family: inherit; font-weight: 500; cursor: pointer; border: 1px solid transparent; }
+        .diary-btn-primary { background: var(--accent); color: #fff; }
+        .diary-btn-primary:hover { background: var(--accent-dark); }
+        .diary-btn-primary:disabled { opacity: 0.6; cursor: default; }
+        .diary-btn-secondary { background: transparent; color: var(--text-soft); border-color: var(--line); }
+        .diary-error { color: var(--danger); font-size: 0.82rem; margin-top: 0.6rem; display: none; }
+        .diary-error.show { display: block; }
+        .diary-lightbox { position: fixed; inset: 0; background: rgba(10,8,5,0.9); z-index: 40; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+        .diary-lightbox.show { display: flex; }
+        .diary-lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html#hero" class="nav-logo">BARVENKO</a>
+        <div class="nav-links">
+            <a href="index.html#about">Über mich</a>
+            <a href="index.html#gallery">Galerie</a>
+            <a href="index.html#adventures">Abenteuer</a>
+            <a href="jakobsweg.html">Reiseführer</a>
+            <a href="index.html#contact">Kontakt</a>
+        </div>
+        <button class="nav-toggle" aria-label="Menü öffnen">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <header class="diary-hero">
+        <div>
+            <p class="kicker">Camino Portugués</p>
+            <h1>Mein Reisetagebuch</h1>
+        </div>
+    </header>
+
+    <div class="diary-wrap">
+        <div class="diary-toolbar">
+            <span class="diary-count" id="diary-count">Lade Einträge …</span>
+            <span class="diary-auth-status" id="diary-auth-status"></span>
+        </div>
+        <div id="diary-feed"></div>
+    </div>
+
+    <button class="diary-fab" id="diary-fab">+ Neuer Tag</button>
+    <div class="diary-lightbox" id="diary-lightbox"><img id="diary-lightbox-img" alt=""></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
+        <p><a href="index.html">barvenko.de</a></p>
+    </footer>
+
+    <a href="#top" class="back-to-top" aria-label="Nach oben">↑</a>
+
+    <script>
+        const toggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        toggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            toggle.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                toggle.classList.remove('active');
+            });
+        });
+        const navbar = document.querySelector('.navbar');
+        const onScroll = () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+            document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
+        };
+        window.addEventListener('scroll', onScroll);
+        onScroll();
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import {
+            getFirestore, collection, addDoc, deleteDoc, doc,
+            onSnapshot, query, orderBy, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+        import {
+            getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAwpQ5RJhmg3EclFhCDxsvw7O8ExuA1jbs",
+            authDomain: "camino-tagebuch.firebaseapp.com",
+            projectId: "camino-tagebuch",
+            storageBucket: "camino-tagebuch.firebasestorage.app",
+            messagingSenderId: "496232405910",
+            appId: "1:496232405910:web:e8eca9a786b91a67f59bb7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let isLoggedIn = false;
+        let entries = [];
+        let draftPhotos = [];
+
+        function esc(s) {
+            return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+                ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        }
+
+        function formatDate(ts) {
+            try {
+                const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
+                return d.toLocaleString("de-DE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+            } catch (e) { return ""; }
+        }
+
+        function renderEntry(entry) {
+            const photos = (entry.photos || []).map(p =>
+                `<img src="${p}" alt="Foto zum Tagebucheintrag" loading="lazy">`).join("");
+            return `
+                <article class="diary-entry">
+                    <div class="diary-entry-head">
+                        <div>
+                            <div class="diary-entry-title">${esc(entry.title)}</div>
+                            <div class="diary-entry-date">${esc(formatDate(entry.createdAt))}</div>
+                        </div>
+                        ${isLoggedIn ? `<button class="diary-entry-del" aria-label="Löschen" data-del="${esc(entry.id)}">✕</button>` : ""}
+                    </div>
+                    ${entry.text ? `<p class="diary-entry-text">${esc(entry.text)}</p>` : ""}
+                    ${photos ? `<div class="diary-entry-photos">${photos}</div>` : ""}
+                </article>`;
+        }
+
+        function paint() {
+            const feed = document.getElementById("diary-feed");
+            const count = document.getElementById("diary-count");
+            count.textContent = entries.length + (entries.length === 1 ? " Eintrag" : " Einträge");
+            feed.innerHTML = entries.length
+                ? `<div class="diary-feed">${entries.map(renderEntry).join("")}</div>`
+                : `<div class="diary-empty"><span class="shell">🐚</span><p>Noch keine Einträge. Der erste Tag auf dem Camino beginnt hier.</p></div>`;
+
+            feed.querySelectorAll("[data-del]").forEach(btn => {
+                btn.addEventListener("click", async () => {
+                    if (!confirm("Diesen Eintrag wirklich löschen?")) return;
+                    btn.disabled = true;
+                    try { await deleteDoc(doc(db, "entries", btn.getAttribute("data-del"))); }
+                    catch (e) { alert("Löschen fehlgeschlagen: " + e.message); btn.disabled = false; }
+                });
+            });
+            feed.querySelectorAll(".diary-entry-photos img").forEach(img => {
+                img.addEventListener("click", () => {
+                    document.getElementById("diary-lightbox-img").src = img.src;
+                    document.getElementById("diary-lightbox").classList.add("show");
+                });
+            });
+
+            document.getElementById("diary-fab").classList.toggle("show", isLoggedIn);
+            renderAuthStatus();
+        }
+
+        function renderAuthStatus() {
+            const el = document.getElementById("diary-auth-status");
+            if (isLoggedIn) {
+                el.innerHTML = `Angemeldet · <button id="logout-btn">Abmelden</button>`;
+                document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
+            } else {
+                el.innerHTML = `<button id="login-btn">Anmelden</button>`;
+                document.getElementById("login-btn").addEventListener("click", openLoginSheet);
+            }
+        }
+
+        onSnapshot(query(collection(db, "entries"), orderBy("createdAt", "desc")), (snap) => {
+            entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            paint();
+        }, (err) => {
+            document.getElementById("diary-count").textContent = "Fehler beim Laden.";
+            console.error(err);
+        });
+
+        onAuthStateChanged(auth, (user) => {
+            isLoggedIn = !!user;
+            paint();
+        });
+
+        function openBackdrop(innerHtml) {
+            closeBackdrop();
+            const div = document.createElement("div");
+            div.className = "diary-backdrop show";
+            div.id = "diary-backdrop";
+            div.innerHTML = `<div class="diary-sheet">${innerHtml}</div>`;
+            document.body.appendChild(div);
+            div.addEventListener("click", (e) => { if (e.target === div) closeBackdrop(); });
+            return div;
+        }
+        function closeBackdrop() {
+            const b = document.getElementById("diary-backdrop");
+            if (b) b.remove();
+            draftPhotos = [];
+        }
+
+        function openLoginSheet() {
+            const div = openBackdrop(`
+                <h2>Anmelden</h2>
+                <div class="diary-field"><label for="login-email">E-Mail</label><input type="email" id="login-email" autocomplete="email"></div>
+                <div class="diary-field"><label for="login-pw">Passwort</label><input type="password" id="login-pw" autocomplete="current-password"></div>
+                <div class="diary-error" id="login-error"></div>
+                <div class="diary-sheet-actions">
+                    <button type="button" class="diary-btn diary-btn-secondary" id="login-cancel">Abbrechen</button>
+                    <button type="button" class="diary-btn diary-btn-primary" id="login-submit">Anmelden</button>
+                </div>`);
+            div.querySelector("#login-cancel").addEventListener("click", closeBackdrop);
+            div.querySelector("#login-submit").addEventListener("click", async () => {
+                const email = div.querySelector("#login-email").value.trim();
+                const pw = div.querySelector("#login-pw").value;
+                const btn = div.querySelector("#login-submit");
+                const errEl = div.querySelector("#login-error");
+                btn.disabled = true; btn.textContent = "Prüfe …";
+                try {
+                    await signInWithEmailAndPassword(auth, email, pw);
+                    closeBackdrop();
+                } catch (e) {
+                    errEl.textContent = "Anmeldung fehlgeschlagen — E-Mail oder Passwort falsch.";
+                    errEl.classList.add("show");
+                    btn.disabled = false; btn.textContent = "Anmelden";
+                }
+            });
+        }
+
+        function resizeImage(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onerror = () => reject(new Error("read-failed"));
+                reader.onload = () => {
+                    const img = new Image();
+                    img.onerror = () => reject(new Error("decode-failed"));
+                    img.onload = () => {
+                        const maxDim = 1100;
+                        let w = img.width, h = img.height;
+                        if (w > maxDim || h > maxDim) {
+                            if (w > h) { h = Math.round(h * (maxDim / w)); w = maxDim; }
+                            else { w = Math.round(w * (maxDim / h)); h = maxDim; }
+                        }
+                        const canvas = document.createElement("canvas");
+                        canvas.width = w; canvas.height = h;
+                        canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL("image/jpeg", 0.62));
+                    };
+                    img.src = reader.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function renderPreviewGrid(container) {
+            container.innerHTML = draftPhotos.map((p, i) => `
+                <div class="diary-preview-item"><img src="${p}" alt="Vorschau">
+                <button type="button" class="diary-preview-remove" data-remove="${i}" aria-label="Entfernen">✕</button></div>`).join("");
+            container.querySelectorAll("[data-remove]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    draftPhotos.splice(Number(btn.getAttribute("data-remove")), 1);
+                    renderPreviewGrid(container);
+                });
+            });
+        }
+
+        function openEntrySheet() {
+            draftPhotos = [];
+            const div = openBackdrop(`
+                <h2>Neuer Tag</h2>
+                <div class="diary-field"><label for="entry-title">Tag-Titel</label>
+                <input type="text" id="entry-title" placeholder="z. B. Tag 3 – Barcelos"></div>
+                <div class="diary-field"><label for="entry-text">Wie war dein Tag?</label>
+                <textarea id="entry-text" placeholder="Erzähl, wie es dir geht, was du gesehen hast …"></textarea></div>
+                <div class="diary-field"><label>Fotos</label>
+                    <label class="diary-photo-picker">📷 Fotos hinzufügen<input type="file" id="entry-photos" accept="image/*" multiple></label>
+                    <div class="diary-preview-grid" id="entry-preview"></div>
+                </div>
+                <div class="diary-error" id="entry-error"></div>
+                <div class="diary-sheet-actions">
+                    <button type="button" class="diary-btn diary-btn-secondary" id="entry-cancel">Abbrechen</button>
+                    <button type="button" class="diary-btn diary-btn-primary" id="entry-save">Speichern</button>
+                </div>`);
+            const previewEl = div.querySelector("#entry-preview");
+            div.querySelector("#entry-cancel").addEventListener("click", closeBackdrop);
+            div.querySelector("#entry-photos").addEventListener("change", async (e) => {
+                const files = Array.from(e.target.files || []);
+                for (const f of files) {
+                    try { draftPhotos.push(await resizeImage(f)); } catch (err) { /* skip */ }
+                }
+                renderPreviewGrid(previewEl);
+                e.target.value = "";
+            });
+            div.querySelector("#entry-save").addEventListener("click", async () => {
+                const title = div.querySelector("#entry-title").value.trim();
+                const text = div.querySelector("#entry-text").value.trim();
+                const errEl = div.querySelector("#entry-error");
+                const btn = div.querySelector("#entry-save");
+                if (!title) { errEl.textContent = "Bitte gib dem Tag einen Titel."; errEl.classList.add("show"); return; }
+                btn.disabled = true; btn.textContent = "Speichere …";
+                try {
+                    await addDoc(collection(db, "entries"), {
+                        title, text, photos: draftPhotos.slice(), createdAt: serverTimestamp()
+                    });
+                    closeBackdrop();
+                } catch (e) {
+                    errEl.textContent = "Speichern fehlgeschlagen: " + e.message;
+                    errEl.classList.add("show");
+                    btn.disabled = false; btn.textContent = "Speichern";
+                }
+            });
+        }
+
+        document.getElementById("diary-fab").addEventListener("click", openEntrySheet);
+        document.getElementById("diary-lightbox").addEventListener("click", function () { this.classList.remove("show"); });
+        renderAuthStatus();
+    </script>
+
+</body>
+</html>
