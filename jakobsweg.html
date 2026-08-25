@@ -173,14 +173,17 @@
         }
         .guide-cta a.btn:hover { background: #2c2c2c; color: #fff; opacity: 1; }
 
-        .back-to-top {
+        .scroll-nav {
             position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 900;
-            width: 44px; height: 44px; border-radius: 50%;
+            display: flex; gap: 0.6rem;
+        }
+        .back-to-top, .scroll-to-bottom {
+            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
             background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
             font-size: 1.2rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
             box-shadow: 0 6px 18px rgba(0,0,0,0.2);
         }
-        .back-to-top.show { opacity: 1; pointer-events: auto; }
+        .back-to-top.show, .scroll-to-bottom.show { opacity: 1; pointer-events: auto; }
 
         .disclaimer { font-size: 0.9rem; color: #6a655d; line-height: 1.7; max-width: 800px; margin: 2rem auto 0; text-align: center; }
         .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 2.5rem; }
@@ -266,35 +269,6 @@
         </table>
         </div>
 
-        <h3 data-i18n="gesamtroute.etappenuebersicht.title">Etappenübersicht</h3>
-        <div class="guide-table-wrap">
-        <table class="guide-table">
-            <tr><th data-i18n="gesamtroute.th.tag">Tag</th><th data-i18n="gesamtroute.th.datum">Datum</th><th data-i18n="gesamtroute.th.vonNach">Von → Nach</th><th>km</th><th data-i18n="gesamtroute.th.gehzeit">Gehzeit</th><th>▲ Hm</th><th data-i18n="gesamtroute.th.grad">Grad</th></tr>
-            <tr><td>1</td><td>01.09</td><td data-i18n="day1.title">Anreise → Mosteiró</td><td>–</td><td>–</td><td>–</td><td>–</td></tr>
-            <tr><td>2</td><td>02.09</td><td>Porto → Vairão</td><td>≈22</td><td data-i18n="etappenuebersicht.ca6h">ca. 6 h</td><td>+200</td><td>★★☆</td></tr>
-            <tr><td>3</td><td>03.09</td><td>Vairão → Barcelos</td><td>23</td><td>5,75 h</td><td>+210</td><td>★★☆</td></tr>
-            <tr><td>4</td><td>04.09</td><td>Barcelos → Balugães</td><td>17</td><td>4,25 h</td><td>+230</td><td>★★☆</td></tr>
-            <tr><td>5</td><td>05.09</td><td>Balugães → Ponte de Lima</td><td>16</td><td>4,0 h</td><td>+180</td><td>★★☆</td></tr>
-            <tr><td>6</td><td>06.09</td><td>Ponte de Lima → Rubiães</td><td>18</td><td>5,0 h</td><td>+540</td><td>★★★</td></tr>
-            <tr><td>7</td><td>07.09</td><td>Rubiães → Tui 🇪🇸</td><td>19</td><td>4,75 h</td><td>+170</td><td>★★☆</td></tr>
-            <tr><td>8</td><td>08.09</td><td>Tui → O Porriño</td><td>18</td><td>4,5 h</td><td>+140</td><td>★★☆</td></tr>
-            <tr><td>9</td><td>09.09</td><td>O Porriño → Redondela</td><td>16</td><td>4,0 h</td><td>+260</td><td>★★☆</td></tr>
-            <tr><td>10</td><td>10.09</td><td>Redondela → Pontevedra</td><td>20</td><td>5,0 h</td><td>+330</td><td>★★☆</td></tr>
-            <tr><td>11</td><td>11.09</td><td>Pontevedra → Caldas de Reis</td><td>21</td><td>5,25 h</td><td>+290</td><td>★★☆</td></tr>
-            <tr><td>12</td><td>12.09</td><td>Caldas de Reis → Padrón</td><td>19</td><td>4,75 h</td><td>+260</td><td>★★☆</td></tr>
-            <tr><td>13</td><td>13.09</td><td>Padrón → O Milladoiro</td><td>16</td><td>4,0 h</td><td>+300</td><td>★★☆</td></tr>
-            <tr><td>14</td><td>14.09</td><td data-i18n="day14.title.plain">O Milladoiro → Santiago 🎉</td><td>8</td><td>2,0 h</td><td>+120</td><td>★☆☆</td></tr>
-        </table>
-        </div>
-
-        <div class="infobox tip" data-i18n-html="gesamtroute.whyInfobox"><strong>Warum diese Aufteilung?</strong> Die ersten Tage sind bewusst kurz (Schuhe &amp; Füße einlaufen), der schwerste Tag (Serra da Labruja, Tag 6) liegt in der Wochenmitte, und der letzte Tag ist kurz &amp; triumphal — du erreichst Santiago entspannt am Vormittag.</div>
-
-        <h3 data-i18n="gesamtroute.wetter.title">Beste Reisezeit &amp; Wetter</h3>
-        <p data-i18n-html="gesamtroute.wetter.text"><strong>September</strong> ist ideal: warm, stabil, weniger Pilger als im Hochsommer, alle Herbergen geöffnet. Tagsüber 22–27 °C, nachts 12–17 °C. Portugal-Teil meist trocken; in Galicien jederzeit kurze Schauer möglich — Poncho griffbereit.</p>
-        <div class="external-links">
-            <a href="https://www.ipma.pt" target="_blank" rel="noopener" data-i18n="link.wetterPT">Wetter Portugal (IPMA) ↗</a>
-            <a href="https://www.aemet.es" target="_blank" rel="noopener" data-i18n="link.wetterES">Wetter Galicien (AEMET) ↗</a>
-        </div>
     </section>
 
     <!-- 2. Etappen -->
@@ -640,6 +614,16 @@
                 </div>
             </div>
         </details>
+
+        <div class="infobox tip" data-i18n-html="gesamtroute.whyInfobox"><strong>Warum diese Aufteilung?</strong> Die ersten Tage sind bewusst kurz (Schuhe &amp; Füße einlaufen), der schwerste Tag (Serra da Labruja, Tag 6) liegt in der Wochenmitte, und der letzte Tag ist kurz &amp; triumphal — du erreichst Santiago entspannt am Vormittag.</div>
+        <div class="infobox tip">
+            <p><strong data-i18n="gesamtroute.wetter.title">Beste Reisezeit &amp; Wetter</strong></p>
+            <p data-i18n-html="gesamtroute.wetter.text"><strong>September</strong> ist ideal: warm, stabil, weniger Pilger als im Hochsommer, alle Herbergen geöffnet. Tagsüber 22–27 °C, nachts 12–17 °C. Portugal-Teil meist trocken; in Galicien jederzeit kurze Schauer möglich — Poncho griffbereit.</p>
+            <div class="external-links">
+                <a href="https://www.ipma.pt" target="_blank" rel="noopener" data-i18n="link.wetterPT">Wetter Portugal (IPMA) ↗</a>
+                <a href="https://www.aemet.es" target="_blank" rel="noopener" data-i18n="link.wetterES">Wetter Galicien (AEMET) ↗</a>
+            </div>
+        </div>
     </section>
 
     <!-- 3. Übernachtungen -->
@@ -819,7 +803,10 @@
         <p><a href="index.html">barvenko.de</a></p>
     </footer>
 
-    <a href="#top" class="back-to-top" data-i18n-aria-label="footer.top" aria-label="Nach oben">↑</a>
+    <div class="scroll-nav">
+        <button type="button" class="scroll-to-bottom" data-i18n-aria-label="footer.bottom" aria-label="Nach unten">↓</button>
+        <a href="#top" class="back-to-top" data-i18n-aria-label="footer.top" aria-label="Nach oben">↑</a>
+    </div>
 
     <script>
         // Mobile nav toggle
@@ -840,9 +827,14 @@
         const onScroll = () => {
             navbar.classList.toggle('scrolled', window.scrollY > 50);
             document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
+            const remaining = document.body.scrollHeight - (window.scrollY + window.innerHeight);
+            document.querySelector('.scroll-to-bottom').classList.toggle('show', remaining > 500);
         };
         window.addEventListener('scroll', onScroll);
         onScroll();
+        document.querySelector('.scroll-to-bottom').addEventListener('click', () => {
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        });
     </script>
 
 </body>
