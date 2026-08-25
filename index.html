@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Barvenko — Travel & Lifestyle</title>
+    <title data-i18n="doc.title">Barvenko — Travel & Lifestyle</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="i18n-index.js"></script>
+    <script src="i18n.js"></script>
 </head>
 <body>
 
@@ -15,13 +17,18 @@
     <nav class="navbar">
         <a href="#hero" class="nav-logo">BARVENKO</a>
         <div class="nav-links">
-            <a href="#about">Über mich</a>
-            <a href="#gallery">Galerie</a>
-            <a href="#adventures">Abenteuer</a>
-            <a href="jakobsweg.html">Jakobsweg</a>
-            <a href="#contact">Kontakt</a>
+            <a href="#about" data-i18n="nav.about">Über mich</a>
+            <a href="#gallery" data-i18n="nav.gallery">Galerie</a>
+            <a href="#adventures" data-i18n="nav.adventures">Abenteuer</a>
+            <a href="jakobsweg.html" data-i18n="nav.jakobsweg">Jakobsweg</a>
+            <a href="#contact" data-i18n="nav.contact">Kontakt</a>
+            <div class="lang-switch">
+                <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
+                <button data-lang="en" onclick="I18N_setLang('en')">EN</button>
+                <button data-lang="ru" onclick="I18N_setLang('ru')">RU</button>
+            </div>
         </div>
-        <button class="nav-toggle" aria-label="Menü öffnen">
+        <button class="nav-toggle" data-i18n-aria-label="nav.toggle" aria-label="Menü öffnen">
             <span></span>
             <span></span>
             <span></span>
@@ -35,8 +42,8 @@
         </div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1>Explore the World</h1>
-            <p class="hero-subtitle">Travel &amp; Lifestyle by Irina</p>
+            <h1 data-i18n="hero.title">Die Welt entdecken</h1>
+            <p class="hero-subtitle" data-i18n="hero.subtitle">Reisen &amp; Lifestyle von Irina</p>
             <a href="#about" class="hero-scroll">↓</a>
         </div>
     </section>
@@ -45,69 +52,69 @@
     <section id="about" class="about">
         <div class="about-container">
             <div class="about-image">
-                <img src="images/videoframe_4283.png" alt="Irina am Strand">
+                <img src="images/videoframe_4283.png" data-i18n-alt="about.imgAlt" alt="Irina am Strand">
             </div>
             <div class="about-text">
-                <h2>Willkommen!</h2>
-                <p>
-                    Mein Name ist Irina. Ich liebe es, die Welt zu entdecken, 
-                    neue Orte zu bereisen und unvergessliche Momente festzuhalten. 
-                    Von traumhaften Stränden über atemberaubende Berglandschaften 
-                    bis hin zu aufregenden Abenteuern — hier teile ich meine 
+                <h2 data-i18n="about.title">Willkommen!</h2>
+                <p data-i18n="about.p1">
+                    Mein Name ist Irina. Ich liebe es, die Welt zu entdecken,
+                    neue Orte zu bereisen und unvergessliche Momente festzuhalten.
+                    Von traumhaften Stränden über atemberaubende Berglandschaften
+                    bis hin zu aufregenden Abenteuern — hier teile ich meine
                     Leidenschaft für das Reisen und das Leben.
                 </p>
-                <p>
-                    Jede Reise erzählt eine Geschichte, und ich lade dich ein, 
-                    diese Geschichten mit mir zu erleben. Sei dabei und lass 
+                <p data-i18n="about.p2">
+                    Jede Reise erzählt eine Geschichte, und ich lade dich ein,
+                    diese Geschichten mit mir zu erleben. Sei dabei und lass
                     dich inspirieren!
                 </p>
-                <p class="about-signature">Alles Liebe, Irina</p>
+                <p class="about-signature" data-i18n="about.signature">Alles Liebe, Irina</p>
             </div>
         </div>
     </section>
 
     <!-- Gallery Section -->
     <section id="gallery" class="gallery">
-        <h2>Galerie</h2>
+        <h2 data-i18n="gallery.title">Galerie</h2>
         <div class="gallery-grid">
             <div class="gallery-item gallery-item--tall">
-                <img src="images/videoframe_2628.png" alt="Tropischer Strand">
+                <img src="images/videoframe_2628.png" data-i18n-alt="gallery.alt1" alt="Tropischer Strand">
             </div>
             <div class="gallery-item">
                 <img src="images/california-mcway-falls-960x480.jpg" alt="McWay Falls, California">
             </div>
             <div class="gallery-item">
-                <img src="images/videoframe_1781.png" alt="Nusa Penida Küste">
+                <img src="images/videoframe_1781.png" data-i18n-alt="gallery.alt3" alt="Nusa Penida Küste">
             </div>
             <div class="gallery-item gallery-item--wide">
-                <img src="images/caption.jpg" alt="Niagara Falls bei Nacht">
+                <img src="images/caption.jpg" data-i18n-alt="gallery.alt4" alt="Niagara Falls bei Nacht">
             </div>
         </div>
     </section>
 
     <!-- Adventures Section -->
     <section id="adventures" class="adventures">
-        <h2>Abenteuer</h2>
+        <h2 data-i18n="adventures.title">Abenteuer</h2>
         <div class="adventures-grid">
             <a href="jakobsweg.html" class="adventure-card">
                 <img src="images/jakobsweg/deko-camino-schild.png" alt="Jakobsweg Camino Portugués">
                 <div class="adventure-info">
-                    <h3>Jakobsweg</h3>
-                    <p>Camino Portugués: Porto → Santiago in 13 Etappen. Kompletter Reiseführer →</p>
+                    <h3 data-i18n="adventures.jakobsweg.title">Jakobsweg</h3>
+                    <p data-i18n="adventures.jakobsweg.desc">Camino Portugués: Porto → Santiago in 13 Etappen. Kompletter Reiseführer →</p>
                 </div>
             </a>
             <div class="adventure-card">
-                <img src="images/videoframe_2628.png" alt="Tropisches Paradies">
+                <img src="images/videoframe_2628.png" data-i18n-alt="adventures.island.alt" alt="Tropisches Paradies">
                 <div class="adventure-info">
-                    <h3>Inselparadies</h3>
-                    <p>Türkisblaues Wasser und weiße Sandstrände.</p>
+                    <h3 data-i18n="adventures.island.title">Inselparadies</h3>
+                    <p data-i18n="adventures.island.desc">Türkisblaues Wasser und weiße Sandstrände.</p>
                 </div>
             </div>
             <div class="adventure-card">
                 <img src="images/place-to-visit-in-california.jpg" alt="California Roadtrip">
                 <div class="adventure-info">
                     <h3>California Dreaming</h3>
-                    <p>Die Westküste entlang — pure Freiheit.</p>
+                    <p data-i18n="adventures.california.desc">Die Westküste entlang — pure Freiheit.</p>
                 </div>
             </div>
         </div>
@@ -115,18 +122,18 @@
         <!-- Featured: Jakobsweg Reiseführer -->
         <a href="jakobsweg.html" class="adventure-feature adventure-feature--jakobsweg">
             <div class="adventure-feature-text">
-                <span class="adventure-feature-kicker">Neuer Reiseführer</span>
-                <h3>Camino Portugués — Zentralroute</h3>
-                <p>Von Porto nach Santiago de Compostela: 13 Etappen für Einsteiger, Tag für Tag geplant — mit Karten, Unterkünften und Packliste.</p>
-                <span class="adventure-feature-btn">Reiseführer öffnen →</span>
+                <span class="adventure-feature-kicker" data-i18n="adventures.feature.kicker">Neuer Reiseführer</span>
+                <h3 data-i18n="adventures.feature.title">Camino Portugués — Zentralroute</h3>
+                <p data-i18n="adventures.feature.desc">Von Porto nach Santiago de Compostela: 13 Etappen für Einsteiger, Tag für Tag geplant — mit Karten, Unterkünften und Packliste.</p>
+                <span class="adventure-feature-btn" data-i18n="adventures.feature.btn">Reiseführer öffnen →</span>
             </div>
         </a>
     </section>
 
     <!-- Contact Section -->
     <section id="contact" class="contact">
-        <h2>Kontakt</h2>
-        <p class="contact-text">Du möchtest mehr erfahren oder zusammenarbeiten? Schreib mir gerne!</p>
+        <h2 data-i18n="contact.title">Kontakt</h2>
+        <p class="contact-text" data-i18n="contact.text">Du möchtest mehr erfahren oder zusammenarbeiten? Schreib mir gerne!</p>
         <a href="mailto:info@barvenko.de" class="contact-email">irina@barvenko.de</a>
         <div class="social-links">
             <a href="https://www.instagram.com/irina_barwinok" target="_blank" rel="noopener noreferrer">Instagram</a>
@@ -135,7 +142,7 @@
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
+        <p data-i18n="footer.rights">&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
         <p><a href="https://barvenko.de">barvenko.de</a></p>
     </footer>
 
