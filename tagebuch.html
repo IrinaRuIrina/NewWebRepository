@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Reisetagebuch — Camino Portugués | Barvenko</title>
+    <title data-i18n="doc.title">Reisetagebuch — Camino Portugués | Barvenko</title>
     <link rel="stylesheet" href="style.css">
+    <script src="i18n-tagebuch.js"></script>
+    <script src="i18n.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
@@ -45,15 +47,26 @@
         .diary-entry {
             background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
             padding: 1.1rem 1.2rem 1.2rem; box-shadow: 0 2px 10px rgba(60,45,25,0.08); position: relative;
+            cursor: pointer;
         }
+        .diary-entry:hover { border-color: var(--accent); }
         .diary-entry-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.4rem; }
         .diary-entry-title { font-family: 'Cormorant Garamond', serif; font-weight: 600; font-size: 1.35rem; }
         .diary-entry-date { font-size: 0.72rem; letter-spacing: 0.03em; color: #948c7d; margin-top: 0.2rem; }
-        .diary-entry-del { border: none; background: transparent; color: #b3a992; font-size: 1rem; cursor: pointer; padding: 0.3rem; border-radius: 6px; flex-shrink: 0; }
+        .diary-entry-actions { display: flex; gap: 0.2rem; flex-shrink: 0; }
+        .diary-entry-del, .diary-entry-edit { border: none; background: transparent; color: #b3a992; font-size: 1rem; cursor: pointer; padding: 0.3rem; border-radius: 6px; }
         .diary-entry-del:hover { color: var(--danger); background: #eadfcd; }
+        .diary-entry-edit:hover { color: var(--accent-dark); background: #eadfcd; }
         .diary-entry-text { color: var(--text-soft); white-space: pre-wrap; margin: 0.5rem 0 0; line-height: 1.6; }
+        .diary-entry-text-preview {
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+            overflow: hidden; white-space: pre-wrap; color: var(--text-soft); margin: 0.5rem 0 0; line-height: 1.6;
+        }
+        .diary-entry-more { font-size: 0.75rem; color: var(--accent-dark); margin-top: 0.3rem; }
         .diary-entry-photos { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 0.5rem; margin-top: 0.8rem; }
         .diary-entry-photos img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; border: 1px solid var(--line); cursor: zoom-in; display: block; }
+        .diary-detail-date { font-size: 0.72rem; color: #948c7d; margin: 0.3rem 0 1rem; }
+        .diary-detail-text { white-space: pre-wrap; line-height: 1.7; color: var(--text); }
 
         .diary-fab {
             position: fixed; bottom: 1.4rem; left: 50%; transform: translateX(-50%);
@@ -107,44 +120,49 @@
     <nav class="navbar">
         <a href="index.html#hero" class="nav-logo">BARVENKO</a>
         <div class="nav-links">
-            <a href="index.html#about">Über mich</a>
-            <a href="index.html#gallery">Galerie</a>
-            <a href="index.html#adventures">Abenteuer</a>
-            <a href="jakobsweg.html">Reiseführer</a>
-            <a href="index.html#contact">Kontakt</a>
+            <a href="index.html#about" data-i18n="nav.about">Über mich</a>
+            <a href="index.html#gallery" data-i18n="nav.gallery">Galerie</a>
+            <a href="index.html#adventures" data-i18n="nav.adventures">Abenteuer</a>
+            <a href="jakobsweg.html" data-i18n="nav.jakobsweg">Reiseführer</a>
+            <a href="index.html#contact" data-i18n="nav.contact">Kontakt</a>
+            <div class="lang-switch">
+                <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
+                <button data-lang="en" onclick="I18N_setLang('en')">EN</button>
+                <button data-lang="ru" onclick="I18N_setLang('ru')">RU</button>
+            </div>
         </div>
-        <button class="nav-toggle" aria-label="Menü öffnen">
+        <button class="nav-toggle" data-i18n-aria-label="nav.toggle" aria-label="Menü öffnen">
             <span></span><span></span><span></span>
         </button>
     </nav>
 
-    <a href="jakobsweg.html" class="diary-back"><span class="arrow">←</span> Zurück zum Reiseführer</a>
+    <a href="jakobsweg.html" class="diary-back"><span class="arrow">←</span> <span data-i18n="back.toGuide">Zurück zum Reiseführer</span></a>
 
     <header class="diary-hero">
         <div>
-            <p class="kicker">Camino Portugués</p>
-            <h1>Mein Reisetagebuch</h1>
+            <p class="kicker" data-i18n="hero.kicker">Camino Portugués</p>
+            <h1 data-i18n="hero.title">Mein Reisetagebuch</h1>
         </div>
     </header>
 
     <div class="diary-wrap">
         <div class="diary-toolbar">
-            <span class="diary-count" id="diary-count">Lade Einträge …</span>
+            <span class="diary-count" id="diary-count" data-i18n="count.loading">Lade Einträge …</span>
             <span class="diary-auth-status" id="diary-auth-status"></span>
         </div>
         <div id="diary-feed"></div>
     </div>
 
-    <button class="diary-fab" id="diary-fab">+ Neuer Tag</button>
+    <button class="diary-fab" id="diary-fab" data-i18n="fab.newDay">+ Neuer Tag</button>
     <div class="diary-lightbox" id="diary-lightbox"><img id="diary-lightbox-img" alt=""></div>
 
     <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
+        <p data-i18n="footer.rights">&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
         <p><a href="index.html">barvenko.de</a></p>
     </footer>
 
-    <a href="#top" class="back-to-top" aria-label="Nach oben">↑</a>
+    <a href="#top" class="back-to-top" data-i18n-aria-label="backToTop.ariaLabel" aria-label="Nach oben">↑</a>
 
     <script>
         const toggle = document.querySelector('.nav-toggle');
@@ -171,7 +189,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import {
-            getFirestore, collection, addDoc, deleteDoc, doc,
+            getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
             onSnapshot, query, orderBy, serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
         import {
@@ -200,48 +218,117 @@
                 ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
         }
 
+        function t(key, fallback) {
+            const lang = (window.I18N_getLang && window.I18N_getLang()) || "de";
+            const dict = (window.I18N && window.I18N[lang]) || {};
+            return dict[key] != null ? dict[key] : fallback;
+        }
+
+        function pluralEntries(n) {
+            const lang = (window.I18N_getLang && window.I18N_getLang()) || "de";
+            if (lang === "en") return n === 1 ? "entry" : "entries";
+            if (lang === "ru") {
+                const mod10 = n % 10, mod100 = n % 100;
+                if (mod10 === 1 && mod100 !== 11) return "запись";
+                if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "записи";
+                return "записей";
+            }
+            return n === 1 ? "Eintrag" : "Einträge";
+        }
+
         function formatDate(ts) {
             try {
                 const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
-                return d.toLocaleString("de-DE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+                const lang = (window.I18N_getLang && window.I18N_getLang()) || "de";
+                const locale = lang === "en" ? "en-GB" : lang === "ru" ? "ru-RU" : "de-DE";
+                return d.toLocaleString(locale, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
             } catch (e) { return ""; }
         }
 
         function renderEntry(entry) {
             const photos = (entry.photos || []).map(p =>
-                `<img src="${p}" alt="Foto zum Tagebucheintrag" loading="lazy">`).join("");
+                `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}" loading="lazy">`).join("");
             return `
-                <article class="diary-entry">
+                <article class="diary-entry" data-open="${esc(entry.id)}">
                     <div class="diary-entry-head">
                         <div>
                             <div class="diary-entry-title">${esc(entry.title)}</div>
                             <div class="diary-entry-date">${esc(formatDate(entry.createdAt))}</div>
                         </div>
-                        ${isLoggedIn ? `<button class="diary-entry-del" aria-label="Löschen" data-del="${esc(entry.id)}">✕</button>` : ""}
+                        ${isLoggedIn ? `<div class="diary-entry-actions">
+                            <button class="diary-entry-edit" aria-label="${esc(t('entry.edit', 'Bearbeiten'))}" data-edit="${esc(entry.id)}">✏️</button>
+                            <button class="diary-entry-del" aria-label="${esc(t('entry.delete', 'Löschen'))}" data-del="${esc(entry.id)}">✕</button>
+                        </div>` : ""}
                     </div>
-                    ${entry.text ? `<p class="diary-entry-text">${esc(entry.text)}</p>` : ""}
+                    ${entry.text ? `<p class="diary-entry-text-preview">${esc(entry.text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
                     ${photos ? `<div class="diary-entry-photos">${photos}</div>` : ""}
                 </article>`;
+        }
+
+        async function deleteEntry(id, triggerBtn) {
+            if (!confirm(t('entry.delete.confirm', 'Diesen Eintrag wirklich löschen?'))) return;
+            if (triggerBtn) triggerBtn.disabled = true;
+            try {
+                await deleteDoc(doc(db, "entries", id));
+                closeBackdrop();
+            } catch (e) {
+                alert(t('entry.delete.failed', 'Löschen fehlgeschlagen: ') + e.message);
+                if (triggerBtn) triggerBtn.disabled = false;
+            }
+        }
+
+        function openDetailView(entry) {
+            const photos = (entry.photos || []).map(p =>
+                `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}">`).join("");
+            const div = openBackdrop(`
+                <h2>${esc(entry.title)}</h2>
+                <div class="diary-detail-date">${esc(formatDate(entry.createdAt))}</div>
+                ${entry.text ? `<p class="diary-detail-text">${esc(entry.text)}</p>` : ""}
+                ${photos ? `<div class="diary-entry-photos" style="margin-top:1rem">${photos}</div>` : ""}
+                ${isLoggedIn ? `<div class="diary-sheet-actions">
+                    <button type="button" class="diary-btn diary-btn-secondary" id="detail-edit">${esc(t('entry.edit', 'Bearbeiten'))}</button>
+                    <button type="button" class="diary-btn diary-btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">${esc(t('entry.delete', 'Löschen'))}</button>
+                </div>` : ""}`);
+            if (isLoggedIn) {
+                div.querySelector("#detail-edit").addEventListener("click", () => openEntrySheet(entry));
+                div.querySelector("#detail-del").addEventListener("click", (e) => deleteEntry(entry.id, e.target));
+            }
+            div.querySelectorAll(".diary-entry-photos img").forEach(img => {
+                img.addEventListener("click", () => {
+                    document.getElementById("diary-lightbox-img").src = img.src;
+                    document.getElementById("diary-lightbox").classList.add("show");
+                });
+            });
         }
 
         function paint() {
             const feed = document.getElementById("diary-feed");
             const count = document.getElementById("diary-count");
-            count.textContent = entries.length + (entries.length === 1 ? " Eintrag" : " Einträge");
+            count.textContent = entries.length + " " + pluralEntries(entries.length);
             feed.innerHTML = entries.length
                 ? `<div class="diary-feed">${entries.map(renderEntry).join("")}</div>`
-                : `<div class="diary-empty"><span class="shell">🐚</span><p>Noch keine Einträge. Der erste Tag auf dem Camino beginnt hier.</p></div>`;
+                : `<div class="diary-empty"><span class="shell">🐚</span><p>${esc(t('empty.text', 'Noch keine Einträge. Der erste Tag auf dem Camino beginnt hier.'))}</p></div>`;
 
-            feed.querySelectorAll("[data-del]").forEach(btn => {
-                btn.addEventListener("click", async () => {
-                    if (!confirm("Diesen Eintrag wirklich löschen?")) return;
-                    btn.disabled = true;
-                    try { await deleteDoc(doc(db, "entries", btn.getAttribute("data-del"))); }
-                    catch (e) { alert("Löschen fehlgeschlagen: " + e.message); btn.disabled = false; }
+            feed.querySelectorAll("[data-open]").forEach(card => {
+                card.addEventListener("click", (e) => {
+                    if (e.target.closest("[data-del],[data-edit],img")) return;
+                    const entry = entries.find(x => x.id === card.getAttribute("data-open"));
+                    if (entry) openDetailView(entry);
                 });
             });
+            feed.querySelectorAll("[data-edit]").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const entry = entries.find(x => x.id === btn.getAttribute("data-edit"));
+                    if (entry) openEntrySheet(entry);
+                });
+            });
+            feed.querySelectorAll("[data-del]").forEach(btn => {
+                btn.addEventListener("click", (e) => { e.stopPropagation(); deleteEntry(btn.getAttribute("data-del"), btn); });
+            });
             feed.querySelectorAll(".diary-entry-photos img").forEach(img => {
-                img.addEventListener("click", () => {
+                img.addEventListener("click", (e) => {
+                    e.stopPropagation();
                     document.getElementById("diary-lightbox-img").src = img.src;
                     document.getElementById("diary-lightbox").classList.add("show");
                 });
@@ -254,10 +341,10 @@
         function renderAuthStatus() {
             const el = document.getElementById("diary-auth-status");
             if (isLoggedIn) {
-                el.innerHTML = `Angemeldet · <button id="logout-btn">Abmelden</button>`;
+                el.innerHTML = `${esc(t('auth.loggedIn', 'Angemeldet'))} · <button id="logout-btn">${esc(t('auth.logout', 'Abmelden'))}</button>`;
                 document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
             } else {
-                el.innerHTML = `<button id="login-btn">Anmelden</button>`;
+                el.innerHTML = `<button id="login-btn">${esc(t('auth.login', 'Anmelden'))}</button>`;
                 document.getElementById("login-btn").addEventListener("click", openLoginSheet);
             }
         }
@@ -266,9 +353,11 @@
             entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             paint();
         }, (err) => {
-            document.getElementById("diary-count").textContent = "Fehler beim Laden.";
+            document.getElementById("diary-count").textContent = t('count.error', 'Fehler beim Laden.');
             console.error(err);
         });
+
+        document.addEventListener("i18n:applied", () => { paint(); });
 
         onAuthStateChanged(auth, (user) => {
             isLoggedIn = !!user;
@@ -293,13 +382,13 @@
 
         function openLoginSheet() {
             const div = openBackdrop(`
-                <h2>Anmelden</h2>
-                <div class="diary-field"><label for="login-email">E-Mail</label><input type="email" id="login-email" autocomplete="email"></div>
-                <div class="diary-field"><label for="login-pw">Passwort</label><input type="password" id="login-pw" autocomplete="current-password"></div>
+                <h2>${esc(t('login.title', 'Anmelden'))}</h2>
+                <div class="diary-field"><label for="login-email">${esc(t('login.email', 'E-Mail'))}</label><input type="email" id="login-email" autocomplete="email"></div>
+                <div class="diary-field"><label for="login-pw">${esc(t('login.password', 'Passwort'))}</label><input type="password" id="login-pw" autocomplete="current-password"></div>
                 <div class="diary-error" id="login-error"></div>
                 <div class="diary-sheet-actions">
-                    <button type="button" class="diary-btn diary-btn-secondary" id="login-cancel">Abbrechen</button>
-                    <button type="button" class="diary-btn diary-btn-primary" id="login-submit">Anmelden</button>
+                    <button type="button" class="diary-btn diary-btn-secondary" id="login-cancel">${esc(t('login.cancel', 'Abbrechen'))}</button>
+                    <button type="button" class="diary-btn diary-btn-primary" id="login-submit">${esc(t('login.submit', 'Anmelden'))}</button>
                 </div>`);
             div.querySelector("#login-cancel").addEventListener("click", closeBackdrop);
             div.querySelector("#login-submit").addEventListener("click", async () => {
@@ -307,14 +396,14 @@
                 const pw = div.querySelector("#login-pw").value;
                 const btn = div.querySelector("#login-submit");
                 const errEl = div.querySelector("#login-error");
-                btn.disabled = true; btn.textContent = "Prüfe …";
+                btn.disabled = true; btn.textContent = t('login.checking', 'Prüfe …');
                 try {
                     await signInWithEmailAndPassword(auth, email, pw);
                     closeBackdrop();
                 } catch (e) {
-                    errEl.textContent = "Anmeldung fehlgeschlagen — E-Mail oder Passwort falsch.";
+                    errEl.textContent = t('login.failed', 'Anmeldung fehlgeschlagen — E-Mail oder Passwort falsch.');
                     errEl.classList.add("show");
-                    btn.disabled = false; btn.textContent = "Anmelden";
+                    btn.disabled = false; btn.textContent = t('login.submit', 'Anmelden');
                 }
             });
         }
@@ -346,8 +435,8 @@
 
         function renderPreviewGrid(container) {
             container.innerHTML = draftPhotos.map((p, i) => `
-                <div class="diary-preview-item"><img src="${p}" alt="Vorschau">
-                <button type="button" class="diary-preview-remove" data-remove="${i}" aria-label="Entfernen">✕</button></div>`).join("");
+                <div class="diary-preview-item"><img src="${p}" alt="${esc(t('preview.alt', 'Vorschau'))}">
+                <button type="button" class="diary-preview-remove" data-remove="${i}" aria-label="${esc(t('preview.remove', 'Entfernen'))}">✕</button></div>`).join("");
             container.querySelectorAll("[data-remove]").forEach(btn => {
                 btn.addEventListener("click", () => {
                     draftPhotos.splice(Number(btn.getAttribute("data-remove")), 1);
@@ -356,24 +445,25 @@
             });
         }
 
-        function openEntrySheet() {
-            draftPhotos = [];
+        function openEntrySheet(existingEntry) {
             const div = openBackdrop(`
-                <h2>Neuer Tag</h2>
-                <div class="diary-field"><label for="entry-title">Tag-Titel</label>
-                <input type="text" id="entry-title" placeholder="z. B. Tag 3 – Barcelos"></div>
-                <div class="diary-field"><label for="entry-text">Wie war dein Tag?</label>
-                <textarea id="entry-text" placeholder="Erzähl, wie es dir geht, was du gesehen hast …"></textarea></div>
-                <div class="diary-field"><label>Fotos</label>
-                    <label class="diary-photo-picker">📷 Fotos hinzufügen<input type="file" id="entry-photos" accept="image/*" multiple></label>
+                <h2>${existingEntry ? esc(t('entrySheet.editTitle', 'Tag bearbeiten')) : esc(t('entrySheet.title', 'Neuer Tag'))}</h2>
+                <div class="diary-field"><label for="entry-title">${esc(t('entrySheet.titleLabel', 'Tag-Titel'))}</label>
+                <input type="text" id="entry-title" placeholder="${esc(t('entrySheet.titlePlaceholder', 'z. B. Tag 3 – Barcelos'))}" value="${existingEntry ? esc(existingEntry.title || "") : ""}"></div>
+                <div class="diary-field"><label for="entry-text">${esc(t('entrySheet.textLabel', 'Wie war dein Tag?'))}</label>
+                <textarea id="entry-text" placeholder="${esc(t('entrySheet.textPlaceholder', 'Erzähl, wie es dir geht, was du gesehen hast …'))}">${existingEntry ? esc(existingEntry.text || "") : ""}</textarea></div>
+                <div class="diary-field"><label>${esc(t('entrySheet.photosLabel', 'Fotos'))}</label>
+                    <label class="diary-photo-picker">${esc(t('entrySheet.addPhotos', '📷 Fotos hinzufügen'))}<input type="file" id="entry-photos" accept="image/*" multiple></label>
                     <div class="diary-preview-grid" id="entry-preview"></div>
                 </div>
                 <div class="diary-error" id="entry-error"></div>
                 <div class="diary-sheet-actions">
-                    <button type="button" class="diary-btn diary-btn-secondary" id="entry-cancel">Abbrechen</button>
-                    <button type="button" class="diary-btn diary-btn-primary" id="entry-save">Speichern</button>
+                    <button type="button" class="diary-btn diary-btn-secondary" id="entry-cancel">${esc(t('entrySheet.cancel', 'Abbrechen'))}</button>
+                    <button type="button" class="diary-btn diary-btn-primary" id="entry-save">${esc(t('entrySheet.save', 'Speichern'))}</button>
                 </div>`);
+            draftPhotos = existingEntry ? (existingEntry.photos || []).slice() : [];
             const previewEl = div.querySelector("#entry-preview");
+            renderPreviewGrid(previewEl);
             div.querySelector("#entry-cancel").addEventListener("click", closeBackdrop);
             div.querySelector("#entry-photos").addEventListener("change", async (e) => {
                 const files = Array.from(e.target.files || []);
@@ -388,22 +478,26 @@
                 const text = div.querySelector("#entry-text").value.trim();
                 const errEl = div.querySelector("#entry-error");
                 const btn = div.querySelector("#entry-save");
-                if (!title) { errEl.textContent = "Bitte gib dem Tag einen Titel."; errEl.classList.add("show"); return; }
-                btn.disabled = true; btn.textContent = "Speichere …";
+                if (!title) { errEl.textContent = t('entrySheet.titleRequired', 'Bitte gib dem Tag einen Titel.'); errEl.classList.add("show"); return; }
+                btn.disabled = true; btn.textContent = t('entrySheet.saving', 'Speichere …');
                 try {
-                    await addDoc(collection(db, "entries"), {
-                        title, text, photos: draftPhotos.slice(), createdAt: serverTimestamp()
-                    });
+                    if (existingEntry) {
+                        await updateDoc(doc(db, "entries", existingEntry.id), { title, text, photos: draftPhotos.slice() });
+                    } else {
+                        await addDoc(collection(db, "entries"), {
+                            title, text, photos: draftPhotos.slice(), createdAt: serverTimestamp()
+                        });
+                    }
                     closeBackdrop();
                 } catch (e) {
-                    errEl.textContent = "Speichern fehlgeschlagen: " + e.message;
+                    errEl.textContent = t('entrySheet.saveFailed', 'Speichern fehlgeschlagen: ') + e.message;
                     errEl.classList.add("show");
-                    btn.disabled = false; btn.textContent = "Speichern";
+                    btn.disabled = false; btn.textContent = t('entrySheet.save', 'Speichern');
                 }
             });
         }
 
-        document.getElementById("diary-fab").addEventListener("click", openEntrySheet);
+        document.getElementById("diary-fab").addEventListener("click", () => openEntrySheet(null));
         document.getElementById("diary-lightbox").addEventListener("click", function () { this.classList.remove("show"); });
         renderAuthStatus();
     </script>

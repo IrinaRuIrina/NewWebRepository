@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="robots" content="noindex, nofollow">
-    <title>Notizen</title>
+    <title data-i18n="doc.title">Notizen</title>
+    <script src="i18n-notizen.js"></script>
+    <script src="i18n.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
@@ -89,31 +91,51 @@
         .lightbox { position: fixed; inset: 0; background: rgba(10,9,6,0.9); z-index: 40; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
         .lightbox.show { display: flex; }
         .lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
+
+        .lang-switch { display: flex; gap: 0.3rem; align-items: center; justify-content: center; margin-top: 1.2rem; }
+        .lang-switch button {
+            background: transparent; border: 1px solid var(--line); color: var(--text-soft);
+            font-family: 'Montserrat', sans-serif; font-size: 0.7rem; letter-spacing: 0.05em;
+            padding: 0.25rem 0.55rem; border-radius: 20px; cursor: pointer; opacity: 0.75;
+        }
+        .lang-switch button:hover { opacity: 1; }
+        .lang-switch button.active { opacity: 1; background: #ece7da; font-weight: 500; }
+        .app-top .lang-switch { margin-top: 0; }
     </style>
 </head>
 <body>
 
     <div class="gate" id="gate">
         <div class="gate-box">
-            <h1>🔒 Notizen</h1>
-            <p class="sub">Privater Bereich — nur mit Login sichtbar.</p>
-            <div class="field"><label for="g-email">E-Mail</label><input type="email" id="g-email" autocomplete="email"></div>
-            <div class="field"><label for="g-pw">Passwort</label><input type="password" id="g-pw" autocomplete="current-password"></div>
-            <button class="btn btn-primary" id="g-submit">Anmelden</button>
+            <h1 data-i18n="gate.title">🔒 Notizen</h1>
+            <p class="sub" data-i18n="gate.sub">Privater Bereich — nur mit Login sichtbar.</p>
+            <div class="field"><label for="g-email" data-i18n="gate.email">E-Mail</label><input type="email" id="g-email" autocomplete="email"></div>
+            <div class="field"><label for="g-pw" data-i18n="gate.password">Passwort</label><input type="password" id="g-pw" autocomplete="current-password"></div>
+            <button class="btn btn-primary" id="g-submit" data-i18n="gate.submit">Anmelden</button>
             <p class="error" id="g-error"></p>
+            <div class="lang-switch">
+                <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
+                <button data-lang="en" onclick="I18N_setLang('en')">EN</button>
+                <button data-lang="ru" onclick="I18N_setLang('ru')">RU</button>
+            </div>
         </div>
     </div>
 
     <div class="app" id="app">
         <div class="app-top">
-            <h1>Meine Notizen</h1>
-            <button id="logout-btn">Abmelden</button>
+            <h1 data-i18n="app.title">Meine Notizen</h1>
+            <div class="lang-switch">
+                <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
+                <button data-lang="en" onclick="I18N_setLang('en')">EN</button>
+                <button data-lang="ru" onclick="I18N_setLang('ru')">RU</button>
+            </div>
+            <button id="logout-btn" data-i18n="app.logout">Abmelden</button>
         </div>
         <div class="filters" id="filters"></div>
         <div id="feed"></div>
     </div>
 
-    <button class="fab" id="fab" style="display:none">+ Neue Notiz</button>
+    <button class="fab" id="fab" style="display:none" data-i18n="fab.newNote">+ Neue Notiz</button>
     <div class="lightbox" id="lightbox"><img id="lightbox-img" alt=""></div>
 
     <script type="module">
@@ -140,6 +162,10 @@
         const auth = getAuth(app);
 
         const CATEGORIES = ["Dankbarkeit", "Traum", "Buchauszug", "Gedanken zu Büchern", "Sonstiges"];
+        const CATEGORY_KEY = {
+            "Dankbarkeit": "cat.dankbarkeit", "Traum": "cat.traum", "Buchauszug": "cat.buchauszug",
+            "Gedanken zu Büchern": "cat.gedanken", "Sonstiges": "cat.sonstiges"
+        };
         let notes = [];
         let activeFilter = "Alle";
         let draftPhotos = [];
@@ -149,10 +175,23 @@
             return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
                 ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
         }
+
+        function t(key, fallback) {
+            const lang = (window.I18N_getLang && window.I18N_getLang()) || "de";
+            const dict = (window.I18N && window.I18N[lang]) || {};
+            return dict[key] != null ? dict[key] : fallback;
+        }
+
+        function categoryLabel(cat) {
+            return cat === "Alle" ? t("cat.alle", "Alle") : t(CATEGORY_KEY[cat], cat);
+        }
+
         function formatDate(ts) {
             try {
                 const d = ts && ts.toDate ? ts.toDate() : new Date(ts);
-                return d.toLocaleString("de-DE", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+                const lang = (window.I18N_getLang && window.I18N_getLang()) || "de";
+                const locale = lang === "en" ? "en-GB" : lang === "ru" ? "ru-RU" : "de-DE";
+                return d.toLocaleString(locale, { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
             } catch (e) { return ""; }
         }
 
@@ -160,30 +199,32 @@
             const el = document.getElementById("filters");
             const all = ["Alle", ...CATEGORIES];
             el.innerHTML = all.map(c =>
-                `<button class="filter-chip ${c === activeFilter ? "active" : ""}" data-filter="${esc(c)}">${esc(c)}</button>`).join("");
+                `<button class="filter-chip ${c === activeFilter ? "active" : ""}" data-filter="${esc(c)}">${esc(categoryLabel(c))}</button>`).join("");
             el.querySelectorAll("[data-filter]").forEach(btn => {
                 btn.addEventListener("click", () => { activeFilter = btn.getAttribute("data-filter"); renderFilters(); renderFeed(); });
             });
         }
 
+        document.addEventListener("i18n:applied", () => { renderFilters(); renderFeed(); });
+
         function renderFeed() {
             const feed = document.getElementById("feed");
             const shown = activeFilter === "Alle" ? notes : notes.filter(n => n.category === activeFilter);
             if (!shown.length) {
-                feed.innerHTML = `<div class="note-empty">Noch keine Notizen${activeFilter !== "Alle" ? " in dieser Kategorie" : ""}.</div>`;
+                feed.innerHTML = `<div class="note-empty">${esc(t('empty.text', 'Noch keine Notizen'))}${activeFilter !== "Alle" ? esc(t('empty.inCategory', ' in dieser Kategorie')) : ""}.</div>`;
                 return;
             }
             feed.innerHTML = `<div class="note-feed">${shown.map(n => `
                 <article class="note" data-open="${esc(n.id)}">
                     <div class="note-head">
-                        <div><span class="note-cat">${esc(n.category)}</span><div class="note-date">${esc(formatDate(n.createdAt))}</div></div>
+                        <div><span class="note-cat">${esc(categoryLabel(n.category))}</span><div class="note-date">${esc(formatDate(n.createdAt))}</div></div>
                         <div class="note-actions">
-                            <button class="note-edit" data-edit="${esc(n.id)}" aria-label="Bearbeiten">✏️</button>
-                            <button class="note-del" data-del="${esc(n.id)}" aria-label="Löschen">✕</button>
+                            <button class="note-edit" data-edit="${esc(n.id)}" aria-label="${esc(t('note.edit', 'Bearbeiten'))}">✏️</button>
+                            <button class="note-del" data-del="${esc(n.id)}" aria-label="${esc(t('note.delete', 'Löschen'))}">✕</button>
                         </div>
                     </div>
-                    ${n.text ? `<p class="note-text-preview">${esc(n.text)}</p><p class="note-more">Weiterlesen →</p>` : ""}
-                    ${(n.photos || []).length ? `<div class="note-photos">${n.photos.map(p => `<img src="${p}" alt="Foto">`).join("")}</div>` : ""}
+                    ${n.text ? `<p class="note-text-preview">${esc(n.text)}</p><p class="note-more">${esc(t('note.readMore', 'Weiterlesen →'))}</p>` : ""}
+                    ${(n.photos || []).length ? `<div class="note-photos">${n.photos.map(p => `<img src="${p}" alt="${esc(t('photo.alt', 'Foto'))}">`).join("")}</div>` : ""}
                 </article>`).join("")}</div>`;
 
             feed.querySelectorAll("[data-open]").forEach(card => {
@@ -213,27 +254,27 @@
         }
 
         async function deleteNote(id, triggerBtn) {
-            if (!confirm("Notiz wirklich löschen?")) return;
+            if (!confirm(t('note.delete.confirm', 'Notiz wirklich löschen?'))) return;
             if (triggerBtn) triggerBtn.disabled = true;
             try {
                 await deleteDoc(doc(db, "private_notes", id));
                 closeBackdrop();
             } catch (e) {
-                alert("Löschen fehlgeschlagen: " + e.message);
+                alert(t('note.delete.failed', 'Löschen fehlgeschlagen: ') + e.message);
                 if (triggerBtn) triggerBtn.disabled = false;
             }
         }
 
         function openDetailView(note) {
-            const photos = (note.photos || []).map(p => `<img src="${p}" alt="Foto">`).join("");
+            const photos = (note.photos || []).map(p => `<img src="${p}" alt="${esc(t('photo.alt', 'Foto'))}">`).join("");
             const div = openBackdrop(`
-                <span class="detail-cat">${esc(note.category)}</span>
+                <span class="detail-cat">${esc(categoryLabel(note.category))}</span>
                 <div class="detail-date">${esc(formatDate(note.createdAt))}</div>
                 ${note.text ? `<p class="detail-text">${esc(note.text)}</p>` : ""}
                 ${photos ? `<div class="note-photos" style="margin-top:1rem">${photos}</div>` : ""}
                 <div class="sheet-actions">
-                    <button type="button" class="btn-secondary" id="detail-edit">Bearbeiten</button>
-                    <button type="button" class="btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">Löschen</button>
+                    <button type="button" class="btn-secondary" id="detail-edit">${esc(t('note.edit', 'Bearbeiten'))}</button>
+                    <button type="button" class="btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">${esc(t('note.delete', 'Löschen'))}</button>
                 </div>`);
             div.querySelector("#detail-edit").addEventListener("click", () => openNoteForm(note));
             div.querySelector("#detail-del").addEventListener("click", (e) => deleteNote(note.id, e.target));
@@ -251,7 +292,7 @@
                 notes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderFeed();
             }, (err) => {
-                document.getElementById("feed").innerHTML = `<div class="note-empty">Fehler beim Laden.</div>`;
+                document.getElementById("feed").innerHTML = `<div class="note-empty">${esc(t('count.error', 'Fehler beim Laden.'))}</div>`;
                 console.error(err);
             });
         }
@@ -283,13 +324,13 @@
             const pw = document.getElementById("g-pw").value;
             const btn = document.getElementById("g-submit");
             const errEl = document.getElementById("g-error");
-            btn.disabled = true; btn.textContent = "Prüfe …";
+            btn.disabled = true; btn.textContent = t('gate.checking', 'Prüfe …');
             try { await signInWithEmailAndPassword(auth, email, pw); }
             catch (e) {
-                errEl.textContent = "Anmeldung fehlgeschlagen — E-Mail oder Passwort falsch.";
+                errEl.textContent = t('gate.failed', 'Anmeldung fehlgeschlagen — E-Mail oder Passwort falsch.');
                 errEl.classList.add("show");
             }
-            btn.disabled = false; btn.textContent = "Anmelden";
+            btn.disabled = false; btn.textContent = t('gate.submit', 'Anmelden');
         });
         document.getElementById("logout-btn").addEventListener("click", () => signOut(auth));
 
@@ -336,7 +377,7 @@
 
         function renderPreviewGrid(container) {
             container.innerHTML = draftPhotos.map((p, i) => `
-                <div class="preview-item"><img src="${p}" alt="Vorschau">
+                <div class="preview-item"><img src="${p}" alt="${esc(t('preview.alt', 'Vorschau'))}">
                 <button type="button" class="preview-remove" data-remove="${i}">✕</button></div>`).join("");
             container.querySelectorAll("[data-remove]").forEach(btn => {
                 btn.addEventListener("click", () => { draftPhotos.splice(Number(btn.getAttribute("data-remove")), 1); renderPreviewGrid(container); });
@@ -345,19 +386,19 @@
 
         function openNoteForm(existingNote) {
             const div = openBackdrop(`
-                <h2>${existingNote ? "Notiz bearbeiten" : "Neue Notiz"}</h2>
-                <div class="field"><label for="n-cat">Kategorie</label>
-                    <select id="n-cat">${CATEGORIES.map(c => `<option value="${esc(c)}" ${existingNote && existingNote.category === c ? "selected" : ""}>${esc(c)}</option>`).join("")}</select>
+                <h2>${existingNote ? esc(t('form.editTitle', 'Notiz bearbeiten')) : esc(t('form.newTitle', 'Neue Notiz'))}</h2>
+                <div class="field"><label for="n-cat">${esc(t('form.category', 'Kategorie'))}</label>
+                    <select id="n-cat">${CATEGORIES.map(c => `<option value="${esc(c)}" ${existingNote && existingNote.category === c ? "selected" : ""}>${esc(categoryLabel(c))}</option>`).join("")}</select>
                 </div>
-                <div class="field"><label for="n-text">Text</label><textarea id="n-text" placeholder="Schreib, was dir gerade wichtig ist …">${existingNote ? esc(existingNote.text || "") : ""}</textarea></div>
-                <div class="field"><label>Foto (optional)</label>
-                    <label class="photo-picker">📷 Foto hinzufügen<input type="file" id="n-photos" accept="image/*" multiple></label>
+                <div class="field"><label for="n-text">${esc(t('form.text', 'Text'))}</label><textarea id="n-text" placeholder="${esc(t('form.textPlaceholder', 'Schreib, was dir gerade wichtig ist …'))}">${existingNote ? esc(existingNote.text || "") : ""}</textarea></div>
+                <div class="field"><label>${esc(t('form.photoLabel', 'Foto (optional)'))}</label>
+                    <label class="photo-picker">${esc(t('form.addPhoto', '📷 Foto hinzufügen'))}<input type="file" id="n-photos" accept="image/*" multiple></label>
                     <div class="preview-grid" id="n-preview"></div>
                 </div>
                 <p class="error" id="n-error"></p>
                 <div class="sheet-actions">
-                    <button type="button" class="btn-secondary" id="n-cancel">Abbrechen</button>
-                    <button type="button" class="btn btn-primary" id="n-save">Speichern</button>
+                    <button type="button" class="btn-secondary" id="n-cancel">${esc(t('form.cancel', 'Abbrechen'))}</button>
+                    <button type="button" class="btn btn-primary" id="n-save">${esc(t('form.save', 'Speichern'))}</button>
                 </div>`);
             draftPhotos = existingNote ? (existingNote.photos || []).slice() : [];
             const previewEl = div.querySelector("#n-preview");
@@ -375,8 +416,8 @@
                 const text = div.querySelector("#n-text").value.trim();
                 const errEl = div.querySelector("#n-error");
                 const btn = div.querySelector("#n-save");
-                if (!text && !draftPhotos.length) { errEl.textContent = "Bitte Text oder Foto hinzufügen."; errEl.classList.add("show"); return; }
-                btn.disabled = true; btn.textContent = "Speichere …";
+                if (!text && !draftPhotos.length) { errEl.textContent = t('form.required', 'Bitte Text oder Foto hinzufügen.'); errEl.classList.add("show"); return; }
+                btn.disabled = true; btn.textContent = t('form.saving', 'Speichere …');
                 try {
                     if (existingNote) {
                         await updateDoc(doc(db, "private_notes", existingNote.id), { category, text, photos: draftPhotos.slice() });
@@ -385,9 +426,9 @@
                     }
                     closeBackdrop();
                 } catch (e) {
-                    errEl.textContent = "Speichern fehlgeschlagen: " + e.message;
+                    errEl.textContent = t('form.saveFailed', 'Speichern fehlgeschlagen: ') + e.message;
                     errEl.classList.add("show");
-                    btn.disabled = false; btn.textContent = "Speichern";
+                    btn.disabled = false; btn.textContent = t('form.save', 'Speichern');
                 }
             });
         }
