@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="doc.title">Geschichte &amp; Legenden — Camino Portugués | Barvenko</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="i18n-geschichte-legenden.js"></script>
+    <script src="i18n.js"></script>
+    <style>
+        :root { --accent: #8a5a38; --accent-dark: #6b452b; --line: #e3ddd5; --text: #33302c; --text-soft: #45413b; }
+        body { font-weight: 400; color: var(--text); }
+
+        .gl-back {
+            position: fixed; top: 84px; left: 1rem; z-index: 15;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.92); color: var(--accent-dark);
+            padding: 0.6rem 1.1rem; border-radius: 999px; text-decoration: none;
+            font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 14px rgba(60,45,25,0.25);
+        }
+        .gl-back:hover { background: #fff; opacity: 1; }
+        .gl-back .arrow { font-size: 1.1rem; line-height: 1; }
+        @media (max-width: 700px) { .gl-back { top: 70px; } }
+
+        .gl-hero {
+            min-height: 38vh; display: flex; align-items: center; justify-content: center; text-align: center;
+            color: #fff; padding: 7rem 1.5rem 3rem; position: relative;
+            background: linear-gradient(135deg, rgba(70,50,35,0.72), rgba(120,90,60,0.55)), url('images/jakobsweg/deko-camino-schild.png');
+            background-size: cover; background-position: center 40%;
+        }
+        .gl-hero .kicker { font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.9; margin-bottom: 1rem; }
+        .gl-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: 0.02em; line-height: 1.25; }
+        .gl-hero .sub { margin-top: 0.8rem; font-size: 1rem; opacity: 0.92; max-width: 560px; margin-left: auto; margin-right: auto; }
+
+        .gl-wrap { max-width: 780px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+        .gl-daynav { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 3rem; }
+        .gl-daynav a {
+            border: 1px solid var(--line); color: var(--accent-dark); font-weight: 500;
+            padding: 0.4rem 0.85rem; border-radius: 30px; font-size: 0.8rem; text-decoration: none;
+            transition: all 0.25s ease;
+        }
+        .gl-daynav a:hover { border-color: var(--accent); background: var(--accent); color: #fff; opacity: 1; }
+
+        .gl-intro { margin-bottom: 3rem; }
+        .gl-intro h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; color: var(--accent-dark); margin: 0 0 0.6rem; }
+        .gl-intro + .gl-intro { margin-top: -1.5rem; }
+
+        .gl-day { margin-bottom: 3.5rem; padding-bottom: 3.5rem; border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
+        .gl-day:last-of-type { border-bottom: none; }
+        .gl-day h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.65rem; color: var(--accent-dark); margin: 0 0 1.2rem; line-height: 1.3; }
+        .gl-day h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.6rem 0 0.5rem; }
+        .gl-day p { color: var(--text-soft); font-size: 1rem; line-height: 1.78; margin: 0 0 1rem; }
+        .gl-day em { color: var(--accent-dark); font-style: italic; }
+
+        .story-tip {
+            border-left: 3px solid var(--accent); background: #f5efe7; padding: 0.9rem 1.2rem; margin: 1.2rem 0 1.4rem;
+            font-size: 0.96rem; line-height: 1.7; color: var(--text-soft); border-radius: 0 6px 6px 0;
+        }
+
+        .gl-outro h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--accent-dark); margin: 0 0 1rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html#hero" class="nav-logo">BARVENKO</a>
+        <div class="nav-links">
+            <a href="index.html#about" data-i18n="nav.about">Über mich</a>
+            <a href="index.html#gallery" data-i18n="nav.gallery">Galerie</a>
+            <a href="index.html#adventures" data-i18n="nav.adventures">Abenteuer</a>
+            <a href="jakobsweg.html#toc" data-i18n="nav.jakobsweg">Reiseführer</a>
+            <a href="index.html#contact" data-i18n="nav.contact">Kontakt</a>
+            <div class="lang-switch">
+                <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
+                <button data-lang="ru" onclick="I18N_setLang('ru')">RU</button>
+            </div>
+        </div>
+        <button class="nav-toggle" data-i18n-aria-label="nav.toggle" aria-label="Menü öffnen">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <a href="jakobsweg.html#etappen" class="gl-back"><span class="arrow">←</span> <span data-i18n="gl.back">Zurück zum Reiseführer</span></a>
+
+    <header class="gl-hero">
+        <div>
+            <p class="kicker" data-i18n="gl.kicker">Camino Português Central</p>
+            <h1 data-i18n="gl.h1">Geschichte &amp; Legenden am Weg</h1>
+            <p class="sub" data-i18n="gl.sub">Was hinter den Kirchen, Brücken und Ortsnamen steckt — Etappe für Etappe</p>
+        </div>
+    </header>
+
+    <div class="gl-wrap">
+
+        <nav class="gl-daynav">
+            <a href="#gl-day2" data-i18n="gl.toc.day2">Tag 2</a>
+            <a href="#gl-day3" data-i18n="gl.toc.day3">Tag 3</a>
+            <a href="#gl-day4" data-i18n="gl.toc.day4">Tag 4</a>
+            <a href="#gl-day5" data-i18n="gl.toc.day5">Tag 5</a>
+            <a href="#gl-day6" data-i18n="gl.toc.day6">Tag 6</a>
+            <a href="#gl-day7" data-i18n="gl.toc.day7">Tag 7</a>
+            <a href="#gl-day8" data-i18n="gl.toc.day8">Tag 8</a>
+            <a href="#gl-day9" data-i18n="gl.toc.day9">Tag 9</a>
+            <a href="#gl-day10" data-i18n="gl.toc.day10">Tag 10</a>
+            <a href="#gl-day11" data-i18n="gl.toc.day11">Tag 11</a>
+            <a href="#gl-day12" data-i18n="gl.toc.day12">Tag 12</a>
+            <a href="#gl-day13" data-i18n="gl.toc.day13">Tag 13</a>
+            <a href="#gl-day14" data-i18n="gl.toc.day14">Tag 14</a>
+        </nav>
+
+        <div class="gl-intro">
+            <h2 data-i18n="gl.intro1.title">Der rote Faden: Du gehst auf einer Römerstraße</h2>
+            <div data-i18n-html="gl.intro1.body"><p>Der Caminho Central ist nicht „irgendein" Pilgerweg, sondern im Kern die <em>Via XIX</em>, die Straße von Bracara Augusta (Braga) nach Asturica Augusta (Astorga), angelegt wahrscheinlich im 1. Jahrhundert unter Kaiser Augustus. Fast alle großen Etappenorte waren römische <em>mansiones</em> – Raststationen mit Herberge: Caldas de Reis war als Aquis Celenis die fünfte Station zwischen Turoqua (Pontevedra) und Pria (Iria Flavia). Wenn du unterwegs auf einen Meilenstein stößt, ist das kein Deko-Objekt, sondern der Kilometerstein der Straße, auf der du gerade läufst.</p></div>
+        </div>
+
+        <div class="gl-intro">
+            <h2 data-i18n="gl.intro2.title">Zweiter Faden: die Traslatio</h2>
+            <div data-i18n-html="gl.intro2.body"><p>Die ganze Route läuft auf eine Legende zu – dass die Jünger Theodor und Athanasius den Leib des Apostels in einem Steinboot von Jaffa nach Iria Flavia brachten. Padrón, Iria Flavia und Santiago sind die drei Akte dieser Erzählung, und du gehst sie in der richtigen Reihenfolge.</p></div>
+        </div>
+
+        <section class="gl-day" id="gl-day2">
+            <h2 data-i18n="gl.day2.title">Tag 2 · Porto → Vairão (~26 km)</h2>
+            <div data-i18n-html="gl.day2.body">
+                <p>Die ersten 12 km sind ehrlich gesagt Vorstadt. Wer sich das sparen will, nimmt die Metro bis Vilar do Pinheiro. Wer läuft, wird dafür mit zwei Klöstern belohnt, die beide dieselbe verblüffende Eigenart haben: Sie waren Doppelklöster – Männer und Frauen unter einem Dach, in getrennten Kreuzgängen.</p>
+                <h3>Mosteiro do Divino Salvador de Moreira da Maia</h3>
+                <p>Der Bau, den du siehst, stammt von 1622 und hat 2022 seinen 400. Geburtstag gefeiert; gegründet wurde die Gemeinschaft aber schon 832 und 1060 an den heutigen Ort verlegt. Bis zum Eintritt in die Kongregation von Santa Cruz de Coimbra 1565 war es das wichtigste Kloster der Augustiner-Chorherren im Bistum Porto – älter und ranghöher als alle anderen. Ursprünglich lebten Chorherren und Chorfrauen in getrennten Kreuzgängen, bis die Nonnen 1147 ins Kloster São Cristóvão verlegt wurden und einen Teil der Einkünfte mitnahmen. Über Jahrhunderte war Moreira ein Stützpunkt für Santiago-Pilger – die Einheimischen nennen die Kirche „Kathedrale der Maia-Länder".</p>
+                <p>Und dann die Pointe: Nach der Auflösung der Orden 1834 wurde das Klostergut verkauft und gehörte irgendwann Luís de Magalhães, einem Mitglied der literarischen „Geração de 70" – der seine Kollegen mitbrachte, darunter Eça de Queirós, Antero de Quental und Oliveira Martins. Aus dem Chorherrenstift wurde also ein Literatensalon.</p>
+                <h3>Mosteiro de São Salvador de Vairão</h3>
+                <p>Dein Etappenziel. Die erste schriftliche Erwähnung datiert vom 12. Mai 974, und schon damals war São Salvador der Patron. Auch Vairão war ein Doppelkloster; die Trennung erfolgte um die Mitte des 12. Jahrhunderts, danach war es rein weiblich und benediktinisch. 1141 gab Afonso Henriques dem Kloster eine <em>carta de couto</em> – ein Immunitätsprivileg.</p>
+                <p>Das eigentlich Bemerkenswerte liegt im Archiv: Im umfangreichen Urkundenbestand von Vairão, heute größtenteils im Nationalarchiv Torre do Tombo, fand sich die <em>Notícia de Torto</em> – ein Dokument, das als der älteste erhaltene schriftliche Text in portugiesischer bzw. galego-portugiesischer Sprache gilt. Du schläfst also an einem der Geburtsorte der portugiesischen Schriftsprache. Als Manuel I. 1517 eine Reform startete, die kleine Ordensgemeinschaften in den Städten zusammenlegen sollte, entzog sich Vairão der Fusion und blieb bestehen; im portugiesischen Bürgerkrieg fanden hier die Nonnen von Corpus Christi aus Gaia für etwa ein Jahr Zuflucht.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day3">
+            <h2 data-i18n="gl.day3.title">Tag 3 · Vairão → Barcelos (~28 km)</h2>
+            <div data-i18n-html="gl.day3.body">
+                <h3>Igreja de São Pedro de Rates</h3>
+                <p>Für viele die schönste romanische Kirche Portugals, seit 1910 Nationaldenkmal. Archäologische Kampagnen 1997/98 zeigten, dass sie auf einem Bau der sueben-westgotischen Zeit steht und die Klosterentwicklung sich vom 6. Jahrhundert an durchgehend nachweisen lässt. Es war eines der wichtigsten cluniazensisch-benediktinischen Klöster; der Zugang erfolgt durch ein mächtiges Portal mit fünf Archivolten, und die Kapitell-Skulpturen sind das eigentliche Ereignis.</p>
+                <p>Die Legende dahinter ist stark – und ihre Entlarvung noch stärker. Der Tradition zufolge besuchte der Apostel Jakobus 44 n. Chr. den Nordwesten der Halbinsel, weihte in Bracara Augusta einen jungen Juden namens Pedro und machte ihn ab 45 zum ersten Bischof von Braga. Zum Martyrium führte vor allem die wunderbare Heilung einer heidnischen Patriziertochter, die daraufhin konvertierte und ein Keuschheitsgelübde ablegte — ihr empörter Vater ließ den Bischof töten; Pedro floh nach Rates, wo er umgebracht und in den Ruinen eines kleinen Tempels bestattet wurde.</p>
+                <p>Nur: Die Legende scheint sich in sehr kurzer Zeit zu Beginn des 16. Jahrhunderts entwickelt zu haben – und zwar opportunistisch: Braga war gerade erneuert worden, und die Legende verschaffte der Erzdiözese einen großen Heiligen aus apostolischer Zeit. Verankert war sie an zwei realen Dingen: Rates lag am Jakobsweg, und es gab dort eine sehr alte, groblinige Bischofsstatue. Aktueller Nachschlag: Nachdem São Pedro de Rates vier Jahrzehnte lang aus dem Bracarenser Heiligenkalender entfernt worden war, erkannte der Vatikan auf Antrag der Erzdiözese an, dass die Absetzung ein Fehler war – er ist wieder Altarheiliger mit eigenem Gedenktag. Der Brunnen bei der Kirche wird ihm selbst zugeschrieben; die Überlieferung sagt, sein Wasser heile Unfruchtbarkeit. Am Ortsanfang teilt sich der Weg – rechts der Zentralweg, links der Küstenweg.</p>
+                <h3>Barcelos und der Hahn</h3>
+                <p>Die Legende zuerst: Ein Galicier auf Pilgerfahrt nach Santiago wird in Barcelos des Silberdiebstahls beschuldigt und zum Tode verurteilt. Er bittet, vor den Richter geführt zu werden, der gerade ein Festmahl gibt, zeigt auf einen gebratenen Hahn auf dem Tisch und sagt, so sicher wie er unschuldig sei, werde dieser Hahn krähen, wenn man ihn hänge. Während der Hinrichtung erhob sich der gebratene Hahn und krähte; der Richter erkannte seinen Irrtum, rannte zum Galgen – und fand den Galicier dank eines schlecht geknoteten Seils lebend vor. Jahre später kam der Mann zurück und ließ das Kalvarienkreuz des „Senhor do Galo" zu Ehren der Jungfrau und des heiligen Jakobus errichten. Das Denkmal aus dem 17. Jahrhundert steht heute in der Sammlung des archäologischen Museums im Paço dos Condes — also in der Palastruine direkt am Weg.</p>
+                <p>Und nun das, was fast niemand erzählt: Der Keramikhahn hat mit der Legende ursprünglich nichts zu tun. Ethnografen zufolge wurde die Verbindung 1960 von Simplício de Sousa hergestellt, der treibenden Kraft hinter den ersten Handwerksmessen in Barcelos, der darin eine Chance sah, den Tourismus zu fördern und die Verkäufe der Töpfer zu steigern. Pires de Lima – ein renommierter Ethnograf – veröffentlichte 1963 ein Buch über die Legende und erwähnte die mögliche Verbindung zur Keramikfigur; niemand stellte ihn in Frage. Wichtiger noch: die religiöse Verknüpfung gefiel der katholischen Bevölkerung und dem Salazar-Regime. Sie setzte sich so durch, dass selbst Behörden bis heute von der „Legende vom Hahn von Barcelos" sprechen. Auch die Formveränderung der Figur ist praktisch begründet: größere, hohle Hähne platzen im Ofen nicht und verkaufen sich besser als die kleinen Pfeifen-Hähne.</p>
+                <p>Was du sonst nicht verpassen solltest: Die Igreja Matriz geht auf eine Kirche des 11./12. Jahrhunderts zurück, wurde im 13./14. neu errichtet und mehrfach umgebaut — außen romanisch-gotisch mit großem Portal und Fensterrose, innen manieristische und barocke Retabel. Der Templo do Senhor Bom Jesus da Cruz ist die Barockkirche und gilt als augenfälligstes Bauwerk der Stadt. Der Paço dos Condes wurde beim Erdbeben von 1755 schwer beschädigt; heute spaziert man zwischen Sarkophagen, Wappensteinen und Bögen. Dazu das Museu de Olaria (Töpfermuseum) — Barcelos ist Keramikstadt, nicht Hahnstadt.</p>
+                <p class="story-tip">⚠️ Praktisch: Donnerstag ist Markttag (03.09. ist ein Donnerstag), aber es ist ein Vormittagsmarkt. Nach 28 km ab Vairão kommst du zu spät. Entweder sehr früh los – oder den Markt bewusst als Etappenziel behandeln.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day4">
+            <h2 data-i18n="gl.day4.title">Tag 4 · Barcelos → Balugães (~17 km)</h2>
+            <div data-i18n-html="gl.day4.body">
+                <p>Kurzer, stiller Tag. Nutze ihn, um zu lesen, was am Wegrand steht:</p>
+                <h3>Alminhas</h3>
+                <p>Die kleinen Nischen mit Kachelbildern, in denen Seelen in Flammen zu sehen sind, sind keine Grabsteine, sondern Fürbitt-Stationen für die Seelen im Fegefeuer. Der Vorbeigehende betet und „verkürzt" damit deren Zeit — eine Art spirituelle Wegemaut. Sie stehen typischerweise an Kreuzungen und Brücken, also an Orten, wo man sich entscheiden muss.</p>
+                <h3>Ramadas</h3>
+                <p>Dir wird auffallen, dass die Weinreben hier nicht in Reihen auf Hüfthöhe stehen, sondern hoch an Granitpfeilern und Pergolen über die Felder gespannt sind. Das hat zwei Gründe: Im feuchten Minho hält die Höhe die Trauben von der nassen Erde und dem Mehltau fern — und der Boden darunter bleibt für Kohl und Mais frei. Das ist der Grund, warum du hier gleichzeitig durch Weinberg und Gemüsegarten läufst. Der Wein daraus: Vinho Verde.</p>
+                <p>Capela de Nossa Senhora da Aparecida bei Portela de Tamel ist das bekannteste Wegheiligtum des Abschnitts; bei Portela de Tamel gibt es auch ein Restaurant und die kommunale Herberge Casa da Recoleta.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day5">
+            <h2 data-i18n="gl.day5.title">Tag 5 · Balugães → Ponte de Lima (~17 km)</h2>
+            <div data-i18n-html="gl.day5.body">
+                <p>Unterwegs die Ponte das Tábuas über den Neiva — eine mittelalterliche Steinbrücke, deren Name („Brettbrücke") noch von ihrem hölzernen Vorgänger erzählt.</p>
+                <h3>Ponte de Lima</h3>
+                <p>Der historisch dichteste Ort der ganzen Route. Und die Brücke ist eigentlich zwei Brücken: Ein römischer Teil, der zur Via XIX gehörte und wahrscheinlich im 1. Jahrhundert entstand, und ein mittelalterlicher. Dieser Übergang legte die Lage des künftigen Ortes für immer fest – etwa 25 km vom Atlantik – und machte ihn zum unvermeidlichen Durchgangspunkt für Heere, Kaufleute, Baumeister, Pilger und andere Reisende. Warum es zwei Teile sind: In der zweiten Hälfte des 14. Jahrhunderts wurde praktisch neu gebaut, weil sich das Flussbett nach Süden verlagert hatte und die alte, weitgehend zerstörte Römerbrücke den Fluss gar nicht mehr überspannte. Der „römische" Abschnitt liegt heute also im Trockenen — das erklärt die merkwürdige Länge.</p>
+                <p>Warum die Brücke so wichtig war: Sie war bis zum Ende des Mittelalters der einzige sichere Übergang über den Rio Lima auf dessen ganzer Länge.</p>
+                <h3>Die Stadtgründung</h3>
+                <p>Am 4. März 1125 machte D. Teresa den Ort „Ponte" zur Stadt und verlieh ein Foral, das ihren künftigen Bewohnern Rechte, Privilegien und Steuerfreiheiten sicherte. Bereits in dieser Gründungsurkunde wird die Feira von Ponte de Lima erwähnt. Und zwar mit der Bestimmung, dass verurteilt wird, wer jemandem etwas antut, der den Markt besucht — mittelalterlicher Marktfrieden, schriftlich. D. Teresa war die Witwe von Graf Heinrich und die Mutter von Afonso Henriques, dem ersten König Portugals. 2025 hat die Stadt die 900 Jahre gefeiert; der 4. März ist seither offizieller Dia do Concelho.</p>
+                <p>Im 14. Jahrhundert ließ D. Pedro I. den Ort ummauern: ein Burgus mit Mauern und neun Türmen, von denen noch zwei stehen, und sechs Stadttoren. Wer aufmerksam durch die Altstadt geht, findet Spuren der verschwundenen Türme und Markierungen im Pflaster, die den alten Mauerverlauf nachzeichnen. Die Torre da Cadeia Velha wurde im 16. Jahrhundert unter Manuel I. zum Gefängnis umgebaut und beherbergt heute das Tourismusbüro und Wechselausstellungen.</p>
+                <h3>Die schönste Legende des Weges</h3>
+                <p>Die Römer nannten den Lima <em>Lethes</em> – Fluss des Vergessens. Daran hängt die Erzählung um den Feldherrn Decimus Junius Brutus Gallaicus. Seine Legionäre weigerten sich, den Fluss zu überschreiten, weil sie fürchteten, dabei ihr Gedächtnis und ihre Heimat zu verlieren. Brutus ging allein hinüber, mit dem Feldzeichen in der Hand, drehte sich um und rief jeden einzelnen Soldaten vom anderen Ufer beim Namen — als Beweis, dass er nichts vergessen hatte. Danach folgten sie ihm.</p>
+                <p class="story-tip">🍷 Trinke den Vinho Verde hier: Er ist jung, leicht perlend, wird kalt getrunken und reist schlecht. Abends an die Flusspromenade und in den Parque do Arnado auf der anderen Seite.</p>
+                <p class="story-tip">📅 Kalender-Check: Ponte de Lima feiert seit 1826 jedes Jahr am zweiten September-Wochenende die „Feiras Novas" — mit Blaskapellen, Feuerwerk und komplett ausgebuchten Betten. Prüfe die 2026er Daten, bevor du buchst.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day6">
+            <h2 data-i18n="gl.day6.title">Tag 6 · Königsetappe: Ponte de Lima → Rubiães (~18 km)</h2>
+            <div data-i18n-html="gl.day6.body">
+                <p>Der Anstieg zum Alto da Portela Grande de Labruja bringt 315 Höhenmeter auf 4 Kilometern und ist der bedeutendste Aufstieg des Camino Portugués, Gipfel etwa 395 m. Klingt nach wenig, ist es aber nicht — von 18 km sind etwa 11 km Asphalt und 7 km Kopfsteinpflaster, und das spürt man in den Fußsohlen mehr als in den Beinen.</p>
+                <p>Warum der Weg hier über den Berg geht und nicht bequemer herum: weil die Römerstraße es tat. Eine <em>portela</em> ist ein Sattel, der niedrigste Punkt einer Kette — die Straßenbauer nahmen den kürzesten Übergang, und der Pilgerweg folgt ihnen seit 2000 Jahren.</p>
+                <h3>Cruz dos Franceses</h3>
+                <p>Ein Steinkreuz bei etwa km 12,5 markiert die Stelle, an der Einheimische Soldaten aus Napoleons Armee während der Invasion von 1809 überfielen. Das ist kein isolierter Zufall — dasselbe Jahr, dasselbe Motiv wird dir auf Tag 10 an der Ponte Sampaio wieder begegnen. Die Halbinsel war 1809 ein Guerillakrieg, und der Camino läuft mitten hindurch.</p>
+                <p>Oben angekommen: Der Gipfel des Alto da Portela Grande ist der beste Picknickplatz des gesamten portugiesischen Camino — und ab Codeçal gibt es 9,2 km lang gar keine Versorgung, also Wasser und Essen in Ponte de Lima kaufen. Unterwegs rauscht der Wasserfall des Rio Labruja.</p>
+                <p>In Rubiães steht neben der Kirche São Pedro ein römischer Meilenstein der Via XIX — die Straße, auf der du gerade den Berg überquert hast, mit Beschilderung.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day7">
+            <h2 data-i18n="gl.day7.title">Tag 7 · Grenzübertritt: Rubiães → Tui (~20 km)</h2>
+            <div data-i18n-html="gl.day7.body">
+                <h3>Valença: eine bewohnte Festung</h3>
+                <p>Die ersten Mauern gehen auf eine eisenzeitliche Siedlung zurück; das heutige Bastionärssystem entstand im 17. und 18. Jahrhundert. Die Anlage liegt auf zwei Hügeln und besteht aus zwei Polygonen: der älteren Magistral und der Coroada, getrennt durch einen Graben. Der Mauerring hat rund 5 km Umfang, mit Wachtürmchen, Revelins, ganzen und halben Bastionen.</p>
+                <p>Die Baugeschichte ist die Geschichte der portugiesischen Unabhängigkeit: Im Kontext des Restaurationskriegs (17. Jh.) wurde die Grenzfestung nach dem Entwurf des Franzosen Miguel de l'École vollständig umgebaut. Schon während der ersten Arbeiten widerstand sie 1643 einem spanischen Vorstoß; 1654 fiel sie in spanische Hände und wurde von portugiesischen Truppen unter dem Grafen von Castelo Melhor zurückerobert. Die Arbeiten liefen noch 1661 und wurden 1713 abgeschlossen, als der letzte Architekt, Manuel Pinto de Vilalobos, sie für beendet erklärte. Der Legende nach stand auf der Festung eine Kanone mit der Inschrift „Ai Espanha, se te moves" — „Spanien, wenn du dich rührst…". Die Zielrichtung war wörtlich: Tui liegt in Schussweite.</p>
+                <p>Heute ist die Festung voller Läden und Cafés, und die Bastion Coroada ist der Aussichtspunkt nach Spanien.</p>
+                <h3>Die Grenzbrücke — und der zähe Eiffel-Mythos</h3>
+                <p>Trotz der Legende, es handle sich um einen Entwurf Gustave Eiffels oder eines seiner Schüler, wurde die Brücke vom Ingenieur und Abgeordneten Pelayo Mancebo y Ágreda aus La Rioja entworfen und am 25. März 1886 offiziell eingeweiht – fast anderthalb Jahre nach Betriebsaufnahme. Eiffel war tatsächlich beteiligt — als Verlierer: Am öffentlichen Wettbewerb ab dem 30. Juli 1881 nahmen sieben Bewerber mit zehn Vorschlägen teil, darunter Gustave Eiffel; die portugiesisch-spanische Kommission entschied sich für Mancebo y Ágreda, die Bauausführung ging an eine belgische Gesellschaft aus Braine-le-Comte. Das Ergebnis ist eine 318 m lange Gitterträgerbrücke aus Eisen und Stein, gebaut für drei Verkehrsarten gleichzeitig – inklusive seitlicher Metallstege für Fußgänger. Auf einem davon gehst du.</p>
+                <h3>Die Wehrkathedrale von Tui</h3>
+                <p>1180 begann man die Kathedrale Santa María direkt neben der Befestigung zu bauen; 1225 wurde sie unter Bischof Esteban Egea geweiht. Warum sie wie eine Burg aussieht, hat einen präzisen Grund: Mit der Entstehung Portugals als eigenständiges Königreich in der ersten Hälfte des 12. Jahrhunderts wurde der schiffbare Miño – bis dahin Verbindungsweg zwischen beiden Ufern – zur natürlichen Grenze. Grenzscharmützel und Kriege machten ein Verteidigungssystem zum Schutz der Bevölkerung notwendig. Also: Zinnen, der Turm San Andrés, der Torreón Santa Catalina.</p>
+                <p>Das Unbezahlbare ist das Westportal: Es gilt als das erste gotische Skulpturenensemble der Iberischen Halbinsel; die Arbeit wird französischen Steinmetzen zugeschrieben, die mit Laon, Sens und Chartres in Verbindung stehen. Links stehen als Säulenfiguren Moses, Jesaja, Petrus und Johannes der Täufer, rechts Salomon, die Königin von Saba, Jeremias und Daniel, und um 1250 kam eine Vorhalle hinzu, die den heiligen Raum auf den Platz davor ausdehnt. Dazu: der Kreuzgang aus der zweiten Hälfte des 13. Jahrhunderts im zisterziensisch-gotischen Stil – der einzige erhaltene mittelalterliche Kreuzgang aller galicischen Kathedralen, 1408 wegen Einsturzgefahr aufwendig restauriert, ein romanischer Kapitelsaal, einer der größten in Spanien, sowie barockes Chorgestühl, Zwillingsorgeln und die Reliquienkapelle.</p>
+                <p>Noch zwei Dinge in Tui: Neben der Kathedrale liegt das Diözesanmuseum im alten Armen- und Pilgerhospital von 1756, und unter der öffentlichen Herberge die eigenwillige Kapelle des San Telmo – barock, auf kreisförmigem Grundriss, entworfen von Fray Mateo de Mosteiro und über dem Haus des Stadtpatrons errichtet.</p>
+                <p class="story-tip">📜 Ab Tui zählt es. Für die Compostela brauchst du die letzten 100 km — und ab hier zwei Stempel pro Tag. Café, Herberge, Kirche, Kiosk: alles zählt.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day8">
+            <h2 data-i18n="gl.day8.title">Tag 8 · Tui → O Porriño (~16 km)</h2>
+            <div data-i18n-html="gl.day8.body">
+                <h3>Ponte das Febres — „Fieberbrücke"</h3>
+                <p>Der Name kommt daher, dass San Telmo hier 1251 am Fieber erkrankte. Wer vorbeikommt, findet eine Tafel mit dem Text, der Wanderer möge ihn bitten, bei Gott ein Wort für ihn einzulegen. (Manche Quellen datieren seinen Tod auf 1246 — die Inschrift sagt 1251.) San Telmo, eigentlich Pedro González Telmo, war Dominikanerprediger, ist Stadtpatron von Tui und Schutzheiliger der Seeleute; das „Elmsfeuer" trägt seinen Namen. Er kam von einer Predigtreise zurück, brach hier zusammen und starb in Tui. Die Brücke selbst ist zudem ein gutes Beispiel für portugiesischen Barock in Galicien.</p>
+                <p>Vorher: San Bartolomé de Rebordáns, romanische Kirche des 12. Jahrhunderts am Stadtrand von Tui, mit älteren Fundamenten.</p>
+                <p class="story-tip">⚠️ Der wichtigste praktische Tipp des Tages: Die Route verläuft streckenweise an der N-550, wo besondere Vorsicht wegen der Fahrzeuge nötig ist – man kann die Abzweigung nach rechts nehmen, um dem Verkehr auszuweichen. Nimm sie. Die Flussvariante am Louro entlang („Senda do Louro") umgeht das große Industriegebiet und ist eine völlig andere Etappe.</p>
+                <h3>O Porriño</h3>
+                <p>Wirkt erst mal ernüchternd, hat aber eine Erklärung: Die Stadt lebt vom rosa Granit, der von hier aus weltweit exportiert wird — die Steinlager am Wegrand sind der Grund, warum der Ort so aussieht. Und das Rathaus ist von Antonio Palacios, hier geboren, dem bedeutendsten galicischen Architekten seiner Zeit (in Madrid stammt der Palacio de Comunicaciones an der Cibeles von ihm). Er hat seiner Heimatstadt ein Gebäude gebaut, das aussieht, als gehöre es in eine Hauptstadt.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day9">
+            <h2 data-i18n="gl.day9.title">Tag 9 · O Porriño → Redondela (~16 km)</h2>
+            <div data-i18n-html="gl.day9.body">
+                <h3>Pazo de Mos</h3>
+                <p>Der Palast der Markgrafen von Mos liegt direkt an der alten Römerstraße, die Braga mit Tui und Compostela verband. Der Bau stammt aus dem 17. Jahrhundert und war Residenz der Marqueses de Mos, bis er zu Beginn des 19. Jahrhunderts von französischen Truppen niedergebrannt und zerstört wurde. Aus der Ruine wurde 2008 ein Kulturzentrum mit Mehrzwecksälen und Bibliothek. Daneben die barocke Kirche Santa Eulalia — zusammen eines der emblematischsten Ensembles des Camino Portugués.</p>
+                <p>Dann der Anstieg: Ab Mos beginnt eine fordernde Rampe zum polychromen Cruceiro von Os Cabaleiros aus dem 18. Jahrhundert, das mit zwei Laternen versehen ist. Ein Steinkreuz mit der Inschrift „Camino de Santiago" markiert den Beginn der Rúa dos Cabaleiros.</p>
+                <h3>Santiaguiño de Antas</h3>
+                <p>Die Kapelle liegt am höchsten Punkt der Etappe, ein einfaches Monument, umgeben von einer schönen <em>carballeira</em>, einem Eichenwäldchen. Und dann, fast beiläufig: ein römischer Meilenstein – eine römische Meile entspricht 1.480 Metern – der einst zur Via XIX gehörte, die Braga mit Astorga verband. Auf dem Gipfel stehen damit gleich vier Jakobs-Zeugnisse beieinander: die Kapelle, ein Santiago-Bildnis, ein Gedenkmonolith für den Camino Portugués und wenige Meter weiter der Meilenstein.</p>
+                <h3>Redondela — „vila dos viadutos"</h3>
+                <p>Als im 19. Jahrhundert die Eisenbahn boomte, wurden die beiden Viadukte gebaut, die den Ort überspannen. Das Bild einer Stadt mit zwei Bahnlinien am Himmel wurde ihr Markenzeichen. Der Ourense-Viadukt, der erste, dem der Pilger begegnet, ist 318 m lang und maximal 36 m hoch und besteht aus drei Teilen: einem metallischen Mittelstück und zwei steinernen Flanken; eingeweiht am 30. Juli 1876. Der Viadukt der Linie Vigo–Pontevedra über dem Fischerviertel A Esfarrapada ist das wichtigste Bauwerk der ganzen Strecke – er wurde mitten im Corpus-Christi-Fest des Jahres 1884 eingeweiht.</p>
+                <p>Auch Redondela war 1809 dran: Die französische Flotte belagerte den Ort vom Meer aus – als Vergeltung dafür, dass die Redondelaner Tui bei einem französischen Angriff geholfen hatten.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day10">
+            <h2 data-i18n="gl.day10.title">Tag 10 · Redondela → Pontevedra (~20 km)</h2>
+            <div data-i18n-html="gl.day10.body">
+                <p>Ab hier hast du das Meer im Blick — die Ría de Vigo, und in ihr eine Landschaft mit doppeltem Boden. Links, im Westen, ragen die Inseln San Simón und San Antón aus dem Wasser; unter der Oberfläche liegen die Reste der Galeonen der Schlacht von Rande (1702), und im Hintergrund schließt zwischen den Muschel-Flößen (<em>bateas</em>) die Hängebrücke von Rande (1978) das Panorama. Die Insel selbst hat eine düstere Biografie: Von 1830 bis 1927 diente sie als Leprastation, vom Bürgerkrieg bis 1943 als Konzentrations- und Vernichtungslager für Gegner des Franco-Regimes; danach verfiel sie, bis sie 1999 unter Kulturschutz gestellt wurde. Es lohnt sich, das zu wissen, wenn man auf diese schöne kleine Insel schaut.</p>
+                <h3>Arcade = Austern</h3>
+                <p>Die Austern von Arcade sind das gastronomische Wahrzeichen der Strecke, der Ort ist auch für seine Zwiebeln bekannt, und am Weg liegen zwei Kirchen: San Salvador de Soutomaior aus dem 18. Jahrhundert und Santiago de Arcade, ein Bau des 12. Jahrhunderts mit späteren Umbauten.</p>
+                <h3>Ponte Sampaio</h3>
+                <p>Der Ursprung ist römisch, erhalten ist aber die mittelalterliche Struktur: ein langer Bau mit zehn Bögen und Strompfeilern dazwischen. Und hier wurde Geschichte gemacht: Ende März 1809 hatten die Galicier Vigo, Tui und Pontevedra zurückgewonnen, bis sich das VI. französische Korps zurückzog. Wenige Monate später, am 7. und 8. Juni, kehrten die Franzosen mit neuen Truppen zurück, um die verlorenen Gebiete wiederzuerobern – und mussten dafür über diese Brücke. Hier stoppten Volksaufgebot und Milizen den Angreifer und zwangen ihn zum endgültigen Abzug aus Galicien.</p>
+                <p>Die Details sind fast unglaublich: Die Franzosen brachten 13.000 Mann, zwei Achtpfünder und neun Feldgeschütze, von denen aber nur 7.000 Mann bewaffnet waren; die Brücke war unterbrochen und von den Achtpfündern unter Feuer. Am nächsten Tag ließ Ney zwei Meilen flussaufwärts bei Caldelas angreifen, wo die Brücke nicht zerstört war – doch am anderen Ufer hatten sich die Bauern aus O Morrazo, Pontevedra und A Lama mit Steinen und Baumstämmen verschanzt. Am 9. berief Ney einen Kriegsrat ein und beschloss den Rückzug, der mühsam wurde, weil Guerilleros die Nachzügler töteten. Seine Truppen vereinigten sich in Lugo mit denen Soults, die Portugal verlassen mussten, und zogen im Juli 1809 gemeinsam aus Galicien ab. Und die schönste Anekdote: Weil den Milizen Kriegsgerät fehlte, bauten sie aus dicken Baumstämmen echte Kanonen – die <em>canóns de pau</em>, Holzkanonen, die angeblich bis zu zwölf Schüsse aushielten. Auf Pontevedras Alameda steht das Denkmal für die Helden von Ponte Sampaio; am Jahrestag werden Blumen in den Rio Verdugo geworfen.</p>
+                <h3>Pontevedra: der muschelförmige Bau</h3>
+                <p>Das Santuario da Virxe Peregrina wurde ab 1778 errichtet; sein Grundriss ist von einer Pilgermuschel inspiriert, mit einem Kreuz als Abschluss – die runde Form geht auf die damals in portugiesischen Kirchen herrschende Typologie zurück. Der Bau mischt Spätbarock mit klassizistischen Formen, etwa im Hauptretabel von 1789. Der Ursprung ist eine Reisegeschichte: Alles begann mit einem Bildnis der als Pilgerin gekleideten Jungfrau, das französische Pilger nach Pontevedra mitbrachten. Es erregte so viel Aufmerksamkeit, dass 1753 eine Bruderschaft zu ihrer Verehrung gegründet wurde. Der Grundstein wurde am 18. Juni 1778 gelegt, finanziert von der Bruderschaft; die Pläne stammen vom Baumeister Antonio Souto, der zugleich Milizsergeant war, fertiggestellt wurde die Kirche von Isidro Martínez. 1792 kamen Glocken, Tür und Fenster, später der Vorhof; am 2. August 1794, nach sechzehn Jahren Bauzeit, wurde sie gesegnet und die erste Messe gefeiert. 1795 riss ein Sturm den Nordturm ein; restauriert wurde er erst 1873, diesmal mit Blitzableiter.</p>
+                <p>Ein Detail, an dem alle vorbeigehen: Das Weihwasserbecken im Inneren ist eine Muschelschale aus dem Pazifik, die Méndez Núñez als Dank für seinen Sieg bei Mindanao mitbrachte.</p>
+                <p>Dazu: die Basilika Santa María A Grande (16. Jh.), die fünf historischen Gebäude des Museo de Pontevedra und die Plätze Ferrería, Leña und Teucro. Pontevedras Altstadt ist seit den späten 1990ern weitgehend autofrei — sie gilt international als Musterbeispiel dafür, was passiert, wenn man Autos aus einer Innenstadt nimmt. Nach zehn Tagen Asphalt merkt man den Unterschied körperlich.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day11">
+            <h2 data-i18n="gl.day11.title">Tag 11 · Pontevedra → Caldas de Reis (~21 km)</h2>
+            <div data-i18n-html="gl.day11.body">
+                <h3>Hórreos lesen lernen</h3>
+                <p>Die schmalen Granitspeicher auf Stelzen mit Pilzkopf-Steinen (<em>tornarratos</em>) sind Maisspeicher. Die Stelzen halten Nagetiere draußen, die Schlitzwände sorgen für Durchlüftung im nassen Klima, das Kreuz an einem und der Pinienzapfen am anderen Ende bringen Segen und Fruchtbarkeit. Je größer der hórreo, desto reicher das Haus — sie sind das Statusobjekt des galicischen Bauern.</p>
+                <h3>Caldas de Reis: römisches Kurbad und Königsgeburtsstätte</h3>
+                <p><em>Aquis Celenis</em> oder <em>Aquae Celenae</em> hieß der Ort bei den Römern und erscheint im Itinerarium Antonini des 3. Jahrhunderts als <em>mansio</em> der Via XIX. Der Name bedeutet „Wasser der Cilenos" und verweist auf das dort ansässige galläkische Volk und die Thermalquellen, die die Römer so schätzten. Aquis Celenis war wichtig genug, dass dort eine Abteilung der Legio X Gemina stationiert wurde, um Sicherheit und Ordnung zu wahren.</p>
+                <p>Das „de Reis" hat einen konkreten Menschen zur Ursache: Im 12. Jahrhundert besaßen Königin Urraca und ihr Mann Raimund von Burgund einen Wohnpalast am Ufer des Bermaña, mitten in Caldas. Dort wurde im März 1105 ihr Sohn Alfonso Raimúndez geboren – der spätere Alfonso VII., König von Galicien, Kastilien und León. Ab Anfang des 13. Jahrhunderts (1214) erscheint der Ort als „Caldas de Rex"; die endgültige Namensform ist erstmals 1254 im Foral des Erzbischofs Juan Arias belegt.</p>
+                <p>Und jetzt die Verbindung, die den Ort für dich zusammenhält: Die Kirche von Caldas wurde in den letzten Jahren des 19. Jahrhunderts gebaut – und zwar aus den Steinen des mittelalterlichen Turms der Königin Urraca, dem Geburtsort Alfonsos VII. Das Gebäude, in dem der spätere „Kaiser von ganz Hispanien" zur Welt kam, steht heute umgeschichtet als Pfarrkirche da. Geweiht ist sie Thomas Becket: Die Tradition erzählt, er habe um 1167 auf dem Weg nach Santiago in diesem Ort übernachtet; dokumentarische Beweise fehlen, doch Historiker wie Castellá Ferrer, Atanasio López und López Ferreiro haben die Pilgerfahrt verteidigt.</p>
+                <h3>Die Quellen</h3>
+                <p>As Burgas: Wasser mit 40 Grad in einem markanten öffentlichen Brunnen von 1881. Er liegt im Zentrum neben dem Balneario Dávila, ist frei zugänglich – und daneben steht das öffentliche Waschhaus, wo Pilger ins Gespräch kommen, während sie die Füße im heißen Wasser baden, was die Durchblutung fördert und die Muskeln lockert. Genau das machst du nach 21 km.</p>
+                <p>Als Kurgast in guter Gesellschaft: 1494 lobte der deutsche Arzt Hieronymus Münzer das Wasser als sehr gut und so heiß wie das der Bäder von Baden in der Schweiz. Dazu die Ponte Bermaña, ein mittelalterliches Stück auf römischen Fundamenten, und 2 km entfernt die romanische Kirche Santa María de Bemil.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day12">
+            <h2 data-i18n="gl.day12.title">Tag 12 · Caldas de Reis → Padrón (~19 km)</h2>
+            <div data-i18n-html="gl.day12.body">
+                <p>Nach Pontecesures überquerst du die Brücke über den Ulla – römischen Ursprungs, heute allerdings entstellt – die die Provinzen Pontevedra und A Coruña trennt. Hier beginnt Padrón, die Wiege der Jakobstradition, eine schöne und monumentale Ortschaft am Rio Sar. Der Eintritt in den Ort führt über den Marktplatz, dann auf die Promenade des Espolón.</p>
+                <h3>Der Pedrón</h3>
+                <p>In der Igrexa de Santiago, einem nüchtern-neoklassizistischen Bau, liegt der PEDRÓN – ein römischer Votivaltar, der dem Gott Neptun geweiht war. Die Tradition sagt, es sei der Stein, an dem die Jünger das Boot festmachten, in dem sie den Leib des Apostels aus Palästina brachten. Die heutige Kirche stammt aus dem späten 19. Jahrhundert und steht an der Stelle, wo zuvor eine romanische Kirche stand, die Erzbischof Xelmírez zu Beginn des 12. Jahrhunderts angeschoben hatte, und nach ihrem Verschwinden eine gotische. Der Pedrón befindet sich unter dem Hauptaltar. Etymologisch leitet sich Padrón von diesem Stein ab; der Rio Sar war bis ins Mittelalter schiffbar — und nur deshalb funktioniert die Legende geografisch überhaupt.</p>
+                <p>Übrigens: Die Ruta da Pedronía, ein anerkannter Weg von Santiago nach Padrón, erinnert an genau diese Überführung – falls du in Santiago noch Beine übrig hast, kannst du die Traslatio rückwärts gehen.</p>
+                <h3>Die Literaturstadt</h3>
+                <p>Am nördlichen Ende der Promenade steht die Rosalía-de-Castro-Statue von 1957, geschaffen von José María Mateos und bezahlt von den nach Uruguay ausgewanderten Padroneser Bürgern – so steht es auf einer Tafel am Sockel. Rosalía de Castro ist die Nationaldichterin Galiciens, die das Galicische als Literatursprache zurückholte; ihr Casa-Museo steht in Padrón. Am anderen Ende: Camilo José Cela, Nobelpreis 1989. Und am Pazo do Concello, einem Palast des 15. Jahrhunderts, der 1794 klassizistisch umgebaut wurde, findest du eine englische Uhr und ein steinernes Wappen, das die Traslatio darstellt.</p>
+                <h3>Die Paprika</h3>
+                <p>Sie heißen <em>pimientos de Padrón</em>, aber die Schoten mit geschützter Herkunftsbezeichnung kommen aus Herbón, einer Pfarrei der Gemeinde Padrón. Franziskanermönche brachten sie im 17. Jahrhundert aus Amerika ins Kloster Herbón. Wichtig: Steht auf der Karte „pimiento tipo Padrón", sind sie nicht von dort – und Saison haben sie in den Sommermonaten. Du bist also genau richtig. Das Kloster Herbón selbst wurde 1396 gegründet, im 17. Jahrhundert stark erweitert, diente von 1701 bis 1985 als Missionarsseminar – und zwischendurch als Gefängnis für Liberale. Der galicische Spruch zur Sache: <em>uns pican e outros non</em> — manche brennen, manche nicht, und du weißt es erst hinterher.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day13">
+            <h2 data-i18n="gl.day13.title">Tag 13 · Padrón → O Milladoiro (~17 km)</h2>
+            <div data-i18n-html="gl.day13.body">
+                <p>Heute läufst du durch den historischen Kern des ganzen Camino-Mythos.</p>
+                <h3>Iria Flavia — die Kathedrale, die Santiago ersetzte</h3>
+                <p>Iria war eine galläkische Stadt, Hauptort der Caporos, gelegen an der Straße von Bracara Augusta nach Asturica Augusta, am Zusammenfluss von Sar und Ulla, und ein wichtiger Hafen. Sie war Bischofssitz von der Spätantike über Sueben und Westgoten hinweg – bis Alfons II. das Bistum nach Compostela verlegte, aus Anlass der Entdeckung des Apostelgrabs. Anders gesagt: Ohne die Grabentdeckung wäre Santiago heute ein Dorf und Iria Flavia die Stadt. Der Tradition zufolge predigte der Apostel hier zuerst, und hierher brachten seine Jünger Theodor und Athanasius seinen Leib in einem Steinboot; sie blieben und predigten weiter.</p>
+                <p>Die Kirche selbst hat mit der ursprünglichen nichts mehr zu tun: Ihre älteste Architektur, das Hauptportal mit trichterförmigen Spitzbögen auf romanischen Säulen, stammt aus dem 13. Jahrhundert; alles andere wurde in den ersten Jahren des 17. Jahrhunderts unter Erzbischof Fray Antonio de Monroy neu errichtet. Bemerkenswert sind die pyramidal gestuften Türme und der große Friedhof an einer Seite.</p>
+                <p>Als infolge des Konkordats von 1851 die Kollegiatkirche von Iria aufgelöst wurde – sie trug den Titel „zweiter Stuhl von Compostela" –, umfasste ihr Kapitel noch einen Vikar, neun Kanoniker und mehrere Kaplansstufen. Auf diesem Friedhof liegt Camilo José Cela begraben, keine 200 Meter von seinem Geburtsort und der Fundación Camilo José Cela.</p>
+                <h3>Santuario da Escravitude</h3>
+                <p>Ein Bau des 18. Jahrhunderts mit zwei markanten Türmen. Die Geschichte hinter dem Namen: Angeblich betete im 18. Jahrhundert ein schwerkranker Pilger zur Jungfrau Maria um Heilung und trank aus dem Brunnen, der noch heute vor der Kirche steht. Der Name „Escravitude" — Sklaverei — meint die freiwillige Knechtschaft, in die sich der Geheilte zum Dank begab.</p>
+                <p>Weiter: das gotische Cruceiro von Rúa de Francos — eines der ältesten Steinkreuze Galiciens, und der Ortsname erinnert an die <em>francos</em>, die fremden, „fränkischen" Siedler und Pilger, die man in eigenen Gassen unterbrachte.</p>
+                <h3>Pazo do Faramello</h3>
+                <p>Der letzte Pazo vor Santiago, und der ungewöhnlichste. Er hat keinen adeligen, sondern einen industriellen Ursprung. 1710 entschied der genuesische Marquis Bartolomé Piombino, dass der Cañon des Rio Tinto der ideale Ort für die erste Königliche Papiermanufaktur Galiciens sei. Die Wahl war kein Zufall: Die Reinheit des von den Höhen von Rois herabkommenden Wassers und die Kraft der Strömung waren entscheidend für das Maischen und den Antrieb der Hammerwerke. Über ein Jahrhundert lang belieferten die Bogen von hier die wichtigsten Institutionen des Königreichs. Philipp V. gewährte Piombino im Zuge seines Modernisierungsdrangs das Privileg, die Fabrik zu errichten – und verbot 20 Jahre lang jedem anderen, Papier ins Königreich Galicien einzuführen oder eine weitere Fabrik zu gründen. Später war der Pazo Arsenal im Krieg gegen die Franzosen und Sommerresidenz König Alfons XIII.; zu seinen für die Zeit innovativen Lösungen gehören die vegetative Dachdeckung der Papierfabrik und der erste Industriestaudamm. Die geweihte Kapelle von 1727 birgt ein Retabel von Meister José Gambino, einem der Bildhauer der Kathedrale von Santiago. Auf dem Gelände stehen zwei Cruceiros – eines davon das höchste des ganzen Camino Portugués.</p>
+                <p>Und direkt daneben schließt sich der mythologische Kreis: Der Pazo liegt neben dem Castro der Königin Lupa, dem Castro Lupario, einem Ort der Legende. Königin Lupa ist die heidnische Herrscherin der Traslatio-Erzählung, die die Jünger mit wilden Stieren in die Falle schicken wollte — und deren Stiere sich nach dem Kreuzzeichen zahm vor den Karren mit dem Apostel spannten. Du gehst am Schauplatz der Legende vorbei, kurz bevor du an ihrem Ziel ankommst.</p>
+                <h3>O Milladoiro — der Ortsname ist eine Anleitung</h3>
+                <p>Die verbreitetste Bedeutung des galicischen Substantivs <em>milladoiro</em> bezeichnet einen Steinhaufen, der durch die aufeinanderfolgenden Beiträge von Wanderern und Pilgern an Wegen und Kultstätten entsteht – ein Brauch, der in Galicien und im Nordwesten der Halbinsel seit langem belegt ist und als eines der traditionellen Elemente des Jakobswegs gilt. Auf den Haufen wurde ein Kreuz aus Stein oder Holz gesetzt. Eine zweite Deutung: Es war der Ort, an dem die Pilger niederknieten, als sie die Kathedrale zum ersten Mal sahen – daher „humilladoiro", von <em>humiliare</em>, sich erniedrigen. Eine dritte: „milladoiro" sei eine alte Form von <em>miradoiro</em>, Aussichtspunkt – und Milladoiros Oberstadt blickt tatsächlich auf die Kathedrale und einen großen Teil der Stadt.</p>
+                <p>Als Antón Seoane und Rodrigo Romaní Ende der 1970er einen Namen für ihre galicische Folkgruppe brauchten, wählten sie „Milladoiro", weil diese Steinhaufen für sie stille Zeugen einer Zeit waren, in der Einflüsse aus ganz mittelalterlichem Europa hierher kamen.</p>
+                <p class="story-tip">👉 Konkreter Vorschlag: Nimm morgens in Padrón einen Kieselstein auf und lege ihn hier ab. Das ist der älteste Ritus des Weges, und heute Abend ist der letzte Moment dafür.</p>
+            </div>
+        </section>
+
+        <section class="gl-day" id="gl-day14">
+            <h2 data-i18n="gl.day14.title">Tag 14 · Ziel: O Milladoiro → Santiago de Compostela (~7 km)</h2>
+            <div data-i18n-html="gl.day14.body">
+                <p>Der Einzug erfolgt über die alte Brücke am Sar und die Rúa do Sar, vorbei an der Colexiata de Santa María a Real do Sar (12. Jh.) — bekannt für ihre dramatisch nach außen geneigten Säulen, die im 18. Jahrhundert mit mächtigen Strebebögen abgefangen wurden. Es sieht aus wie ein Fehler und ist eine Rettung.</p>
+                <p>Dann Porta Faxeira, Alameda (die Postkartenansicht) und die Praza do Obradoiro. Der Name ist wörtlich zu nehmen: <em>obradoiro</em> heißt Werkstatt — nach der Steinmetzwerkstatt, die während des Bauens der Barockfassade auf diesem Platz stand.</p>
+                <h3>Der Pórtico da Gloria</h3>
+                <p>Von Meister Mateo existieren nur zwei zeitgenössische Zeugnisse: die Urkunde über eine Leibrente Ferdinands II. vom 23. Februar 1168 und die Inschrift auf den Türstürzen des Pórtico vom 1. April 1188, in der festgehalten ist, dass Mateo das Werk „von den Fundamenten an" leitete. Sonst bleibt eine der Schlüsselfiguren der Kunstgeschichte rätselhaft. Die Westfassade wurde 1188 vollendet – von Mateo in nur zwanzig Jahren geschaffen, mit über 200 Granitfiguren, wie sie nie zuvor so lebendig dargestellt worden waren. Was Mateo von anderen romanischen Bildhauern unterscheidet, ist die Individualisierung der Gesichter: Jede Figur hat eigene Züge, Gesten und Blicke, die miteinander zu sprechen scheinen – für Kunsthistoriker ein Meilenstein ohne Vorbild in mittelalterlichem Stein.</p>
+                <p>Und er war bunt. Der Pórtico war vollständig polychrom; von der Fassung des 13. Jahrhunderts stechen zwei Farben hervor: Lapislazuli-Blau und Blattgold, dazu Grün und Rot bei einzelnen Figuren – insgesamt wurden bis zu drei komplette Farbschichten identifiziert. Ein zehnjähriges Restaurierungsprojekt, an dem Spezialisten der renommiertesten Universitäten mitwirkten und das die Fundación Barrié finanzierte, holte Schnitzwerk und Originaltöne zurück; im Juli 2018 wurde die Wiederherstellung eingeweiht. Zuvor musste die Feuchtigkeit beseitigt werden, die sowohl über das Kathedralendach als über die Obradoiro-Fassade eindrang.</p>
+                <p>Zwei Rituale, die du nur noch anschauen darfst: Traditionell legten die Pilger bei der Ankunft die Hand in eine Vertiefung des Mittelpfeilers, die von so vielen Händen im Lauf der Geschichte schon verformt war – eine Gebärde, die zeigte, dass man Teil der Nachfolge Christi werden wollte. Aus Konservierungsgründen ist das heute nicht mehr erlaubt. Hinter dem Pfeiler kniet die Figur des „Santo dos Croques", des Heiligen der Kopfstöße – der Überlieferung nach Meister Mateo selbst. Die Legende erzählt, der Erzbischof habe Mateo streng gerügt, weil er sich selbst zur Rechten Christi in Stein gesetzt hatte – Mangel an Demut – und ihn gezwungen, sich auf die Rückseite zu versetzen.</p>
+                <p class="story-tip">⚠️ Reservieren, sonst stehst du davor. Der Pórtico braucht ein Ticket: 12 € normal, 10 € reduziert – unter anderem für akkreditierte Pilger. Enthalten sind eine App mit Erklärungen, das Kathedralenmuseum, der Pazo de Xelmírez und das Museum der Kollegiatkirche von Sar. Es gibt außerdem kostenlose Nachmittagstickets, die aber nur mit sieben Tagen Vorlauf erhältlich sind und schnell weg sind.</p>
+                <h3>Rest des Tages</h3>
+                <p>Pilgerbüro (Rúa das Carretas 33) für die Compostela, Pilgermesse 12:00 (Botafumeiro nicht garantiert — er schwingt an bestimmten Festtagen oder wenn eine Gruppe ihn bezahlt), Mercado de Abastos (Meeresfrüchte kaufen, nebenan zubereiten lassen), Praza da Quintana am Abend, und der Blick vom Paseo da Ferradura in der Alameda.</p>
+                <p>Und wenn du Manuel I. nacheifern willst: Der portugiesische König pilgerte 1502 von Lissabon nach Santiago und verfügte als Erinnerung an seinen Aufenthalt, dass eine Lampe den Kathedralenraum Tag und Nacht erleuchten solle, wofür er eine jährliche Rente stiftete. Du kommst mit weniger aus.</p>
+            </div>
+        </section>
+
+        <div class="gl-outro">
+            <h2 data-i18n="gl.essen.title">Was du essen und trinken solltest</h2>
+            <div data-i18n-html="gl.essen.body">
+                <p><strong>Portugal:</strong> caldo verde, bacalhau in allen Varianten, broa (Maisbrot), Vinho Verde in Ponte de Lima, arroz de pato im Minho.</p>
+                <p><strong>Galicien:</strong> Austern in Arcade, pulpo á feira, empanada, Padrón-Paprika, Albariño aus den Rías Baixas (du läufst durch das Anbaugebiet), tarta de Santiago mit Mandeln und dem Jakobskreuz aus Puderzucker, licor café zum Abschluss.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p data-i18n="footer.rights">&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
+        <p><a href="index.html">barvenko.de</a></p>
+    </footer>
+
+    <a href="#top" class="back-to-top" data-i18n-aria-label="footer.top" aria-label="Nach oben">↑</a>
+
+    <script>
+        const toggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        toggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            toggle.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                toggle.classList.remove('active');
+            });
+        });
+        const navbar = document.querySelector('.navbar');
+        const onScroll = () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+            document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
+        };
+        window.addEventListener('scroll', onScroll);
+        onScroll();
+    </script>
+
+</body>
+</html>
