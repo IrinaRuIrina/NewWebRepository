@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Endgültige Packliste — Camino Portugués | Barvenko</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="i18n-jakobsweg.js"></script>
+    <script src="i18n.js"></script>
+    <style>
+        :root { --accent: #8a5a38; --accent-dark: #6b452b; --line: #e3ddd5; --text: #33302c; --text-soft: #45413b; }
+        body { font-weight: 400; color: var(--text); }
+
+        .pf-back {
+            position: fixed; top: 84px; left: 1rem; z-index: 15;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: rgba(255,255,255,0.92); color: var(--accent-dark);
+            padding: 0.6rem 1.1rem; border-radius: 999px; text-decoration: none;
+            font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 14px rgba(60,45,25,0.25);
+        }
+        .pf-back:hover { background: #fff; opacity: 1; }
+        .pf-back .arrow { font-size: 1.1rem; line-height: 1; }
+        @media (max-width: 700px) { .pf-back { top: 70px; } }
+
+        .pf-hero {
+            min-height: 34vh; display: flex; align-items: center; justify-content: center; text-align: center;
+            color: #fff; padding: 7rem 1.5rem 3rem; position: relative;
+            background: linear-gradient(135deg, rgba(70,50,35,0.72), rgba(120,90,60,0.55)), url('images/jakobsweg/deko-bergpfad.png');
+            background-size: cover; background-position: center 30%;
+        }
+        .pf-hero .kicker { font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.9; margin-bottom: 1rem; }
+        .pf-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.9rem, 4.5vw, 3rem); letter-spacing: 0.02em; line-height: 1.25; }
+        .pf-hero .sub { margin-top: 0.8rem; font-size: 0.95rem; opacity: 0.9; }
+
+        .pf-wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+
+        .pf-section { margin-bottom: 3rem; }
+        .pf-section h2 { font-size: 1.5rem; color: var(--accent-dark); margin-bottom: 0.3rem; }
+        .pf-section .pf-h2-sub { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; }
+
+        .guide-table-wrap { overflow-x: auto; margin: 0; }
+        table.guide-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; min-width: 420px; color: var(--text); }
+        table.guide-table th, table.guide-table td { text-align: left; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--line); }
+        table.guide-table th { background: #eae5de; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; font-size: 0.74rem; color: var(--text); }
+        table.guide-table td:last-child, table.guide-table th:last-child { text-align: right; white-space: nowrap; }
+        table.guide-table tr:hover td { background: #faf7f3; }
+        table.guide-table tr.pf-sum td { font-weight: 600; background: #f5efe7; }
+        table.guide-table tr.pf-total td { font-weight: 700; background: #eae5de; }
+
+        .pf-note { font-size: 0.9rem; color: var(--text-soft); text-align: center; margin-top: 1rem; font-style: italic; }
+        .pf-body-note { font-size: 0.85rem; color: #6a655d; margin: -0.6rem 0 1rem; }
+
+        .pf-list { list-style: none; margin: 0; padding: 0; }
+        .pf-list li { position: relative; padding: 0.5rem 0.85rem 0.5rem 1.6rem; border-bottom: 1px solid var(--line); font-size: 0.94rem; color: var(--text); }
+        .pf-list li::before { content: "🐚"; position: absolute; left: 0.15rem; font-size: 0.75rem; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="index.html#hero" class="nav-logo">BARVENKO</a>
+        <div class="nav-links">
+            <a href="index.html#about" data-i18n="nav.about">Über mich</a>
+            <a href="index.html#gallery" data-i18n="nav.gallery">Galerie</a>
+            <a href="index.html#adventures" data-i18n="nav.adventures">Abenteuer</a>
+            <a href="jakobsweg.html#toc" data-i18n="nav.jakobsweg">Reiseführer</a>
+            <a href="index.html#contact" data-i18n="nav.contact">Kontakt</a>
+            <div class="lang-switch">
+                <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
+                <button data-lang="en" onclick="I18N_setLang('en')">EN</button>
+                <button data-lang="ru" onclick="I18N_setLang('ru')">RU</button>
+            </div>
+        </div>
+        <button class="nav-toggle" data-i18n-aria-label="nav.toggle" aria-label="Menü öffnen">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <a href="jakobsweg.html#packliste" class="pf-back"><span class="arrow">←</span> <span>Zurück zur Packliste</span></a>
+
+    <header class="pf-hero">
+        <div>
+            <p class="kicker">Caminho Português Central · Porto → Santiago · 2.–14.09.</p>
+            <h1>Meine endgültige Packliste</h1>
+            <p class="sub">Körpergewicht 52 kg · Rucksack deuter Trail 28 SL</p>
+        </div>
+    </header>
+
+    <div class="pf-wrap">
+
+        <div class="pf-section">
+            <h2>Am Körper / in der Hand</h2>
+            <div class="guide-table-wrap">
+            <table class="guide-table">
+                <tr><th>Artikel</th><th>g</th></tr>
+                <tr><td>New Balance Nitrel V6 + Einlagen</td><td>495</td></tr>
+                <tr><td>Funktions-Shirt Nr. 1</td><td>130</td></tr>
+                <tr><td>Leichte Synthetik-Kurzhose Nr. 1</td><td>150</td></tr>
+                <tr><td>Juclise Bambus Kompressionssocken (1 Paar)</td><td>90</td></tr>
+                <tr><td>Sonnenhut</td><td>90</td></tr>
+                <tr><td>Sonnenbrille</td><td>30</td></tr>
+                <tr><td>AXTOP Hüfttasche</td><td>105</td></tr>
+                <tr><td>Smartphone</td><td>265</td></tr>
+                <tr class="pf-sum"><td>Summe am Körper</td><td>1.375</td></tr>
+                <tr><td>Trekkingstöcke</td><td>in der Hand</td></tr>
+            </table>
+            </div>
+        </div>
+
+        <div class="pf-section">
+            <h2>Im Rucksack</h2>
+            <div class="guide-table-wrap">
+            <table class="guide-table">
+                <tr><th>Artikel</th><th>g</th></tr>
+                <tr><td>Camper K200958 Match Sandalen</td><td>381</td></tr>
+                <tr><td>Aomig Flip Flops faltbar (Dusche)</td><td>140</td></tr>
+                <tr><td>Juclise Bambus Kompressionssocken (1 Paar)</td><td>90</td></tr>
+                <tr><td>Rahhint Coolmax Laufsocken kurz (3 Paar)</td><td>240</td></tr>
+                <tr><td>Funktions-Shirt Nr. 2</td><td>130</td></tr>
+                <tr><td>Leichte Synthetik-Kurzhose Nr. 2</td><td>150</td></tr>
+                <tr><td>Odlo Merino 200 Thermo-Leggings 3/4 (Abend + Schlaf)</td><td>250</td></tr>
+                <tr><td>Fleece-/Daunenjacke</td><td>285</td></tr>
+                <tr><td>myMo ATHLSR Regenjacke</td><td>350 </td></tr>
+                <tr><td>Rucksack-Regenhülle</td><td>80</td></tr>
+                <tr><td>Unterwäsche (3 Stück)</td><td>60</td></tr>
+                <tr><td>Backpacker's Journey Hüttenschlafsack (Baumwolle)</td><td>265</td></tr>
+                <tr><td>Ohrstöpsel + Schlafmaske</td><td>40</td></tr>
+                <tr><td>Blukar LED Stirnlampe aufladbar</td><td>84</td></tr>
+                <tr><td>Flintronic Trinkblase 1,5 L (leer)</td><td>120</td></tr>
+                <tr><td>Faltflasche 0,5 L</td><td>30</td></tr>
+                <tr><td>Kulturtasche (Detail unten)</td><td>400</td></tr>
+                <tr><td>Apotheke (Detail unten)</td><td>300</td></tr>
+                <tr><td>Kühltasche + 2 Kühlakkus</td><td>240</td></tr>
+                <tr><td>NIU Ultra Mini Powerbank 10.000 mAh 45 W</td><td>160</td></tr>
+                <tr><td>USB-C-Kabel + kleines Netzteil</td><td>90</td></tr>
+                <tr><td>Wäscheleine + 6 Sicherheitsnadeln</td><td>40</td></tr>
+                <tr><td>Müllbeutel als Innenfutter</td><td>30</td></tr>
+                <tr><td>Mückenspray klein</td><td>30</td></tr>
+                <tr><td>Perso, Pilgerpass, EHIC, Bargeld, Kreditkarte, Pilgermuschel</td><td>120</td></tr>
+                <tr class="pf-sum"><td>Inhalt</td><td>4.105</td></tr>
+            </table>
+            </div>
+        </div>
+
+        <div class="pf-section">
+            <h2>Gesamtbilanz</h2>
+            <div class="guide-table-wrap">
+            <table class="guide-table">
+                <tr><th></th><th>g</th></tr>
+                <tr><td>Inhalt</td><td>4.105</td></tr>
+                <tr><td>deuter Trail 28 SL</td><td>1.070</td></tr>
+                <tr><td>1 L Wasser</td><td>1.000</td></tr>
+                <tr class="pf-sum"><td>Auf dem Rücken</td><td>6.175</td></tr>
+                <tr><td>An der Hüfte (Hüfttasche + Handy)</td><td>370</td></tr>
+                <tr><td>Am Körper (Kleidung, Schuhe, Hut, Brille)</td><td>1.005</td></tr>
+                <tr class="pf-total"><td>Getragen insgesamt</td><td>7.550</td></tr>
+            </table>
+            </div>
+            <p class="pf-note">Auf dem Rücken: 11,9 % deines Körpergewichts.</p>
+        </div>
+
+        <div class="pf-section">
+            <h2>Kulturtasche</h2>
+            <p class="pf-body-note">400 g</p>
+            <div class="guide-table-wrap">
+            <table class="guide-table">
+                <tr><th>Artikel</th><th>g</th></tr>
+                <tr><td>Fester Shampoo-Riegel (Haare + Körper + Wäsche)</td><td>60</td></tr>
+                <tr><td>Sonnencreme LSF 50 in 50 ml</td><td>60</td></tr>
+                <tr><td>Mikrofaser-Handtuch 40 × 80</td><td>80</td></tr>
+                <tr><td>Zahnbürste (gekürzt) + Mini-Zahnpasta</td><td>30</td></tr>
+                <tr><td>Mini-Deo</td><td>30</td></tr>
+                <tr><td>Kontaktlinsenlösung kleinste Flasche + Behälter</td><td>80</td></tr>
+                <tr><td>Nagelfeile, Haargummi, Zip-Beutel</td><td>30</td></tr>
+            </table>
+            </div>
+        </div>
+
+        <div class="pf-section">
+            <h2>Apotheke</h2>
+            <p class="pf-body-note">300 g</p>
+            <ul class="pf-list">
+                <li>Blasenpflaster</li>
+                <li>Leukotape </li>
+                <li>Knie-Tapes</li>
+                <li>Herpespflaster</li>
+                <li>Schmerzmittel</li>
+                <li>Mini-Erste-Hilfe</li>
+                <li>Elektrolyt-/Magnesiumtabletten</li>
+                <li>Persönliche Medikamente</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p data-i18n="footer.rights">&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
+        <p><a href="index.html">barvenko.de</a></p>
+    </footer>
+
+    <a href="#top" class="back-to-top" data-i18n-aria-label="footer.top" aria-label="Nach oben">↑</a>
+
+    <script>
+        const toggle = document.querySelector('.nav-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        toggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            toggle.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                toggle.classList.remove('active');
+            });
+        });
+        const navbar = document.querySelector('.navbar');
+        const onScroll = () => {
+            navbar.classList.toggle('scrolled', window.scrollY > 50);
+            document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
+        };
+        window.addEventListener('scroll', onScroll);
+        onScroll();
+    </script>
+
+</body>
+</html>
