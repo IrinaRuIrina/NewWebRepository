@@ -17,6 +17,10 @@
         /* Kräftigere, besser lesbare Grundschrift nur auf dieser Seite */
         body { font-weight: 400; color: var(--text); }
 
+        /* Besser lesbares Menü über dem Hero-Foto */
+        .navbar:not(.scrolled) { background: linear-gradient(to bottom, rgba(35,25,15,0.55), rgba(35,25,15,0)); }
+        .navbar:not(.scrolled) .nav-links a { text-shadow: 0 1px 4px rgba(0,0,0,0.4); }
+
         .guide-hero {
             position: relative;
             min-height: 70vh;
@@ -97,18 +101,25 @@
             gap: 0.8rem;
         }
         .guide-toc-grid a {
-            display: block;
+            display: flex;
+            align-items: center;
             background: #fff;
             border: 1px solid var(--line);
             padding: 1rem 1.2rem;
-            font-size: 0.95rem;
-            font-weight: 500;
+            font-size: 1rem;
+            font-weight: 600;
             color: var(--text);
-            letter-spacing: 0.02em;
+            letter-spacing: 0.01em;
             transition: all 0.3s ease;
         }
         .guide-toc-grid a:hover { border-color: var(--accent); opacity: 1; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.06); }
-        .guide-toc-grid a span { color: var(--accent); font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; margin-right: 0.5rem; }
+        .guide-toc-grid a span:first-child {
+            flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 1.9rem; height: 1.9rem; margin-right: 0.8rem;
+            border-radius: 50%; background: var(--accent); color: #fff;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0;
+        }
 
         .guide-section { padding: 4.5rem 0; border-bottom: 1px solid var(--line); }
         .guide-section h2 {
@@ -180,7 +191,8 @@
         .back-to-top, .scroll-to-bottom {
             width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
             background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+            font-family: 'Montserrat', sans-serif; font-size: 1.5rem; line-height: 1; text-decoration: none;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
             box-shadow: 0 6px 18px rgba(0,0,0,0.2);
         }
         .back-to-top.show, .scroll-to-bottom.show { opacity: 1; pointer-events: auto; }
@@ -196,12 +208,14 @@
         .img-source { font-size: 0.72rem; color: #948c7d; margin: -0.9rem 0 0.8rem; }
         .img-source a { color: #948c7d; text-decoration: underline; }
 
-        .packliste-final-link { text-align: center; margin-top: 0.5rem; }
+        .packliste-final-link { text-align: center; margin-top: 1rem; }
         .packliste-final-link a {
-            font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.05rem;
-            color: var(--accent-dark); text-decoration: none; border-bottom: 1px solid transparent;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            border: 1px solid var(--accent); background: transparent; color: var(--accent-dark);
+            font-weight: 500; padding: 0.65rem 1.3rem; border-radius: 30px; font-size: 0.92rem;
+            letter-spacing: 0.02em; text-decoration: none; transition: all 0.3s ease;
         }
-        .packliste-final-link a:hover { opacity: 1; border-bottom-color: var(--accent); }
+        .packliste-final-link a:hover { background: var(--accent); color: #fff; opacity: 1; }
     </style>
 
 </head>
@@ -215,6 +229,7 @@
             <a href="index.html#gallery" data-i18n="nav.gallery">Galerie</a>
             <a href="index.html#adventures" data-i18n="nav.adventures">Abenteuer</a>
             <a href="#toc" data-i18n="nav.jakobsweg">Reiseführer</a>
+            <a href="tagebuch.html">🐚 <span data-i18n="toc.diary">Live-Tagebuch</span></a>
             <a href="index.html#contact" data-i18n="nav.contact">Kontakt</a>
             <div class="lang-switch">
                 <button data-lang="de" onclick="I18N_setLang('de')">DE</button>
@@ -246,15 +261,12 @@
     <section id="toc" class="guide-toc">
         <h2 data-i18n="toc.title">Inhalt</h2>
         <div class="guide-toc-grid">
-            <a href="tagebuch.html"><span>🐚</span><span data-i18n="toc.diary">Live-Tagebuch</span></a>
-            <a href="#gesamtroute"><span>01</span><span data-i18n="toc.item1">Gesamtroute &amp; Überblick</span></a>
-            <a href="#etappen"><span>02</span><span data-i18n="toc.item2">Die 13 Etappen</span></a>
-            <a href="#uebernachtungen"><span>03</span><span data-i18n="toc.item3">Meine Übernachtungen</span></a>
-            <a href="#karten"><span>04</span><span data-i18n="toc.item4">Karten</span></a>
-            <a href="#packliste"><span>05</span><span data-i18n="toc.item5">Meine Packliste</span></a>
-            <a href="#kosten"><span>06</span><span data-i18n="toc.item6">Kostenübersicht</span></a>
-            <a href="#sicherheit"><span>07</span><span data-i18n="toc.item7">Sicherheit</span></a>
-            <a href="#quellen"><span>08</span><span data-i18n="toc.item8">Quellen &amp; Hinweise</span></a>
+            <a href="#gesamtroute"><span>01</span><span data-i18n="toc.item1">Gesamtroute &amp; Etappen</span></a>
+            <a href="#uebernachtungen"><span>02</span><span data-i18n="toc.item3">Meine Übernachtungen</span></a>
+            <a href="#karten"><span>03</span><span data-i18n="toc.item4">Karten</span></a>
+            <a href="#packliste"><span>04</span><span data-i18n="toc.item5">Meine Packliste</span></a>
+            <a href="#kosten"><span>05</span><span data-i18n="toc.item6merged">Kosten &amp; Sicherheit</span></a>
+            <a href="#quellen"><span>06</span><span data-i18n="toc.item8">Quellen &amp; Hinweise</span></a>
         </div>
     </section>
 
@@ -803,7 +815,7 @@
     <!-- CTA -->
     <section class="guide-cta">
         <h2 style="font-size:clamp(1.8rem,4vw,2.6rem)" data-i18n="cta.title">Bereit für den Weg?</h2>
-        <p style="color:#555;max-width:520px;margin:0.8rem auto 0" data-i18n="cta.text">Buen Camino! Zurück zur Startseite oder direkt zu weiteren Abenteuern.</p>
+        <p style="color:#555;max-width:520px;margin:0.8rem auto 0" data-i18n="cta.text">Buen Camino!</p>
         <a href="index.html#adventures" class="btn" data-i18n="cta.btn">Zurück zu den Abenteuern</a>
     </section>
 

@@ -19,7 +19,7 @@ window.I18N = {
         "pf.th.gramm": "g",
 
         "pf.h2.koerper": "Am Körper / in der Hand",
-        "pf.koerper.1": "New Balance Nitrel V6 + Einlagen",
+        "pf.koerper.1": "New Balance Nitrel V6 + Einlagen CURREX RunPro Dynamische Einlegesohle",
         "pf.koerper.2": "Funktions-Shirt Nr. 1",
         "pf.koerper.3": "Leichte Synthetik-Kurzhose Nr. 1",
         "pf.koerper.4": "Juclise Bambus Kompressionssocken (1 Paar)",
@@ -109,7 +109,7 @@ window.I18N = {
         "pf.th.gramm": "g",
 
         "pf.h2.koerper": "On the body / in hand",
-        "pf.koerper.1": "New Balance Nitrel V6 + insoles",
+        "pf.koerper.1": "New Balance Nitrel V6 + CURREX RunPro Dynamic insoles",
         "pf.koerper.2": "Technical shirt no. 1",
         "pf.koerper.3": "Lightweight synthetic shorts no. 1",
         "pf.koerper.4": "Juclise bamboo compression socks (1 pair)",
@@ -199,7 +199,7 @@ window.I18N = {
         "pf.th.gramm": "г",
 
         "pf.h2.koerper": "На теле / в руке",
-        "pf.koerper.1": "Кроссовки New Balance Nitrel V6 + стельки",
+        "pf.koerper.1": "Кроссовки New Balance Nitrel V6 + стельки CURREX RunPro Dynamic",
         "pf.koerper.2": "Функциональная футболка №1",
         "pf.koerper.3": "Лёгкие синтетические шорты №1",
         "pf.koerper.4": "Бамбуковые компрессионные носки Juclise (1 пара)",
