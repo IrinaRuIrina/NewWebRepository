@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
     <script src="i18n-jakobsweg.js"></script>
     <script src="i18n.js"></script>
     <style>
@@ -208,6 +209,13 @@
         .img-source { font-size: 0.72rem; color: #948c7d; margin: -0.9rem 0 0.8rem; }
         .img-source a { color: #948c7d; text-decoration: underline; }
 
+        .camino-map { width: 100%; height: 460px; border-radius: 8px; border: 1px solid var(--line); margin: 1.5rem 0 0.8rem; background: #eae5de; }
+        @media (max-width: 700px) { .camino-map { height: 340px; } }
+        .camino-map-credit { font-size: 0.78rem; color: #948c7d; margin: 0 0 0.5rem; }
+        .camino-map-credit a { color: #948c7d; text-decoration: underline; }
+        .leaflet-popup-content { font-family: 'Montserrat', sans-serif; font-size: 0.85rem; line-height: 1.5; }
+        .leaflet-popup-content strong { color: var(--accent-dark); }
+
         .packliste-final-link { text-align: center; margin-top: 1rem; }
         .packliste-final-link a {
             display: inline-flex; align-items: center; gap: 0.4rem;
@@ -248,10 +256,10 @@
         <div class="guide-hero-content">
             <p class="kicker" data-i18n="hero.kicker">Pilger-Reiseführer</p>
             <h1 data-i18n-html="hero.title">Jakobsweg<br>Camino Portugués</h1>
-            <p class="lead" data-i18n-html="hero.lead">Die klassische <strong>Zentralroute</strong> von Porto nach Santiago de Compostela — 13 Etappen, Tag für Tag geplant. Ich bin Einsteigerin und laufe so gut wie nie lange Distanzen, bin aber dank Tanzen und ein paar anderen Aktivitäten ziemlich fit. Ich gehe vom 02. bis 14. September 2026 · ≈ 260 km.</p>
+            <p class="lead" data-i18n-html="hero.lead">Die klassische <strong>Zentralroute</strong> von Porto nach Santiago de Compostela — 13 Etappen, Tag für Tag geplant. Ich bin Einsteigerin und laufe so gut wie nie lange Distanzen, bin aber dank Tanzen und ein paar anderen Aktivitäten ziemlich fit. Ich gehe vom 02. bis 14. September 2026 · ≈ 245 km.</p>
             <div class="guide-badges">
                 <span class="guide-badge" data-i18n="hero.badge1">13 Etappen</span>
-                <span class="guide-badge">≈ 260 km</span>
+                <span class="guide-badge">≈ 245 km</span>
                 <span class="guide-badge">Porto → Santiago</span>
             </div>
             <a href="tagebuch.html" class="guide-diary-link" data-i18n="hero.diaryLink">🐚 Live-Tagebuch mitlesen</a>
@@ -283,9 +291,9 @@
             <tr><th data-i18n="gesamtroute.th.kennzahl">Kennzahl</th><th data-i18n="gesamtroute.th.wert">Wert</th></tr>
             <tr><td data-i18n="gesamtroute.row.start">Start</td><td>Kathedrale Porto (Sé), Portugal</td></tr>
             <tr><td data-i18n="gesamtroute.row.ziel">Ziel</td><td>Kathedrale Santiago de Compostela, Galicien</td></tr>
-            <tr><td data-i18n="gesamtroute.row.gesamtlaenge">Gesamtlänge</td><td data-i18n="gesamtroute.val.gesamtlaenge">≈ 260 km (je nach Messung)</td></tr>
+            <tr><td data-i18n="gesamtroute.row.gesamtlaenge">Gesamtlänge</td><td data-i18n="gesamtroute.val.gesamtlaenge">≈ 245 km (aus den GPS-Tracks gemessen, ohne Busabschnitt Tag 1)</td></tr>
             <tr><td data-i18n="gesamtroute.row.etappen">Etappen</td><td data-i18n="gesamtroute.val.etappen">13 Etappen (02.–14.09.2026), Anreisetag 01.09.</td></tr>
-            <tr><td data-i18n="gesamtroute.row.tagesdistanz">Ø Tagesdistanz</td><td>≈ 20 km</td></tr>
+            <tr><td data-i18n="gesamtroute.row.tagesdistanz">Ø Tagesdistanz</td><td>≈ 18,8 km</td></tr>
         </table>
         </div>
 
@@ -317,7 +325,7 @@
             <summary>
                 <span class="day-num">2</span>
                 <span class="day-title"><strong>Porto → Vairão</strong><span>02.09.2026</span></span>
-                <span class="day-meta"><span class="chip">≈ 22 km</span><span class="chip" data-i18n="etappenuebersicht.ca6h">ca. 6 h</span><span class="chip">+200 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">≈ 15,5 km</span><span class="chip" data-i18n="etappenuebersicht.ca6h">ca. 6 h</span><span class="chip">+200 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="day2.h4.hinweg">Hinweg zur Kathedrale</h4>
@@ -346,20 +354,20 @@
         <details class="stage">
             <summary>
                 <span class="day-num">3</span>
-                <span class="day-title"><strong>Vairão → Barcelos</strong><span>03.09.2026</span></span>
-                <span class="day-meta"><span class="chip">23 km</span><span class="chip">5,75 h</span><span class="chip">+210 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-title"><strong>Vairão → Pedra Furada</strong><span>03.09.2026</span></span>
+                <span class="day-meta"><span class="chip">19,9 km</span><span class="chip">5,75 h</span><span class="chip">+210 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
-                <p data-i18n="day3.streckeText">Ein langer, aber flacher Tag durch typische Minho-Landschaft: Maisfelder, Weinreben (Vinho Verde), Waldstücke. Nach gut der Hälfte erreichst du das mittelalterliche Rates mit einer der bedeutendsten romanischen Kirchen Nordportugals — guter Ort für eine Pause. Weiter geht's ins lebendige Barcelos am Fluss Cávado, eine der charmantesten Städte der Route. Der 03.09.2026 ist ein Donnerstag: großer Wochenmarkt!</p>
-                <img src="images/jakobsweg/Day3.png" alt="Unterkunft Tag 3 in Barcelinhos" class="stage-img">
+                <p data-i18n="day3.streckeText">Ein langer, aber flacher Tag durch typische Minho-Landschaft: Maisfelder, Weinreben (Vinho Verde), Waldstücke. Nach gut der Hälfte erreichst du das mittelalterliche Rates mit einer der bedeutendsten romanischen Kirchen Nordportugals — guter Ort für eine Pause. Weiter geht's am Fluss Cávado entlang bis Pedra Furada, ein kleiner, ruhiger Ort mit guter Pilgerherberge — Barcelos selbst folgt erst am nächsten Tag.</p>
+                <img src="images/jakobsweg/Day3.png" alt="Unterkunft Tag 3 in Pedra Furada" class="stage-img">
                 <p class="img-source"><span data-i18n="imgSource.prefix">Quelle:</span> <a href="https://maps.google.com" target="_blank" rel="noopener">Google Maps</a></p>
                 <h4 data-i18n="h4.highlights">Highlights</h4>
-                <ul><li data-i18n-html="day3.highlights1">⛪ Igreja de São Pedro de Rates (romanische Wallfahrtskirche, 11.–13. Jh., Nationaldenkmal)</li><li data-i18n-html="day3.highlights2">🏛️ Mittelalterlicher Dorfkern, römische Spuren bei Alvarelhos</li><li data-i18n-html="day3.highlights3">🐓 Galo de Barcelos (Legende vom singenden Hahn, Stadtsymbol) &amp; Cruzeiro do Senhor do Galo</li><li data-i18n-html="day3.highlights4">🌉 Mittelalterliche Brücke über den Cávado · ⛪ Igreja Matriz (Barockkirche), Templo do Bom Jesus</li><li data-i18n-html="day3.highlights5">🛍️ Feira de Barcelos (donnerstags, berühmt für Keramik &amp; den bemalten Hahn)</li></ul>
+                <ul><li data-i18n-html="day3.highlights1">⛪ Igreja de São Pedro de Rates (romanische Wallfahrtskirche, 11.–13. Jh., Nationaldenkmal)</li><li data-i18n-html="day3.highlights2">🏛️ Mittelalterlicher Dorfkern, römische Spuren bei Alvarelhos</li><li data-i18n-html="day3.highlights3">🏫 Albergue O Palhuço in Pedra Furada — ehemalige Dorfschule, seit 2022 als Pilgerherberge restauriert</li></ul>
                 <h4 data-i18n="h4.versorgung">Versorgung</h4>
-                <ul><li data-i18n-html="day3.versorgung">☕ Bar in Arcos (km 6) &amp; Rates, viele Cafés in Barcelos · 🛒 Mini-Mercado in Rates, Pingo Doce/Continente/Lidl in Barcelos · 🏧 in Rates unzuverlässig, in Barcelos viele Automaten (aufstocken!) · 💊 Apotheken in Barcelos</li></ul>
+                <ul><li data-i18n-html="day3.versorgung">☕ Bar in Arcos (km 6) &amp; Rates · 🛒 Mini-Mercado in Rates · 🏧 in Rates unzuverlässig, nächste sichere Automaten erst am Folgetag in Barcelos · 💊 keine Apotheke unterwegs, nächste in Barcelos am Folgetag</li></ul>
                 <h4 data-i18n="h4.unterkunft">Unterkunft</h4>
-                <p data-i18n-html="day3.unterkunft"><a href="https://www.gronze.com/portugal/braga/barcelinhos/albergue-residencia-do-senhor-do-galo" target="_blank" rel="noopener">Albergue-Residência do Senhor do Galo</a>, Largo Guilherme Gomes Fernandes, Barcelinhos, 4755-060 — 10 €/Nacht, Schlafsaal. Links vor der Brücke, neben der Feuerwache. Tel. +351 253 833 304.</p>
+                <p data-i18n-html="day3.unterkunft"><a href="https://www.gronze.com/portugal/braga/pedra-furada/albergue-peregrinos-palhuco" target="_blank" rel="noopener">Albergue de Peregrinos O Palhuço</a>, Rua de Santa Leocádia 760, Pedra Furada — 10 €/Nacht, Schlafsaal (24 Plätze in 2 Zimmern), keine Reservierung möglich, Check-in 14:00–21:00 Uhr. Ehemalige Dorfschule, seit 2022 als Pilgerherberge genutzt. Tel. +351 252 954 331 / +351 935 608 425.</p>
                 <h4 data-i18n="h4.achtungTipp">Achtung &amp; Tipp</h4>
                 <ul><li data-i18n-html="day3.achtung">⚠️ Kein verlässlicher Geldautomat in Rates — Bargeld vorher ziehen!</li><li data-i18n-html="day3.tipp">💡 Längerer Tag nach dem sanften Start — Füße &amp; Blasen zwischendurch in Rates kontrollieren</li></ul>
                 <div class="external-links"><a href="https://www.gronze.com/etapa/sao-pedro-rates-barcelos" target="_blank" rel="noopener" data-i18n="link.etappeGronze">Etappe auf Gronze ↗</a></div>
@@ -370,18 +378,18 @@
         <details class="stage">
             <summary>
                 <span class="day-num">4</span>
-                <span class="day-title"><strong>Barcelos → Balugães (Casa Altamira)</strong><span>04.09.2026</span></span>
-                <span class="day-meta"><span class="chip">17 km</span><span class="chip">4,25 h</span><span class="chip">+230 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-title"><strong>Pedra Furada → Balugães (Casa Altamira)</strong><span>04.09.2026</span></span>
+                <span class="day-meta"><span class="chip">26,1 km</span><span class="chip">6,25 h</span><span class="chip">+230 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
-                <p data-i18n="day4.streckeText">Erste richtige Etappe durch sanft hügelige Agrarlandschaft: Weinreben, Mais, kleine Höfe, Kapellen. Leicht bergauf bis Balugães.</p>
+                <p data-i18n="day4.streckeText">Langer Tag: Erst weiter am Cávado entlang nach Barcelos, eine der charmantesten Städte der Route, dann durch sanft hügelige Agrarlandschaft (Weinreben, Mais, kleine Höfe, Kapellen) leicht bergauf bis Balugães.</p>
                 <img src="images/jakobsweg/Day4.png" alt="Unterkunft Tag 4 in Balugães" class="stage-img">
                 <p class="img-source"><span data-i18n="imgSource.prefix">Quelle:</span> <a href="https://maps.google.com" target="_blank" rel="noopener">Google Maps</a></p>
                 <h4 data-i18n="h4.highlights">Highlights</h4>
-                <ul><li data-i18n-html="day4.highlights">🌉 Barcelos-Brücke beim Start · ⛪ Wegkapellen &amp; Cruzeiros (kleine Andachtsstätten am Wegrand)</li></ul>
+                <ul><li data-i18n-html="day4.highlights1">🌉 Mittelalterliche Brücke über den Cávado nach Barcelinhos/Barcelos · 🐓 Galo de Barcelos (Legende vom singenden Hahn, Stadtsymbol) &amp; Cruzeiro do Senhor do Galo</li><li data-i18n-html="day4.highlights2">⛪ Igreja Matriz (Barockkirche), Templo do Bom Jesus · 🛍️ Feira de Barcelos (großer Wochenmarkt, donnerstags)</li><li data-i18n-html="day4.highlights3">⛪ Wegkapellen &amp; Cruzeiros (kleine Andachtsstätten am Wegrand) weiter Richtung Balugães</li></ul>
                 <h4 data-i18n="h4.versorgung">Versorgung</h4>
-                <ul><li data-i18n-html="day4.versorgung">☕ Bar in Vila Boa/Lijó · 🛒 in Barcelos Proviant kaufen (unterwegs wenig) · ⚠️ kein Automat unterwegs</li></ul>
+                <ul><li data-i18n-html="day4.versorgung">☕ Viele Cafés in Barcelos, danach Bar in Vila Boa/Lijó · 🛒 Pingo Doce/Continente/Lidl in Barcelos (hier einkaufen, danach wenig) · 🏧 viele Automaten in Barcelos (aufstocken!) · 💊 Apotheken in Barcelos · ⚠️ nach Barcelos kein Automat mehr unterwegs</li></ul>
                 <h4 data-i18n="h4.unterkunft">Unterkunft</h4>
                 <p data-i18n-html="day4.unterkunft"><a href="https://www.gronze.com/portugal/braga/balugaes/casa-altamira" target="_blank" rel="noopener">Casa Altamira</a>, Av. Nossa Senhora Aparecida 29, Balugães — Einzelzimmer 35 €, ca. 450 m vom Weg entfernt. Tel. +351 968 848 244 / +351 939 315 314.</p>
                 <h4 data-i18n="h4.achtungTipp">Achtung &amp; Tipp</h4>
@@ -395,7 +403,7 @@
             <summary>
                 <span class="day-num">5</span>
                 <span class="day-title"><strong>Balugães → Ponte de Lima</strong><span>05.09.2026</span></span>
-                <span class="day-meta"><span class="chip">16 km</span><span class="chip">4,0 h</span><span class="chip">+180 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">18,0 km</span><span class="chip">4,0 h</span><span class="chip">+180 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -419,7 +427,7 @@
             <summary>
                 <span class="day-num">6</span>
                 <span class="day-title"><strong>Ponte de Lima → Rubiães</strong><span data-i18n="day6.dateSub">06.09.2026 · Königsetappe</span></span>
-                <span class="day-meta"><span class="chip">18 km</span><span class="chip">5,0 h</span><span class="chip hard">+540 Hm</span><span class="chip hard">★★★</span></span>
+                <span class="day-meta"><span class="chip">19,3 km</span><span class="chip">5,0 h</span><span class="chip hard">+540 Hm</span><span class="chip hard">★★★</span></span>
             </summary>
             <div class="stage-body">
                 <div class="infobox warn" data-i18n-html="day6.warnInfobox"><strong>Die schwerste Etappe:</strong> Aufstieg über die Serra da Labruja zum Alto da Portela Grande (~410 m), danach steiler, felsiger Abstieg.</div>
@@ -444,7 +452,7 @@
             <summary>
                 <span class="day-num">7</span>
                 <span class="day-title"><strong>Rubiães → Tui 🇪🇸</strong><span data-i18n="day7.dateSub">07.09.2026 · Grenzübertritt</span></span>
-                <span class="day-meta"><span class="chip">19 km</span><span class="chip">4,75 h</span><span class="chip">+170 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">20,2 km</span><span class="chip">4,75 h</span><span class="chip">+170 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <div class="infobox warn" data-i18n-html="day7.warnInfobox"><strong>Grenze Portugal → Spanien!</strong> Uhr +1 Stunde vorstellen. Ab Tui beginnt der Compostela-Countdown (letzte ~115 km) — jetzt täglich min. 2 Stempel sammeln!</div>
@@ -469,7 +477,7 @@
             <summary>
                 <span class="day-num">8</span>
                 <span class="day-title"><strong>Tui → O Porriño</strong><span>08.09.2026</span></span>
-                <span class="day-meta"><span class="chip">18 km</span><span class="chip">4,5 h</span><span class="chip">+140 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">14,4 km</span><span class="chip">4,5 h</span><span class="chip">+140 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -493,7 +501,7 @@
             <summary>
                 <span class="day-num">9</span>
                 <span class="day-title"><strong>O Porriño → Redondela</strong><span>09.09.2026</span></span>
-                <span class="day-meta"><span class="chip">16 km</span><span class="chip">4,0 h</span><span class="chip">+260 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">19,5 km</span><span class="chip">4,0 h</span><span class="chip">+260 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -517,7 +525,7 @@
             <summary>
                 <span class="day-num">10</span>
                 <span class="day-title"><strong>Redondela → Pontevedra</strong><span>10.09.2026</span></span>
-                <span class="day-meta"><span class="chip">20 km</span><span class="chip">5,0 h</span><span class="chip">+330 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">22,0 km</span><span class="chip">5,0 h</span><span class="chip">+330 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -541,7 +549,7 @@
             <summary>
                 <span class="day-num">11</span>
                 <span class="day-title"><strong>Pontevedra → Caldas de Reis</strong><span>11.09.2026</span></span>
-                <span class="day-meta"><span class="chip">21 km</span><span class="chip">5,25 h</span><span class="chip">+290 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">24,5 km</span><span class="chip">5,25 h</span><span class="chip">+290 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -565,7 +573,7 @@
             <summary>
                 <span class="day-num">12</span>
                 <span class="day-title"><strong>Caldas de Reis → Padrón</strong><span>12.09.2026</span></span>
-                <span class="day-meta"><span class="chip">19 km</span><span class="chip">4,75 h</span><span class="chip">+260 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">19,7 km</span><span class="chip">4,75 h</span><span class="chip">+260 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -589,7 +597,7 @@
             <summary>
                 <span class="day-num">13</span>
                 <span class="day-title"><strong>Padrón → O Milladoiro</strong><span>13.09.2026</span></span>
-                <span class="day-meta"><span class="chip">16 km</span><span class="chip">4,0 h</span><span class="chip">+300 Hm</span><span class="chip">★★☆</span></span>
+                <span class="day-meta"><span class="chip">18,1 km</span><span class="chip">4,0 h</span><span class="chip">+300 Hm</span><span class="chip">★★☆</span></span>
             </summary>
             <div class="stage-body">
                 <h4 data-i18n="h4.strecke">Strecke</h4>
@@ -613,7 +621,7 @@
             <summary>
                 <span class="day-num">14</span>
                 <span class="day-title"><strong data-i18n="day14.title">O Milladoiro → Santiago de Compostela 🎉</strong><span data-i18n="day14.dateSub">14.09.2026 · ZIEL</span></span>
-                <span class="day-meta"><span class="chip">8 km</span><span class="chip">2,0 h</span><span class="chip">+120 Hm</span><span class="chip easy">★☆☆</span></span>
+                <span class="day-meta"><span class="chip">7,6 km</span><span class="chip">2,0 h</span><span class="chip">+120 Hm</span><span class="chip easy">★☆☆</span></span>
             </summary>
             <div class="stage-body">
                 <div class="infobox tip" data-i18n-html="day14.tipInfobox"><strong>Der Zieltag!</strong> Durch den Torbogen unter dem Pazo de Xelmírez trittst du auf die Praza do Obradoiro — vor die Kathedrale, das Grab des Apostels. Du hast es geschafft!</div>
@@ -667,9 +675,9 @@
                 <td><a class="book-link" href="https://maps.app.goo.gl/duF8pj2DaqumycH86" target="_blank" rel="noopener" data-i18n="link.karte">Karte ↗</a> · <a class="book-link" href="https://www.gronze.com/portugal/porto/vairao/albergue-peregrinos-do-mosteiro-vairao" target="_blank" rel="noopener">Gronze ↗</a></td>
             </tr>
             <tr>
-                <td>03.09</td><td>Barcelinhos</td>
-                <td><span class="book-note" data-i18n="uebernachtungen.n3">Albergue-Residência do Senhor do Galo — 10 €, Tel. +351 253 833 304</span></td>
-                <td><a class="book-link" href="https://maps.app.goo.gl/mXbYScPBVCCUssX86" target="_blank" rel="noopener" data-i18n="link.karte">Karte ↗</a> · <a class="book-link" href="https://www.gronze.com/portugal/braga/barcelinhos/albergue-residencia-do-senhor-do-galo" target="_blank" rel="noopener">Gronze ↗</a></td>
+                <td>03.09</td><td>Pedra Furada</td>
+                <td><span class="book-note" data-i18n="uebernachtungen.n3">Albergue de Peregrinos O Palhuço</span></td>
+                <td><a class="book-link" href="https://maps.app.goo.gl/h7Bw9H3T6c72CtyVA" target="_blank" rel="noopener" data-i18n="link.karte">Karte ↗</a> · <a class="book-link" href="https://www.gronze.com/portugal/braga/pedra-furada/albergue-peregrinos-palhuco" target="_blank" rel="noopener">Gronze ↗</a></td>
             </tr>
             <tr>
                 <td>04.09</td><td>Balugães</td>
@@ -734,8 +742,12 @@
     <!-- 4. Karten -->
     <section id="karten" class="guide-section">
         <h2 data-i18n="toc.item4">Karten</h2>
-        <p class="section-sub" data-i18n="karten.sub">Interaktiv &amp; druckfreundlich</p>
-        <p data-i18n="karten.text">Die beste kostenlose, interaktive Karte mit Route, Höhenprofilen &amp; Herbergen bietet Gronze.</p>
+        <p class="section-sub" data-i18n="karten.sub">Meine echte Route, Etappe für Etappe</p>
+        <p data-i18n="karten.text">Das ist die tatsächlich gelaufene GPS-Route meiner 13 Etappen — kein von Google vorgeschlagener Weg, sondern die echten Original-Tracks.</p>
+        <div id="camino-map" class="camino-map" role="img" aria-label="Karte der Camino-Route von Porto nach Santiago de Compostela"></div>
+        <p class="camino-map-credit" data-i18n-html="karten.trackCredit">GPS-Tracks: <a href="https://walkthecaminoportugues.com/planning/portuguese-camino-de-santiago/" target="_blank" rel="noopener">Kayla &amp; Bert-Jan, Walk The Camino Portugués</a> · <a href="https://www.google.com/maps/d/viewer?mid=1XH7KMGMs53i8ABvBa3Eb74Hq3wvYw4M" target="_blank" rel="noopener">Original-Karte auf Google My Maps ↗</a></p>
+        <p class="section-sub" data-i18n="karten.sub2" style="margin-top:2.5rem">Weitere Karte</p>
+        <p data-i18n="karten.text2">Die beste kostenlose Karte mit Höhenprofilen &amp; Herbergen bietet Gronze.</p>
         <div class="external-links">
             <a href="https://www.gronze.com/camino-portugues" target="_blank" rel="noopener" data-i18n="karten.link">Gesamtkarte (Gronze) ↗</a>
         </div>
@@ -860,6 +872,64 @@
         document.querySelector('.scroll-to-bottom').addEventListener('click', () => {
             window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         });
+    </script>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script>
+        (function () {
+            const mapEl = document.getElementById('camino-map');
+            if (!mapEl || !window.L) return;
+
+            const STAGE_COLORS = [
+                '#8a5a38', '#b5651d', '#6b8e23', '#2f6f6f', '#a4243b',
+                '#5c6b73', '#c08a2e', '#3c6e71', '#9a4f3c', '#4a6b3e',
+                '#7a5c8e', '#c1666b', '#546e7a',
+            ];
+            const NOTE_BADGE = { 'Königsetappe': ' 👑', 'Grenzübertritt': ' 🇪🇸', 'Ziel': ' 🏁' };
+
+            const map = L.map(mapEl, { scrollWheelZoom: false, attributionControl: false });
+            L.control.attribution({ prefix: false }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 18,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>-Mitwirkende',
+            }).addTo(map);
+
+            fetch('data/camino-central-route.geojson')
+                .then((r) => r.json())
+                .then((geojson) => {
+                    const group = L.featureGroup().addTo(map);
+
+                    geojson.features
+                        .filter((f) => f.geometry.type === 'LineString')
+                        .forEach((f) => {
+                            const latlngs = f.geometry.coordinates.map(([lon, lat]) => [lat, lon]);
+                            const color = STAGE_COLORS[(f.properties.stage - 1) % STAGE_COLORS.length];
+                            const badge = NOTE_BADGE[f.properties.note] || '';
+                            const isBus = f.properties.mode === 'bus';
+                            const modeLabel = isBus ? ' 🚌' : '';
+                            L.polyline(latlngs, {
+                                color, weight: 4, opacity: isBus ? 0.7 : 0.85,
+                                dashArray: isBus ? '2, 8' : null,
+                            })
+                                .bindPopup(`<strong>${f.properties.label}</strong><br>${f.properties.date} · ${f.properties.km}${modeLabel}${badge}`)
+                                .addTo(group);
+                        });
+
+                    geojson.features
+                        .filter((f) => f.geometry.type === 'Point')
+                        .forEach((f) => {
+                            const [lon, lat] = f.geometry.coordinates;
+                            const isTransit = f.properties.type === 'transit';
+                            L.circleMarker([lat, lon], {
+                                radius: isTransit ? 6 : 5, color: '#fff', weight: 2,
+                                fillColor: isTransit ? '#2f6f6f' : '#6b452b', fillOpacity: 1,
+                            }).bindPopup(`<strong>${f.properties.name}</strong>${isTransit ? ' 🚌' : ''}`).addTo(group);
+                        });
+
+                    map.fitBounds(group.getBounds(), { padding: [16, 16] });
+                })
+                .catch((err) => console.error('Camino-Karte konnte nicht geladen werden:', err));
+        })();
     </script>
 
 </body>
