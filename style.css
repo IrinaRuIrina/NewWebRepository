@@ -214,6 +214,13 @@ img {
     color: #555;
 }
 
+.about-link {
+    color: #2c2c2c;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 500;
+}
+
 .about-signature {
     font-family: 'Cormorant Garamond', serif;
     font-style: italic;
