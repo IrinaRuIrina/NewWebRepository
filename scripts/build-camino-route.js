@@ -151,6 +151,16 @@ const PEDRA_FURADA = [-8.6364478, 41.4678268]; // Google Maps place "Albergue Pa
 const [vairaoPedraFurada, pedraFuradaBarcelos] = splitTrack(raw[1].coords, PEDRA_FURADA, "Pedra Furada");
 const pedraFuradaBalugaes = pedraFuradaBarcelos.concat(barcelosBalugaes);
 
+// Overnight for 04.09. changed again, from Balugães (Casa Altamira) to Aborim
+// (Albergue de Peregrinos Casa de Santiago), which sits directly on this same
+// track ~4 km before Balugães (confirmed: only ~42 m from the geocoded place on
+// the Pedra Furada→Balugães track — right at the trail, as Gronze describes it).
+// So stage 3 now ends there, and stage 4 starts there, straight through Balugães
+// (no longer an overnight stop, just passed through) to Ponte de Lima.
+const ABORIM = [-8.6359091, 41.6113718]; // Google Maps place "Albergue de Peregrinos Casa de Santiago"
+const [pedraFuradaAborim, aborimBalugaes] = splitTrack(pedraFuradaBalugaes, ABORIM, "Aborim");
+const aborimPonteDeLima = aborimBalugaes.concat(balugaesPonteDeLima.slice(1));
+
 // Day 1 in real life isn't one continuous walk: ~3 km through Porto on foot,
 // then public transport (bus/metro) to the Padrão Moreira stop, then walking
 // again to Vairão. Split the source track the same way so the map shows it.
@@ -167,19 +177,49 @@ const portoWalk1 = raw[0].coords.slice(0, cityWalkEndIdx + 1);
 const portoBus = raw[0].coords.slice(cityWalkEndIdx, busStopIdx + 1);
 const portoWalk2 = raw[0].coords.slice(busStopIdx);
 
+// Overnight for 02.09. changed from the monastery albergue in Vairão to Casa da
+// Laura, which is ~1.9 km away in Vilarinho and NOT on the source hiker's
+// recorded track (they stayed in Vairão). This one connector segment IS
+// hand-typed, unlike everything else here — it's an OSRM foot-routing result
+// (router.project-osrm.org) between the track's old Vairão endpoint and Casa da
+// Laura's geocoded address, not a recorded GPS track. Distance: 1906.7 m.
+const VAIRAO_VILARINHO_CONNECTOR = [
+    [-8.670266, 41.331899], [-8.670211, 41.331923], [-8.669987, 41.332045],
+    [-8.669634, 41.332277], [-8.669187, 41.332653], [-8.669383, 41.332577],
+    [-8.669662, 41.332495], [-8.669997, 41.332434], [-8.670533, 41.332417],
+    [-8.670609, 41.332448], [-8.670729, 41.332515], [-8.670813, 41.33255],
+    [-8.670896, 41.332577], [-8.671285, 41.332539], [-8.671402, 41.332524],
+    [-8.671509, 41.332542], [-8.671594, 41.332595], [-8.671931, 41.332973],
+    [-8.672076, 41.333179], [-8.672274, 41.333509], [-8.672331, 41.333636],
+    [-8.672402, 41.333922], [-8.672494, 41.334206], [-8.672485, 41.334341],
+    [-8.672442, 41.33446], [-8.672062, 41.334973], [-8.672075, 41.334977],
+    [-8.673443, 41.335335], [-8.675521, 41.33588], [-8.677206, 41.336317],
+    [-8.677706, 41.336432], [-8.678175, 41.336556], [-8.678348, 41.336602],
+    [-8.678852, 41.336732], [-8.679305, 41.336886], [-8.679612, 41.337057],
+    [-8.680173, 41.337463], [-8.681258, 41.338195], [-8.681427, 41.338298],
+    [-8.6819, 41.338195], [-8.682317, 41.338106], [-8.682033, 41.338824],
+    [-8.681745, 41.339605], [-8.68143, 41.340431], [-8.680989, 41.340362],
+    [-8.680889, 41.340332], [-8.680828, 41.340303],
+];
+const VILARINHO = VAIRAO_VILARINHO_CONNECTOR[VAIRAO_VILARINHO_CONNECTOR.length - 1];
+// portoWalk2's last point ~= the connector's first point (same real-world spot); drop the duplicate.
+const portoWalk2ToVilarinho = portoWalk2.concat(VAIRAO_VILARINHO_CONNECTOR.slice(1));
+
 // The site's own 13 stages (day2..day14 in jakobsweg.html), in order.
 // km is left empty here on purpose — it is measured from the real GPS coordinates
 // below (trackLengthKm), never hand-typed, so it can't drift from the actual route.
 // Most stages are a single walked leg; stage 1 has three legs (walk/bus/walk).
 const STAGES = [
-    { stage: 1, label: "Porto → Vairão", date: "02.09.2026", note: "", legs: [
+    { stage: 1, label: "Porto → Vilarinho", date: "02.09.2026", note: "", legs: [
         { mode: "walk", coords: portoWalk1 },
         { mode: "bus", coords: portoBus },
-        { mode: "walk", coords: portoWalk2 },
+        { mode: "walk", coords: portoWalk2ToVilarinho },
     ] },
-    { stage: 2, label: "Vairão → Pedra Furada", date: "03.09.2026", note: "", legs: [{ mode: "walk", coords: vairaoPedraFurada }] },
-    { stage: 3, label: "Pedra Furada → Balugães", date: "04.09.2026", note: "", legs: [{ mode: "walk", coords: pedraFuradaBalugaes }] },
-    { stage: 4, label: "Balugães → Ponte de Lima", date: "05.09.2026", note: "", legs: [{ mode: "walk", coords: balugaesPonteDeLima }] },
+    // Vilarinho is a ~1.9 km detour off the recorded route (see connector above), so
+    // stage 2 starts by walking back to the old Vairão point before it rejoins the track.
+    { stage: 2, label: "Vilarinho → Pedra Furada", date: "03.09.2026", note: "", legs: [{ mode: "walk", coords: [...VAIRAO_VILARINHO_CONNECTOR].reverse().slice(0, -1).concat(vairaoPedraFurada) }] },
+    { stage: 3, label: "Pedra Furada → Aborim", date: "04.09.2026", note: "", legs: [{ mode: "walk", coords: pedraFuradaAborim }] },
+    { stage: 4, label: "Aborim → Ponte de Lima", date: "05.09.2026", note: "", legs: [{ mode: "walk", coords: aborimPonteDeLima }] },
     { stage: 5, label: "Ponte de Lima → Rubiães", date: "06.09.2026", note: "Königsetappe", legs: [{ mode: "walk", coords: raw[3].coords }] },
     { stage: 6, label: "Rubiães → Tui", date: "07.09.2026", note: "Grenzübertritt", legs: [{ mode: "walk", coords: raw[4].coords }] },
     { stage: 7, label: "Tui → O Porriño", date: "08.09.2026", note: "", legs: [{ mode: "walk", coords: tuiOPorrino }] },
@@ -194,9 +234,9 @@ const STAGES = [
 const WAYPOINTS = [
     { name: "Porto", type: "town", coord: raw[0].coords[0] },
     { name: "Padrão Moreira", type: "transit", coord: raw[0].coords[busStopIdx] },
-    { name: "Vairão", type: "town", coord: raw[0].coords[raw[0].coords.length - 1] },
+    { name: "Vilarinho", type: "town", coord: VILARINHO },
     { name: "Pedra Furada", type: "town", coord: vairaoPedraFurada[vairaoPedraFurada.length - 1] },
-    { name: "Balugães", type: "town", coord: barcelosBalugaes[barcelosBalugaes.length - 1] },
+    { name: "Aborim", type: "town", coord: pedraFuradaAborim[pedraFuradaAborim.length - 1] },
     { name: "Ponte de Lima", type: "town", coord: balugaesPonteDeLima[balugaesPonteDeLima.length - 1] },
     { name: "Rubiães", type: "town", coord: raw[3].coords[raw[3].coords.length - 1] },
     { name: "Tui", type: "town", coord: raw[4].coords[raw[4].coords.length - 1] },
