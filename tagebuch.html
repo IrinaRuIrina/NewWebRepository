@@ -286,15 +286,22 @@
             return chunks;
         }
 
-        async function translateLongText(text, source, target) {
+        // Detects each PARAGRAPH's language independently rather than assuming one
+        // language for the whole entry — a note written over several days can end up
+        // with, say, a German paragraph followed by a Russian one, and forcing a single
+        // source language on the whole text would mistranslate (or skip) whichever part
+        // doesn't match. A paragraph already in the target language is left untouched.
+        async function translateLongText(text, target) {
             if (!text || !text.trim()) return "";
             const paragraphs = text.split(/\n+/);
             const out = [];
             for (const para of paragraphs) {
                 if (!para.trim()) { out.push(""); continue; }
+                const paraLang = detectLang(para);
+                if (paraLang === target) { out.push(para.trim()); continue; }
                 const chunks = chunkParagraph(para.trim(), 450);
                 const translatedChunks = [];
-                for (const c of chunks) translatedChunks.push(await translateChunk(c, source, target));
+                for (const c of chunks) translatedChunks.push(await translateChunk(c, paraLang, target));
                 out.push(translatedChunks.join(" "));
             }
             return out.join("\n");
@@ -367,13 +374,6 @@
 
         const onDemandTranslateCache = {};
         async function switchEntryLang(entry, targetLang, titleEl, textEl, btn) {
-            const origTitle = entry.title || "";
-            const origText = entry.text || "";
-            if (detectLang(origTitle || origText) === targetLang) {
-                if (titleEl) titleEl.textContent = origTitle;
-                if (textEl) textEl.textContent = origText;
-                return;
-            }
             if (hasTrustedField(entry, "title", targetLang)) {
                 if (titleEl) titleEl.textContent = entry["title_" + targetLang];
                 if (textEl) textEl.textContent = entry["text_" + targetLang] || "";
@@ -385,13 +385,14 @@
                 if (textEl) textEl.textContent = onDemandTranslateCache[cacheKey].text;
                 return;
             }
-            const source = detectLang(origTitle || origText);
+            const origTitle = entry.title || "";
+            const origText = entry.text || "";
             const origLabel = btn.textContent;
             btn.disabled = true;
             btn.textContent = "…";
             try {
-                const title = origTitle ? await translateLongText(origTitle, source, targetLang) : "";
-                const text = origText ? await translateLongText(origText, source, targetLang) : "";
+                const title = origTitle ? await translateLongText(origTitle, targetLang) : "";
+                const text = origText ? await translateLongText(origText, targetLang) : "";
                 onDemandTranslateCache[cacheKey] = { title, text };
                 if (titleEl) titleEl.textContent = title;
                 if (textEl) textEl.textContent = text;
@@ -697,19 +698,13 @@
                     const key = title + "::" + text;
                     if (translatedFor !== key) { translatedFor = key; translatedMap = {}; }
                     const targetLang = btn.getAttribute("data-target-lang");
-                    const source = detectLang(title + " " + text);
-                    if (targetLang === source) {
-                        translatedMap[targetLang] = { title, text };
-                        renderTranslatePreview();
-                        return;
-                    }
                     if (translatedMap[targetLang]) { renderTranslatePreview(); return; }
                     const origLabel = btn.textContent;
                     btn.disabled = true;
                     btn.textContent = "…";
                     try {
-                        const tTitle = title ? await translateLongText(title, source, targetLang) : "";
-                        const tText = text ? await translateLongText(text, source, targetLang) : "";
+                        const tTitle = title ? await translateLongText(title, targetLang) : "";
+                        const tText = text ? await translateLongText(text, targetLang) : "";
                         translatedMap[targetLang] = { title: tTitle, text: tText };
                         renderTranslatePreview();
                     } catch (err) {
