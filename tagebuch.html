@@ -80,13 +80,14 @@
 
         .diary-backdrop {
             position: fixed; inset: 0; background: rgba(20,15,8,0.45); z-index: 20;
-            display: none; align-items: flex-end; justify-content: center;
+            display: none; align-items: center; justify-content: center;
+            padding: 1.5rem 1rem; box-sizing: border-box;
         }
         .diary-backdrop.show { display: flex; }
         .diary-sheet {
-            background: #fff; width: 100%; max-width: 640px; border-radius: 18px 18px 0 0;
-            padding: 1.4rem 1.2rem 1.6rem; max-height: 88vh; max-height: 88dvh; overflow-y: auto;
-            -webkit-overflow-scrolling: touch; box-shadow: 0 -8px 30px rgba(60,45,25,0.2);
+            background: #fff; width: 100%; max-width: 640px; border-radius: 18px;
+            padding: 1.4rem 1.2rem 1.6rem; max-height: 82vh; max-height: 82dvh; overflow-y: auto;
+            -webkit-overflow-scrolling: touch; box-shadow: 0 12px 40px rgba(20,15,8,0.35);
         }
         .diary-sheet h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; color: var(--accent-dark); margin-bottom: 1rem; }
         .diary-field { margin-bottom: 1rem; }
@@ -110,9 +111,6 @@
         .diary-btn-secondary { background: transparent; color: var(--text-soft); border-color: var(--line); }
         .diary-error { color: var(--danger); font-size: 0.82rem; margin-top: 0.6rem; display: none; }
         .diary-error.show { display: block; }
-        .entry-lang-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
-        .entry-lang-row label { font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-soft); }
-        .entry-lang-row select { border: 1px solid var(--line); border-radius: 8px; padding: 0.4rem 0.6rem; font-family: inherit; font-size: 0.9rem; background: #fff; color: var(--text); }
         .diary-translate-btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--accent); background: transparent; color: var(--accent-dark); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-family: inherit; cursor: pointer; }
         .diary-translate-btn:hover { background: var(--accent); color: #fff; }
         .diary-translate-btn:disabled { opacity: 0.65; cursor: default; }
@@ -124,6 +122,13 @@
         .translate-preview-title { font-weight: 600; margin-bottom: 0.2rem; }
         .translate-preview-text { color: var(--text-soft); white-space: pre-wrap; line-height: 1.5; }
         .diary-auto-badge { font-size: 0.68rem; color: #948c7d; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.5rem; margin-left: 0.5rem; white-space: nowrap; }
+        .diary-translate-inline {
+            display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.6rem;
+            border: 1px solid var(--accent); background: transparent; color: var(--accent-dark);
+            border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-family: inherit; cursor: pointer;
+        }
+        .diary-translate-inline:hover { background: var(--accent); color: #fff; }
+        .diary-translate-inline:disabled { opacity: 0.6; cursor: default; }
         .diary-lightbox { position: fixed; inset: 0; background: rgba(10,8,5,0.9); z-index: 40; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
         .diary-lightbox.show { display: flex; }
         .diary-lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
@@ -307,30 +312,83 @@
 
         function currentLang() { return (window.I18N_getLang && window.I18N_getLang()) || "de"; }
 
+        // Decided purely from the actual text, never trusted from stored metadata alone —
+        // a manually-picked "I'm writing in X" value is too easy to forget/leave wrong,
+        // and that mismatch is exactly what silently broke translations before. Cyrillic
+        // is unambiguous; anything else is assumed German (the site's base language).
+        function detectLang(text) {
+            return /[Ѐ-ӿ]/.test(text || "") ? "ru" : "de";
+        }
+        // A stored per-language field is only trusted if its own script actually matches
+        // that language — this makes rendering self-healing against any bad data already
+        // saved (e.g. a wrong source-language mirror from before this check existed).
+        function fieldMatchesLang(value, lang) {
+            if (!value) return false;
+            const looksRu = /[Ѐ-ӿ]/.test(value);
+            return lang === "ru" ? looksRu : !looksRu;
+        }
+        function hasTrustedField(entry, field, lang) {
+            const v = entry[field + "_" + lang];
+            return v != null && v !== "" && fieldMatchesLang(v, lang);
+        }
+
         function localizedField(entry, field, lang) {
-            const key = field + "_" + lang;
-            return (entry[key] != null && entry[key] !== "") ? entry[key] : (entry[field] || "");
+            if (hasTrustedField(entry, field, lang)) return entry[field + "_" + lang];
+            return entry[field] || "";
         }
         function isAutoTranslated(entry, lang) {
-            return !!(entry.origLang && entry.origLang !== lang && entry[("title_" + lang)] != null);
+            if (!hasTrustedField(entry, "title", lang)) return false;
+            return detectLang(entry.title || entry.text || "") !== lang;
         }
         function autoBadge(entry, lang) {
             return isAutoTranslated(entry, lang)
                 ? `<span class="diary-auto-badge">🌐 ${esc(t('entry.autoTranslated', 'automatisch übersetzt'))}</span>`
                 : "";
         }
+        function needsTranslateButton(entry, lang) {
+            if (hasTrustedField(entry, "title", lang)) return false;
+            return detectLang(entry.title || entry.text || "") !== lang;
+        }
+
+        const onDemandTranslateCache = {};
+        async function onDemandTranslate(entry, lang, titleEl, textEl, btn) {
+            const cacheKey = entry.id + "_" + lang;
+            if (onDemandTranslateCache[cacheKey]) {
+                if (titleEl) titleEl.textContent = onDemandTranslateCache[cacheKey].title;
+                if (textEl) textEl.textContent = onDemandTranslateCache[cacheKey].text;
+                btn.remove();
+                return;
+            }
+            const origTitle = entry.title || "";
+            const origText = entry.text || "";
+            const source = detectLang(origTitle || origText);
+            btn.disabled = true;
+            btn.textContent = t('entrySheet.translating', 'Übersetze …');
+            try {
+                const title = origTitle ? await translateLongText(origTitle, source, lang) : "";
+                const text = origText ? await translateLongText(origText, source, lang) : "";
+                onDemandTranslateCache[cacheKey] = { title, text };
+                if (titleEl) titleEl.textContent = title;
+                if (textEl) textEl.textContent = text;
+                btn.remove();
+            } catch (err) {
+                btn.textContent = t('entry.translateRetry', '🌐 Erneut versuchen');
+                btn.disabled = false;
+            }
+        }
 
         function renderEntry(entry) {
             const lang = currentLang();
             const title = localizedField(entry, "title", lang);
             const text = localizedField(entry, "text", lang);
+            const showTranslateBtn = needsTranslateButton(entry, lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}" loading="lazy">`).join("");
             return `
                 <article class="diary-entry" data-open="${esc(entry.id)}">
                     <div class="diary-entry-head">
                         <div>
-                            <div class="diary-entry-title">${esc(title)}${autoBadge(entry, lang)}</div>
+                            <div class="diary-entry-title" data-title-el="${esc(entry.id)}">${esc(title)}${autoBadge(entry, lang)}</div>
                             <div class="diary-entry-date">${esc(formatDate(entry.createdAt))}</div>
                         </div>
                         ${isLoggedIn ? `<div class="diary-entry-actions">
@@ -338,7 +396,8 @@
                             <button class="diary-entry-del" aria-label="${esc(t('entry.delete', 'Löschen'))}" data-del="${esc(entry.id)}">✕</button>
                         </div>` : ""}
                     </div>
-                    ${text ? `<p class="diary-entry-text-preview">${esc(text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
+                    ${text ? `<p class="diary-entry-text-preview" data-text-el="${esc(entry.id)}">${esc(text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
+                    ${showTranslateBtn ? `<button type="button" class="diary-translate-inline" data-translate="${esc(entry.id)}">${esc(t('entry.translateBtn', '🌐 Übersetzen'))}</button>` : ""}
                     ${photos ? `<div class="diary-entry-photos">${photos}</div>` : ""}
                 </article>`;
         }
@@ -359,17 +418,24 @@
             const lang = currentLang();
             const title = localizedField(entry, "title", lang);
             const text = localizedField(entry, "text", lang);
+            const showTranslateBtn = needsTranslateButton(entry, lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}">`).join("");
             const div = openBackdrop(`
-                <h2>${esc(title)}${autoBadge(entry, lang)}</h2>
+                <h2 id="detail-title">${esc(title)}${autoBadge(entry, lang)}</h2>
                 <div class="diary-detail-date">${esc(formatDate(entry.createdAt))}</div>
-                ${text ? `<p class="diary-detail-text">${esc(text)}</p>` : ""}
+                ${showTranslateBtn ? `<button type="button" class="diary-translate-inline" id="detail-translate">${esc(t('entry.translateBtn', '🌐 Übersetzen'))}</button>` : ""}
+                ${text ? `<p class="diary-detail-text" id="detail-text">${esc(text)}</p>` : ""}
                 ${photos ? `<div class="diary-entry-photos" style="margin-top:1rem">${photos}</div>` : ""}
                 ${isLoggedIn ? `<div class="diary-sheet-actions">
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-edit">${esc(t('entry.edit', 'Bearbeiten'))}</button>
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">${esc(t('entry.delete', 'Löschen'))}</button>
                 </div>` : ""}`);
+            if (showTranslateBtn) {
+                div.querySelector("#detail-translate").addEventListener("click", () => {
+                    onDemandTranslate(entry, lang, div.querySelector("#detail-title"), div.querySelector("#detail-text"), div.querySelector("#detail-translate"));
+                });
+            }
             if (isLoggedIn) {
                 div.querySelector("#detail-edit").addEventListener("click", () => openEntrySheet(entry));
                 div.querySelector("#detail-del").addEventListener("click", (e) => deleteEntry(entry.id, e.target));
@@ -392,7 +458,7 @@
 
             feed.querySelectorAll("[data-open]").forEach(card => {
                 card.addEventListener("click", (e) => {
-                    if (e.target.closest("[data-del],[data-edit],img")) return;
+                    if (e.target.closest("[data-del],[data-edit],[data-translate],img")) return;
                     const entry = entries.find(x => x.id === card.getAttribute("data-open"));
                     if (entry) openDetailView(entry);
                 });
@@ -406,6 +472,18 @@
             });
             feed.querySelectorAll("[data-del]").forEach(btn => {
                 btn.addEventListener("click", (e) => { e.stopPropagation(); deleteEntry(btn.getAttribute("data-del"), btn); });
+            });
+            feed.querySelectorAll("[data-translate]").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute("data-translate");
+                    const entry = entries.find(x => x.id === id);
+                    if (!entry) return;
+                    const lang = currentLang();
+                    const titleEl = feed.querySelector(`[data-title-el="${CSS.escape(id)}"]`);
+                    const textEl = feed.querySelector(`[data-text-el="${CSS.escape(id)}"]`);
+                    onDemandTranslate(entry, lang, titleEl, textEl, btn);
+                });
             });
             feed.querySelectorAll(".diary-entry-photos img").forEach(img => {
                 img.addEventListener("click", (e) => {
@@ -527,16 +605,8 @@
         }
 
         function openEntrySheet(existingEntry) {
-            const defaultWriteLang = (function () {
-                try { return existingEntry ? (existingEntry.origLang || "ru") : (localStorage.getItem("diary-write-lang") || "ru"); }
-                catch (e) { return existingEntry ? (existingEntry.origLang || "ru") : "ru"; }
-            })();
             const div = openBackdrop(`
                 <h2>${existingEntry ? esc(t('entrySheet.editTitle', 'Tag bearbeiten')) : esc(t('entrySheet.title', 'Neuer Tag'))}</h2>
-                <div class="entry-lang-row">
-                    <label for="entry-write-lang">${esc(t('entrySheet.writeLangLabel', 'Ich schreibe auf'))}</label>
-                    <select id="entry-write-lang">${ALL_LANGS.map((l) => `<option value="${l}"${l === defaultWriteLang ? " selected" : ""}>${esc(LANG_NAMES[l])}</option>`).join("")}</select>
-                </div>
                 <div class="diary-field"><label for="entry-title">${esc(t('entrySheet.titleLabel', 'Tag-Titel'))}</label>
                 <input type="text" id="entry-title" placeholder="${esc(t('entrySheet.titlePlaceholder', 'z. B. Tag 3 – Barcelos'))}" value="${existingEntry ? esc(existingEntry.title || "") : ""}"></div>
                 <div class="diary-field"><label for="entry-text">${esc(t('entrySheet.textLabel', 'Wie war dein Tag?'))}</label>
@@ -569,7 +639,6 @@
 
             const titleInput = div.querySelector("#entry-title");
             const textArea = div.querySelector("#entry-text");
-            const writeLangSelect = div.querySelector("#entry-write-lang");
             const translateBtn = div.querySelector("#entry-translate");
             const translatePreviewEl = div.querySelector("#translate-preview");
             let translated = null;
@@ -585,13 +654,12 @@
             }
             titleInput.addEventListener("input", resetTranslateState);
             textArea.addEventListener("input", resetTranslateState);
-            writeLangSelect.addEventListener("change", resetTranslateState);
 
             translateBtn.addEventListener("click", async () => {
                 const title = titleInput.value.trim();
                 const text = textArea.value.trim();
                 if (!title && !text) return;
-                const source = writeLangSelect.value;
+                const source = detectLang(title + " " + text);
                 const targets = otherLangs(source);
                 translateBtn.disabled = true;
                 translateBtn.textContent = t('entrySheet.translating', 'Übersetze …');
@@ -632,11 +700,8 @@
                 const btn = div.querySelector("#entry-save");
                 if (!title) { errEl.textContent = t('entrySheet.titleRequired', 'Bitte gib dem Tag einen Titel.'); errEl.classList.add("show"); return; }
                 btn.disabled = true; btn.textContent = t('entrySheet.saving', 'Speichere …');
-                const source = writeLangSelect.value;
-                try { localStorage.setItem("diary-write-lang", source); } catch (e) { /* ignore */ }
+                const source = detectLang(title + " " + text);
                 const payload = { title, text, photos: draftPhotos.slice(), origLang: source };
-                payload["title_" + source] = title;
-                payload["text_" + source] = text;
                 if (translated && translatedKey === source + "::" + title + "::" + text) {
                     for (const tgt of otherLangs(source)) {
                         payload["title_" + tgt] = translated[tgt].title;
