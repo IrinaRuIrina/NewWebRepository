@@ -122,16 +122,26 @@
         .translate-preview-title { font-weight: 600; margin-bottom: 0.2rem; }
         .translate-preview-text { color: var(--text-soft); white-space: pre-wrap; line-height: 1.5; }
         .diary-auto-badge { font-size: 0.68rem; color: #948c7d; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.5rem; margin-left: 0.5rem; white-space: nowrap; }
+        .diary-translate-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.6rem; }
         .diary-translate-inline {
-            display: inline-flex; align-items: center; gap: 0.35rem; margin-top: 0.6rem;
+            display: inline-flex; align-items: center; gap: 0.35rem;
             border: 1px solid var(--accent); background: transparent; color: var(--accent-dark);
             border-radius: 999px; padding: 0.35rem 0.85rem; font-size: 0.78rem; font-family: inherit; cursor: pointer;
         }
         .diary-translate-inline:hover { background: var(--accent); color: #fff; }
         .diary-translate-inline:disabled { opacity: 0.6; cursor: default; }
-        .diary-lightbox { position: fixed; inset: 0; background: rgba(10,8,5,0.9); z-index: 40; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+        .diary-lightbox { position: fixed; inset: 0; background: rgba(10,8,5,0.9); z-index: 1001; display: none; align-items: center; justify-content: center; padding: 1.5rem; touch-action: pan-y; }
         .diary-lightbox.show { display: flex; }
-        .diary-lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
+        .diary-lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; user-select: none; -webkit-user-drag: none; }
+        .lightbox-close, .lightbox-nav {
+            position: absolute; background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 41;
+        }
+        .lightbox-close:hover, .lightbox-nav:hover { background: rgba(255,255,255,0.32); }
+        .lightbox-close { top: 1rem; right: 1rem; width: 40px; height: 40px; font-size: 1.1rem; }
+        .lightbox-nav { top: 50%; transform: translateY(-50%); width: 48px; height: 48px; font-size: 1.8rem; line-height: 1; }
+        .lightbox-prev { left: 0.6rem; }
+        .lightbox-next { right: 0.6rem; }
     </style>
 </head>
 <body>
@@ -174,7 +184,12 @@
     </div>
 
     <button class="diary-fab" id="diary-fab" data-i18n="fab.newDay">+ Neuer Tag</button>
-    <div class="diary-lightbox" id="diary-lightbox"><img id="diary-lightbox-img" alt=""></div>
+    <div class="diary-lightbox" id="diary-lightbox">
+        <button type="button" class="lightbox-close" id="lightbox-close" aria-label="Schließen">✕</button>
+        <button type="button" class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Zurück">‹</button>
+        <img id="diary-lightbox-img" alt="">
+        <button type="button" class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Weiter">›</button>
+    </div>
 
     <!-- Footer -->
     <footer class="footer">
@@ -349,6 +364,13 @@
             if (hasTrustedField(entry, "title", lang)) return false;
             return detectLang(entry.title || entry.text || "") !== lang;
         }
+        // Which language(s) to offer a translate button for. If the site language
+        // doesn't match what's shown, offer just that one (fixes the mismatch). If it
+        // already matches, offer the other two anyway — lets a reader peek at another
+        // language for this one note without switching the whole site's language.
+        function translateButtonTargets(entry, lang) {
+            return needsTranslateButton(entry, lang) ? [lang] : otherLangs(lang);
+        }
 
         const onDemandTranslateCache = {};
         async function onDemandTranslate(entry, lang, titleEl, textEl, btn) {
@@ -377,11 +399,18 @@
             }
         }
 
+        function translateButtonsHtml(entry, lang, idAttr) {
+            const targets = translateButtonTargets(entry, lang);
+            if (!targets.length) return "";
+            return `<div class="diary-translate-row">${targets.map((tgt) =>
+                `<button type="button" class="diary-translate-inline" ${idAttr ? `data-translate="${esc(entry.id)}"` : `id="detail-translate-${tgt}"`} data-target-lang="${tgt}">🌐 ${esc(LANG_NAMES[tgt])}</button>`
+            ).join("")}</div>`;
+        }
+
         function renderEntry(entry) {
             const lang = currentLang();
             const title = localizedField(entry, "title", lang);
             const text = localizedField(entry, "text", lang);
-            const showTranslateBtn = needsTranslateButton(entry, lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}" loading="lazy">`).join("");
             return `
@@ -397,7 +426,7 @@
                         </div>` : ""}
                     </div>
                     ${text ? `<p class="diary-entry-text-preview" data-text-el="${esc(entry.id)}">${esc(text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
-                    ${showTranslateBtn ? `<button type="button" class="diary-translate-inline" data-translate="${esc(entry.id)}">${esc(t('entry.translateBtn', '🌐 Übersetzen'))}</button>` : ""}
+                    ${translateButtonsHtml(entry, lang, true)}
                     ${photos ? `<div class="diary-entry-photos">${photos}</div>` : ""}
                 </article>`;
         }
@@ -418,33 +447,32 @@
             const lang = currentLang();
             const title = localizedField(entry, "title", lang);
             const text = localizedField(entry, "text", lang);
-            const showTranslateBtn = needsTranslateButton(entry, lang);
+            const translateTargets = translateButtonTargets(entry, lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}">`).join("");
             const div = openBackdrop(`
                 <h2 id="detail-title">${esc(title)}${autoBadge(entry, lang)}</h2>
                 <div class="diary-detail-date">${esc(formatDate(entry.createdAt))}</div>
-                ${showTranslateBtn ? `<button type="button" class="diary-translate-inline" id="detail-translate">${esc(t('entry.translateBtn', '🌐 Übersetzen'))}</button>` : ""}
+                ${translateButtonsHtml(entry, lang, false)}
                 ${text ? `<p class="diary-detail-text" id="detail-text">${esc(text)}</p>` : ""}
                 ${photos ? `<div class="diary-entry-photos" style="margin-top:1rem">${photos}</div>` : ""}
                 ${isLoggedIn ? `<div class="diary-sheet-actions">
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-edit">${esc(t('entry.edit', 'Bearbeiten'))}</button>
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">${esc(t('entry.delete', 'Löschen'))}</button>
                 </div>` : ""}`);
-            if (showTranslateBtn) {
-                div.querySelector("#detail-translate").addEventListener("click", () => {
-                    onDemandTranslate(entry, lang, div.querySelector("#detail-title"), div.querySelector("#detail-text"), div.querySelector("#detail-translate"));
+            translateTargets.forEach((tgt) => {
+                const btn = div.querySelector(`#detail-translate-${tgt}`);
+                btn.addEventListener("click", () => {
+                    onDemandTranslate(entry, tgt, div.querySelector("#detail-title"), div.querySelector("#detail-text"), btn);
                 });
-            }
+            });
             if (isLoggedIn) {
                 div.querySelector("#detail-edit").addEventListener("click", () => openEntrySheet(entry));
                 div.querySelector("#detail-del").addEventListener("click", (e) => deleteEntry(entry.id, e.target));
             }
-            div.querySelectorAll(".diary-entry-photos img").forEach(img => {
-                img.addEventListener("click", () => {
-                    document.getElementById("diary-lightbox-img").src = img.src;
-                    document.getElementById("diary-lightbox").classList.add("show");
-                });
+            const detailImgs = Array.from(div.querySelectorAll(".diary-entry-photos img"));
+            detailImgs.forEach((img, idx) => {
+                img.addEventListener("click", () => openLightbox(detailImgs.map((i) => i.src), idx));
             });
         }
 
@@ -479,17 +507,19 @@
                     const id = btn.getAttribute("data-translate");
                     const entry = entries.find(x => x.id === id);
                     if (!entry) return;
-                    const lang = currentLang();
+                    const targetLang = btn.getAttribute("data-target-lang");
                     const titleEl = feed.querySelector(`[data-title-el="${CSS.escape(id)}"]`);
                     const textEl = feed.querySelector(`[data-text-el="${CSS.escape(id)}"]`);
-                    onDemandTranslate(entry, lang, titleEl, textEl, btn);
+                    onDemandTranslate(entry, targetLang, titleEl, textEl, btn);
                 });
             });
-            feed.querySelectorAll(".diary-entry-photos img").forEach(img => {
-                img.addEventListener("click", (e) => {
-                    e.stopPropagation();
-                    document.getElementById("diary-lightbox-img").src = img.src;
-                    document.getElementById("diary-lightbox").classList.add("show");
+            feed.querySelectorAll(".diary-entry-photos").forEach(container => {
+                const imgs = Array.from(container.querySelectorAll("img"));
+                imgs.forEach((img, idx) => {
+                    img.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        openLightbox(imgs.map((i) => i.src), idx);
+                    });
                 });
             });
 
@@ -725,7 +755,66 @@
         }
 
         document.getElementById("diary-fab").addEventListener("click", () => openEntrySheet(null));
-        document.getElementById("diary-lightbox").addEventListener("click", function () { this.classList.remove("show"); });
+
+        // ---- Lightbox: swipe left/right (or the arrow buttons) to browse an entry's other photos ----
+        let lightboxPhotos = [];
+        let lightboxIndex = 0;
+
+        function showLightboxImage() {
+            document.getElementById("diary-lightbox-img").src = lightboxPhotos[lightboxIndex];
+        }
+        function lightboxNext() {
+            if (lightboxPhotos.length < 2) return;
+            lightboxIndex = (lightboxIndex + 1) % lightboxPhotos.length;
+            showLightboxImage();
+        }
+        function lightboxPrev() {
+            if (lightboxPhotos.length < 2) return;
+            lightboxIndex = (lightboxIndex - 1 + lightboxPhotos.length) % lightboxPhotos.length;
+            showLightboxImage();
+        }
+        function openLightbox(photos, index) {
+            lightboxPhotos = photos;
+            lightboxIndex = index;
+            const multi = photos.length > 1;
+            document.getElementById("lightbox-prev").style.display = multi ? "flex" : "none";
+            document.getElementById("lightbox-next").style.display = multi ? "flex" : "none";
+            showLightboxImage();
+            document.getElementById("diary-lightbox").classList.add("show");
+        }
+
+        const lightboxEl = document.getElementById("diary-lightbox");
+        document.getElementById("lightbox-close").addEventListener("click", (e) => {
+            e.stopPropagation();
+            lightboxEl.classList.remove("show");
+        });
+        document.getElementById("lightbox-prev").addEventListener("click", (e) => { e.stopPropagation(); lightboxPrev(); });
+        document.getElementById("lightbox-next").addEventListener("click", (e) => { e.stopPropagation(); lightboxNext(); });
+        lightboxEl.addEventListener("click", function (e) { if (e.target === this) this.classList.remove("show"); });
+
+        let lightboxTouchStartX = null;
+        let lightboxTouchMoved = false;
+        lightboxEl.addEventListener("touchstart", (e) => {
+            lightboxTouchStartX = e.changedTouches[0].clientX;
+            lightboxTouchMoved = false;
+        }, { passive: true });
+        lightboxEl.addEventListener("touchmove", () => { lightboxTouchMoved = true; }, { passive: true });
+        lightboxEl.addEventListener("touchend", (e) => {
+            if (lightboxTouchStartX == null) return;
+            const dx = e.changedTouches[0].clientX - lightboxTouchStartX;
+            if (lightboxTouchMoved && Math.abs(dx) > 40) {
+                if (dx < 0) lightboxNext(); else lightboxPrev();
+                e.preventDefault();
+            }
+            lightboxTouchStartX = null;
+        });
+        document.addEventListener("keydown", (e) => {
+            if (!lightboxEl.classList.contains("show")) return;
+            if (e.key === "ArrowRight") lightboxNext();
+            else if (e.key === "ArrowLeft") lightboxPrev();
+            else if (e.key === "Escape") lightboxEl.classList.remove("show");
+        });
+
         renderAuthStatus();
     </script>
 
