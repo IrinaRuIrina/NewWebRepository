@@ -111,9 +111,6 @@
         .diary-btn-secondary { background: transparent; color: var(--text-soft); border-color: var(--line); }
         .diary-error { color: var(--danger); font-size: 0.82rem; margin-top: 0.6rem; display: none; }
         .diary-error.show { display: block; }
-        .diary-translate-btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--accent); background: transparent; color: var(--accent-dark); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-family: inherit; cursor: pointer; }
-        .diary-translate-btn:hover { background: var(--accent); color: #fff; }
-        .diary-translate-btn:disabled { opacity: 0.65; cursor: default; }
         .translate-preview { margin-top: 0.9rem; display: none; flex-direction: column; gap: 0.7rem; }
         .translate-preview.show { display: flex; }
         .translate-preview-hint { font-size: 0.75rem; color: #948c7d; }
@@ -261,7 +258,6 @@
 
         // ---- Translation (MyMemory: free, keyless, works on every device/browser) ----
         const ALL_LANGS = ["de", "en", "ru"];
-        const LANG_NAMES = { de: "Deutsch", en: "English", ru: "Русский" };
         function otherLangs(sourceLang) { return ALL_LANGS.filter((l) => l !== sourceLang); }
 
         async function translateChunk(text, source, target) {
@@ -360,51 +356,51 @@
                 ? `<span class="diary-auto-badge">🌐 ${esc(t('entry.autoTranslated', 'automatisch übersetzt'))}</span>`
                 : "";
         }
-        function needsTranslateButton(entry, lang) {
-            if (hasTrustedField(entry, "title", lang)) return false;
-            return detectLang(entry.title || entry.text || "") !== lang;
-        }
-        // Which language(s) to offer a translate button for. If the site language
-        // doesn't match what's shown, offer just that one (fixes the mismatch). If it
-        // already matches, offer the other two anyway — lets a reader peek at another
-        // language for this one note without switching the whole site's language.
-        function translateButtonTargets(entry, lang) {
-            return needsTranslateButton(entry, lang) ? [lang] : otherLangs(lang);
+        // Always the same 3 buttons (DE/EN/RU), everywhere, regardless of the site's
+        // current language — clicking one shows THIS entry in that language, on top of
+        // whatever the site language happens to be.
+        function langButtonsHtml(entryId) {
+            return `<div class="diary-translate-row">${ALL_LANGS.map((l) =>
+                `<button type="button" class="diary-translate-inline" data-entry-id="${esc(entryId)}" data-target-lang="${l}">${l.toUpperCase()}</button>`
+            ).join("")}</div>`;
         }
 
         const onDemandTranslateCache = {};
-        async function onDemandTranslate(entry, lang, titleEl, textEl, btn) {
-            const cacheKey = entry.id + "_" + lang;
+        async function switchEntryLang(entry, targetLang, titleEl, textEl, btn) {
+            const origTitle = entry.title || "";
+            const origText = entry.text || "";
+            if (detectLang(origTitle || origText) === targetLang) {
+                if (titleEl) titleEl.textContent = origTitle;
+                if (textEl) textEl.textContent = origText;
+                return;
+            }
+            if (hasTrustedField(entry, "title", targetLang)) {
+                if (titleEl) titleEl.textContent = entry["title_" + targetLang];
+                if (textEl) textEl.textContent = entry["text_" + targetLang] || "";
+                return;
+            }
+            const cacheKey = entry.id + "_" + targetLang;
             if (onDemandTranslateCache[cacheKey]) {
                 if (titleEl) titleEl.textContent = onDemandTranslateCache[cacheKey].title;
                 if (textEl) textEl.textContent = onDemandTranslateCache[cacheKey].text;
-                btn.remove();
                 return;
             }
-            const origTitle = entry.title || "";
-            const origText = entry.text || "";
             const source = detectLang(origTitle || origText);
+            const origLabel = btn.textContent;
             btn.disabled = true;
-            btn.textContent = t('entrySheet.translating', 'Übersetze …');
+            btn.textContent = "…";
             try {
-                const title = origTitle ? await translateLongText(origTitle, source, lang) : "";
-                const text = origText ? await translateLongText(origText, source, lang) : "";
+                const title = origTitle ? await translateLongText(origTitle, source, targetLang) : "";
+                const text = origText ? await translateLongText(origText, source, targetLang) : "";
                 onDemandTranslateCache[cacheKey] = { title, text };
                 if (titleEl) titleEl.textContent = title;
                 if (textEl) textEl.textContent = text;
-                btn.remove();
             } catch (err) {
-                btn.textContent = t('entry.translateRetry', '🌐 Erneut versuchen');
+                alert(t('entry.translateFailedAlert', 'Übersetzung fehlgeschlagen.'));
+            } finally {
                 btn.disabled = false;
+                btn.textContent = origLabel;
             }
-        }
-
-        function translateButtonsHtml(entry, lang, idAttr) {
-            const targets = translateButtonTargets(entry, lang);
-            if (!targets.length) return "";
-            return `<div class="diary-translate-row">${targets.map((tgt) =>
-                `<button type="button" class="diary-translate-inline" ${idAttr ? `data-translate="${esc(entry.id)}"` : `id="detail-translate-${tgt}"`} data-target-lang="${tgt}">🌐 ${esc(LANG_NAMES[tgt])}</button>`
-            ).join("")}</div>`;
         }
 
         function renderEntry(entry) {
@@ -426,7 +422,7 @@
                         </div>` : ""}
                     </div>
                     ${text ? `<p class="diary-entry-text-preview" data-text-el="${esc(entry.id)}">${esc(text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
-                    ${translateButtonsHtml(entry, lang, true)}
+                    ${langButtonsHtml(entry.id)}
                     ${photos ? `<div class="diary-entry-photos">${photos}</div>` : ""}
                 </article>`;
         }
@@ -447,23 +443,21 @@
             const lang = currentLang();
             const title = localizedField(entry, "title", lang);
             const text = localizedField(entry, "text", lang);
-            const translateTargets = translateButtonTargets(entry, lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}">`).join("");
             const div = openBackdrop(`
                 <h2 id="detail-title">${esc(title)}${autoBadge(entry, lang)}</h2>
                 <div class="diary-detail-date">${esc(formatDate(entry.createdAt))}</div>
-                ${translateButtonsHtml(entry, lang, false)}
+                ${langButtonsHtml(entry.id)}
                 ${text ? `<p class="diary-detail-text" id="detail-text">${esc(text)}</p>` : ""}
                 ${photos ? `<div class="diary-entry-photos" style="margin-top:1rem">${photos}</div>` : ""}
                 ${isLoggedIn ? `<div class="diary-sheet-actions">
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-edit">${esc(t('entry.edit', 'Bearbeiten'))}</button>
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-del" style="color:var(--danger);border-color:var(--danger)">${esc(t('entry.delete', 'Löschen'))}</button>
                 </div>` : ""}`);
-            translateTargets.forEach((tgt) => {
-                const btn = div.querySelector(`#detail-translate-${tgt}`);
+            div.querySelectorAll("[data-target-lang]").forEach((btn) => {
                 btn.addEventListener("click", () => {
-                    onDemandTranslate(entry, tgt, div.querySelector("#detail-title"), div.querySelector("#detail-text"), btn);
+                    switchEntryLang(entry, btn.getAttribute("data-target-lang"), div.querySelector("#detail-title"), div.querySelector("#detail-text"), btn);
                 });
             });
             if (isLoggedIn) {
@@ -486,7 +480,7 @@
 
             feed.querySelectorAll("[data-open]").forEach(card => {
                 card.addEventListener("click", (e) => {
-                    if (e.target.closest("[data-del],[data-edit],[data-translate],img")) return;
+                    if (e.target.closest("[data-del],[data-edit],[data-target-lang],img")) return;
                     const entry = entries.find(x => x.id === card.getAttribute("data-open"));
                     if (entry) openDetailView(entry);
                 });
@@ -501,16 +495,16 @@
             feed.querySelectorAll("[data-del]").forEach(btn => {
                 btn.addEventListener("click", (e) => { e.stopPropagation(); deleteEntry(btn.getAttribute("data-del"), btn); });
             });
-            feed.querySelectorAll("[data-translate]").forEach(btn => {
+            feed.querySelectorAll("[data-target-lang]").forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     e.stopPropagation();
-                    const id = btn.getAttribute("data-translate");
+                    const id = btn.getAttribute("data-entry-id");
                     const entry = entries.find(x => x.id === id);
                     if (!entry) return;
                     const targetLang = btn.getAttribute("data-target-lang");
                     const titleEl = feed.querySelector(`[data-title-el="${CSS.escape(id)}"]`);
                     const textEl = feed.querySelector(`[data-text-el="${CSS.escape(id)}"]`);
-                    onDemandTranslate(entry, targetLang, titleEl, textEl, btn);
+                    switchEntryLang(entry, targetLang, titleEl, textEl, btn);
                 });
             });
             feed.querySelectorAll(".diary-entry-photos").forEach(container => {
@@ -646,7 +640,7 @@
                     <div class="diary-preview-grid" id="entry-preview"></div>
                 </div>
                 <div class="diary-field">
-                    <button type="button" class="diary-translate-btn" id="entry-translate">${esc(t('entrySheet.translateBtn', '🌐 Automatisch übersetzen'))}</button>
+                    <div class="diary-translate-row">${ALL_LANGS.map((l) => `<button type="button" class="diary-translate-inline" data-target-lang="${l}">${l.toUpperCase()}</button>`).join("")}</div>
                     <div class="translate-preview" id="translate-preview"></div>
                 </div>
                 <div class="diary-error" id="entry-error"></div>
@@ -669,58 +663,63 @@
 
             const titleInput = div.querySelector("#entry-title");
             const textArea = div.querySelector("#entry-text");
-            const translateBtn = div.querySelector("#entry-translate");
             const translatePreviewEl = div.querySelector("#translate-preview");
-            let translated = null;
-            let translatedKey = null;
-            const defaultTranslateLabel = translateBtn.textContent;
+            let translatedFor = null; // "title::text" these translations were generated from
+            let translatedMap = {}; // { de: {title,text}, ru: {...} } — only the langs actually fetched
 
             function resetTranslateState() {
-                translated = null;
-                translatedKey = null;
-                translateBtn.textContent = defaultTranslateLabel;
+                translatedFor = null;
+                translatedMap = {};
                 translatePreviewEl.classList.remove("show");
                 translatePreviewEl.innerHTML = "";
             }
             titleInput.addEventListener("input", resetTranslateState);
             textArea.addEventListener("input", resetTranslateState);
 
-            translateBtn.addEventListener("click", async () => {
-                const title = titleInput.value.trim();
-                const text = textArea.value.trim();
-                if (!title && !text) return;
-                const source = detectLang(title + " " + text);
-                const targets = otherLangs(source);
-                translateBtn.disabled = true;
-                translateBtn.textContent = t('entrySheet.translating', 'Übersetze …');
-                translatePreviewEl.classList.remove("show");
-                translatePreviewEl.innerHTML = "";
-                try {
-                    const result = {};
-                    for (const tgt of targets) {
-                        result[tgt] = {
-                            title: title ? await translateLongText(title, source, tgt) : "",
-                            text: text ? await translateLongText(text, source, tgt) : "",
-                        };
+            function renderTranslatePreview() {
+                const langs = Object.keys(translatedMap);
+                if (!langs.length) { translatePreviewEl.classList.remove("show"); translatePreviewEl.innerHTML = ""; return; }
+                translatePreviewEl.innerHTML = `<div class="translate-preview-hint">${esc(t('entrySheet.translatePreviewHint', 'Bitte kurz prüfen:'))}</div>` +
+                    langs.map((l) => `
+                        <div class="translate-preview-block">
+                            <strong>${l.toUpperCase()}</strong>
+                            <div class="translate-preview-title">${esc(translatedMap[l].title)}</div>
+                            <div class="translate-preview-text">${esc(translatedMap[l].text)}</div>
+                        </div>`).join("");
+                translatePreviewEl.classList.add("show");
+            }
+
+            div.querySelectorAll(".diary-translate-row [data-target-lang]").forEach((btn) => {
+                btn.addEventListener("click", async () => {
+                    const title = titleInput.value.trim();
+                    const text = textArea.value.trim();
+                    if (!title && !text) return;
+                    const key = title + "::" + text;
+                    if (translatedFor !== key) { translatedFor = key; translatedMap = {}; }
+                    const targetLang = btn.getAttribute("data-target-lang");
+                    const source = detectLang(title + " " + text);
+                    if (targetLang === source) {
+                        translatedMap[targetLang] = { title, text };
+                        renderTranslatePreview();
+                        return;
                     }
-                    translated = result;
-                    translatedKey = source + "::" + title + "::" + text;
-                    translatePreviewEl.innerHTML = `<div class="translate-preview-hint">${esc(t('entrySheet.translatePreviewHint', 'Bitte kurz prüfen:'))}</div>` +
-                        targets.map((tgt) => `
-                            <div class="translate-preview-block">
-                                <strong>${esc(LANG_NAMES[tgt])}</strong>
-                                <div class="translate-preview-title">${esc(result[tgt].title)}</div>
-                                <div class="translate-preview-text">${esc(result[tgt].text)}</div>
-                            </div>`).join("");
-                    translatePreviewEl.classList.add("show");
-                    translateBtn.textContent = t('entrySheet.translateDone', 'Übersetzung erstellt ✓');
-                } catch (err) {
-                    translatePreviewEl.innerHTML = `<div class="diary-error show">${esc(t('entrySheet.translateFailed', 'Übersetzung fehlgeschlagen: '))}${esc(err.message)}</div>`;
-                    translatePreviewEl.classList.add("show");
-                    translateBtn.textContent = defaultTranslateLabel;
-                } finally {
-                    translateBtn.disabled = false;
-                }
+                    if (translatedMap[targetLang]) { renderTranslatePreview(); return; }
+                    const origLabel = btn.textContent;
+                    btn.disabled = true;
+                    btn.textContent = "…";
+                    try {
+                        const tTitle = title ? await translateLongText(title, source, targetLang) : "";
+                        const tText = text ? await translateLongText(text, source, targetLang) : "";
+                        translatedMap[targetLang] = { title: tTitle, text: tText };
+                        renderTranslatePreview();
+                    } catch (err) {
+                        translatePreviewEl.innerHTML = `<div class="diary-error show">${esc(t('entrySheet.translateFailed', 'Übersetzung fehlgeschlagen: '))}${esc(err.message)}</div>`;
+                        translatePreviewEl.classList.add("show");
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = origLabel;
+                    }
+                });
             });
 
             div.querySelector("#entry-save").addEventListener("click", async () => {
@@ -732,10 +731,17 @@
                 btn.disabled = true; btn.textContent = t('entrySheet.saving', 'Speichere …');
                 const source = detectLang(title + " " + text);
                 const payload = { title, text, photos: draftPhotos.slice(), origLang: source };
-                if (translated && translatedKey === source + "::" + title + "::" + text) {
-                    for (const tgt of otherLangs(source)) {
-                        payload["title_" + tgt] = translated[tgt].title;
-                        payload["text_" + tgt] = translated[tgt].text;
+                // Any language not freshly (re-)translated for THIS exact text gets explicitly
+                // cleared rather than left stale — otherwise editing an entry without re-clicking
+                // translate would silently leave old, now-outdated translations behind.
+                const freshKey = title + "::" + text;
+                for (const tgt of otherLangs(source)) {
+                    if (translatedFor === freshKey && translatedMap[tgt]) {
+                        payload["title_" + tgt] = translatedMap[tgt].title;
+                        payload["text_" + tgt] = translatedMap[tgt].text;
+                    } else {
+                        payload["title_" + tgt] = null;
+                        payload["text_" + tgt] = null;
                     }
                 }
                 try {
