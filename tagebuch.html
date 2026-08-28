@@ -286,23 +286,47 @@
             return chunks;
         }
 
-        // Detects each PARAGRAPH's language independently rather than assuming one
-        // language for the whole entry — a note written over several days can end up
-        // with, say, a German paragraph followed by a Russian one, and forcing a single
-        // source language on the whole text would mistranslate (or skip) whichever part
-        // doesn't match. A paragraph already in the target language is left untouched.
+        // Groups consecutive words of the same script together — needed because a
+        // sentence can switch languages mid-clause (e.g. Russian, with a German phrase
+        // dropped in, ending back in Russian). Detecting language per whole paragraph
+        // would misclassify the entire sentence as one language and leave whichever
+        // part doesn't match completely untranslated; per word-run, each part gets its
+        // own correct source language instead.
+        function splitByScript(text) {
+            const words = text.split(/\s+/).filter(Boolean);
+            const runs = [];
+            for (const w of words) {
+                const script = detectLang(w);
+                if (runs.length && runs[runs.length - 1].script === script) {
+                    runs[runs.length - 1].words.push(w);
+                } else {
+                    runs.push({ script, words: [w] });
+                }
+            }
+            return runs.map((r) => ({ script: r.script, text: r.words.join(" ") }));
+        }
+
+        // Detects language per word-run rather than assuming one language for the whole
+        // entry — a note written over several days (or even one code-switching sentence)
+        // can mix languages, and forcing a single source language on the whole text would
+        // mistranslate (or skip) whichever part doesn't match. A run already in the
+        // target language is left untouched.
         async function translateLongText(text, target) {
             if (!text || !text.trim()) return "";
             const paragraphs = text.split(/\n+/);
             const out = [];
             for (const para of paragraphs) {
                 if (!para.trim()) { out.push(""); continue; }
-                const paraLang = detectLang(para);
-                if (paraLang === target) { out.push(para.trim()); continue; }
-                const chunks = chunkParagraph(para.trim(), 450);
-                const translatedChunks = [];
-                for (const c of chunks) translatedChunks.push(await translateChunk(c, paraLang, target));
-                out.push(translatedChunks.join(" "));
+                const runs = splitByScript(para.trim());
+                const translatedRuns = [];
+                for (const run of runs) {
+                    if (run.script === target) { translatedRuns.push(run.text); continue; }
+                    const chunks = chunkParagraph(run.text, 450);
+                    const translatedChunks = [];
+                    for (const c of chunks) translatedChunks.push(await translateChunk(c, run.script, target));
+                    translatedRuns.push(translatedChunks.join(" "));
+                }
+                out.push(translatedRuns.join(" "));
             }
             return out.join("\n");
         }
