@@ -109,6 +109,20 @@
         .diary-btn-secondary { background: transparent; color: var(--text-soft); border-color: var(--line); }
         .diary-error { color: var(--danger); font-size: 0.82rem; margin-top: 0.6rem; display: none; }
         .diary-error.show { display: block; }
+        .entry-lang-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.9rem; flex-wrap: wrap; }
+        .entry-lang-row label { font-size: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--text-soft); }
+        .entry-lang-row select { border: 1px solid var(--line); border-radius: 8px; padding: 0.4rem 0.6rem; font-family: inherit; font-size: 0.9rem; background: #fff; color: var(--text); }
+        .diary-translate-btn { display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--accent); background: transparent; color: var(--accent-dark); border-radius: 999px; padding: 0.5rem 1rem; font-size: 0.85rem; font-family: inherit; cursor: pointer; }
+        .diary-translate-btn:hover { background: var(--accent); color: #fff; }
+        .diary-translate-btn:disabled { opacity: 0.65; cursor: default; }
+        .translate-preview { margin-top: 0.9rem; display: none; flex-direction: column; gap: 0.7rem; }
+        .translate-preview.show { display: flex; }
+        .translate-preview-hint { font-size: 0.75rem; color: #948c7d; }
+        .translate-preview-block { background: #f6f1ea; border-radius: 10px; padding: 0.7rem 0.85rem; font-size: 0.88rem; }
+        .translate-preview-block strong { display: block; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-dark); margin-bottom: 0.3rem; }
+        .translate-preview-title { font-weight: 600; margin-bottom: 0.2rem; }
+        .translate-preview-text { color: var(--text-soft); white-space: pre-wrap; line-height: 1.5; }
+        .diary-auto-badge { font-size: 0.68rem; color: #948c7d; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.5rem; margin-left: 0.5rem; white-space: nowrap; }
         .diary-lightbox { position: fixed; inset: 0; background: rgba(10,8,5,0.9); z-index: 40; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
         .diary-lightbox.show { display: flex; }
         .diary-lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; }
@@ -224,6 +238,51 @@
             return dict[key] != null ? dict[key] : fallback;
         }
 
+        // ---- Translation (MyMemory: free, keyless, works on every device/browser) ----
+        const ALL_LANGS = ["de", "en", "ru"];
+        const LANG_NAMES = { de: "Deutsch", en: "English", ru: "Русский" };
+        function otherLangs(sourceLang) { return ALL_LANGS.filter((l) => l !== sourceLang); }
+
+        async function translateChunk(text, source, target) {
+            if (!text.trim()) return "";
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${source}|${target}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            const data = await res.json();
+            if (data.responseStatus != 200 || !data.responseData) throw new Error(data.responseDetails || "Übersetzung fehlgeschlagen");
+            return data.responseData.translatedText;
+        }
+
+        // MyMemory caps queries at 500 chars, so long diary entries are split into
+        // sentence-sized pieces (per paragraph) and translated one at a time, then rejoined.
+        function chunkParagraph(para, maxLen) {
+            const chunks = [];
+            let rest = para;
+            while (rest.length > maxLen) {
+                let cut = rest.lastIndexOf(". ", maxLen);
+                if (cut < maxLen * 0.3) cut = rest.lastIndexOf(" ", maxLen);
+                if (cut <= 0) cut = maxLen;
+                chunks.push(rest.slice(0, cut + 1).trim());
+                rest = rest.slice(cut + 1);
+            }
+            if (rest.trim()) chunks.push(rest.trim());
+            return chunks;
+        }
+
+        async function translateLongText(text, source, target) {
+            if (!text || !text.trim()) return "";
+            const paragraphs = text.split(/\n+/);
+            const out = [];
+            for (const para of paragraphs) {
+                if (!para.trim()) { out.push(""); continue; }
+                const chunks = chunkParagraph(para.trim(), 450);
+                const translatedChunks = [];
+                for (const c of chunks) translatedChunks.push(await translateChunk(c, source, target));
+                out.push(translatedChunks.join(" "));
+            }
+            return out.join("\n");
+        }
+
         function pluralEntries(n) {
             const lang = (window.I18N_getLang && window.I18N_getLang()) || "de";
             if (lang === "en") return n === 1 ? "entry" : "entries";
@@ -245,14 +304,32 @@
             } catch (e) { return ""; }
         }
 
+        function currentLang() { return (window.I18N_getLang && window.I18N_getLang()) || "de"; }
+
+        function localizedField(entry, field, lang) {
+            const key = field + "_" + lang;
+            return (entry[key] != null && entry[key] !== "") ? entry[key] : (entry[field] || "");
+        }
+        function isAutoTranslated(entry, lang) {
+            return !!(entry.origLang && entry.origLang !== lang && entry[("title_" + lang)] != null);
+        }
+        function autoBadge(entry, lang) {
+            return isAutoTranslated(entry, lang)
+                ? `<span class="diary-auto-badge">🌐 ${esc(t('entry.autoTranslated', 'automatisch übersetzt'))}</span>`
+                : "";
+        }
+
         function renderEntry(entry) {
+            const lang = currentLang();
+            const title = localizedField(entry, "title", lang);
+            const text = localizedField(entry, "text", lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}" loading="lazy">`).join("");
             return `
                 <article class="diary-entry" data-open="${esc(entry.id)}">
                     <div class="diary-entry-head">
                         <div>
-                            <div class="diary-entry-title">${esc(entry.title)}</div>
+                            <div class="diary-entry-title">${esc(title)}${autoBadge(entry, lang)}</div>
                             <div class="diary-entry-date">${esc(formatDate(entry.createdAt))}</div>
                         </div>
                         ${isLoggedIn ? `<div class="diary-entry-actions">
@@ -260,7 +337,7 @@
                             <button class="diary-entry-del" aria-label="${esc(t('entry.delete', 'Löschen'))}" data-del="${esc(entry.id)}">✕</button>
                         </div>` : ""}
                     </div>
-                    ${entry.text ? `<p class="diary-entry-text-preview">${esc(entry.text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
+                    ${text ? `<p class="diary-entry-text-preview">${esc(text)}</p><p class="diary-entry-more">${esc(t('entry.readMore', 'Weiterlesen →'))}</p>` : ""}
                     ${photos ? `<div class="diary-entry-photos">${photos}</div>` : ""}
                 </article>`;
         }
@@ -278,12 +355,15 @@
         }
 
         function openDetailView(entry) {
+            const lang = currentLang();
+            const title = localizedField(entry, "title", lang);
+            const text = localizedField(entry, "text", lang);
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}">`).join("");
             const div = openBackdrop(`
-                <h2>${esc(entry.title)}</h2>
+                <h2>${esc(title)}${autoBadge(entry, lang)}</h2>
                 <div class="diary-detail-date">${esc(formatDate(entry.createdAt))}</div>
-                ${entry.text ? `<p class="diary-detail-text">${esc(entry.text)}</p>` : ""}
+                ${text ? `<p class="diary-detail-text">${esc(text)}</p>` : ""}
                 ${photos ? `<div class="diary-entry-photos" style="margin-top:1rem">${photos}</div>` : ""}
                 ${isLoggedIn ? `<div class="diary-sheet-actions">
                     <button type="button" class="diary-btn diary-btn-secondary" id="detail-edit">${esc(t('entry.edit', 'Bearbeiten'))}</button>
@@ -446,8 +526,16 @@
         }
 
         function openEntrySheet(existingEntry) {
+            const defaultWriteLang = (function () {
+                try { return existingEntry ? (existingEntry.origLang || "ru") : (localStorage.getItem("diary-write-lang") || "ru"); }
+                catch (e) { return existingEntry ? (existingEntry.origLang || "ru") : "ru"; }
+            })();
             const div = openBackdrop(`
                 <h2>${existingEntry ? esc(t('entrySheet.editTitle', 'Tag bearbeiten')) : esc(t('entrySheet.title', 'Neuer Tag'))}</h2>
+                <div class="entry-lang-row">
+                    <label for="entry-write-lang">${esc(t('entrySheet.writeLangLabel', 'Ich schreibe auf'))}</label>
+                    <select id="entry-write-lang">${ALL_LANGS.map((l) => `<option value="${l}"${l === defaultWriteLang ? " selected" : ""}>${esc(LANG_NAMES[l])}</option>`).join("")}</select>
+                </div>
                 <div class="diary-field"><label for="entry-title">${esc(t('entrySheet.titleLabel', 'Tag-Titel'))}</label>
                 <input type="text" id="entry-title" placeholder="${esc(t('entrySheet.titlePlaceholder', 'z. B. Tag 3 – Barcelos'))}" value="${existingEntry ? esc(existingEntry.title || "") : ""}"></div>
                 <div class="diary-field"><label for="entry-text">${esc(t('entrySheet.textLabel', 'Wie war dein Tag?'))}</label>
@@ -455,6 +543,10 @@
                 <div class="diary-field"><label>${esc(t('entrySheet.photosLabel', 'Fotos'))}</label>
                     <label class="diary-photo-picker">${esc(t('entrySheet.addPhotos', '📷 Fotos hinzufügen'))}<input type="file" id="entry-photos" accept="image/*" multiple></label>
                     <div class="diary-preview-grid" id="entry-preview"></div>
+                </div>
+                <div class="diary-field">
+                    <button type="button" class="diary-translate-btn" id="entry-translate">${esc(t('entrySheet.translateBtn', '🌐 Automatisch übersetzen'))}</button>
+                    <div class="translate-preview" id="translate-preview"></div>
                 </div>
                 <div class="diary-error" id="entry-error"></div>
                 <div class="diary-sheet-actions">
@@ -473,20 +565,89 @@
                 renderPreviewGrid(previewEl);
                 e.target.value = "";
             });
+
+            const titleInput = div.querySelector("#entry-title");
+            const textArea = div.querySelector("#entry-text");
+            const writeLangSelect = div.querySelector("#entry-write-lang");
+            const translateBtn = div.querySelector("#entry-translate");
+            const translatePreviewEl = div.querySelector("#translate-preview");
+            let translated = null;
+            let translatedKey = null;
+            const defaultTranslateLabel = translateBtn.textContent;
+
+            function resetTranslateState() {
+                translated = null;
+                translatedKey = null;
+                translateBtn.textContent = defaultTranslateLabel;
+                translatePreviewEl.classList.remove("show");
+                translatePreviewEl.innerHTML = "";
+            }
+            titleInput.addEventListener("input", resetTranslateState);
+            textArea.addEventListener("input", resetTranslateState);
+            writeLangSelect.addEventListener("change", resetTranslateState);
+
+            translateBtn.addEventListener("click", async () => {
+                const title = titleInput.value.trim();
+                const text = textArea.value.trim();
+                if (!title && !text) return;
+                const source = writeLangSelect.value;
+                const targets = otherLangs(source);
+                translateBtn.disabled = true;
+                translateBtn.textContent = t('entrySheet.translating', 'Übersetze …');
+                translatePreviewEl.classList.remove("show");
+                translatePreviewEl.innerHTML = "";
+                try {
+                    const result = {};
+                    for (const tgt of targets) {
+                        result[tgt] = {
+                            title: title ? await translateLongText(title, source, tgt) : "",
+                            text: text ? await translateLongText(text, source, tgt) : "",
+                        };
+                    }
+                    translated = result;
+                    translatedKey = source + "::" + title + "::" + text;
+                    translatePreviewEl.innerHTML = `<div class="translate-preview-hint">${esc(t('entrySheet.translatePreviewHint', 'Bitte kurz prüfen:'))}</div>` +
+                        targets.map((tgt) => `
+                            <div class="translate-preview-block">
+                                <strong>${esc(LANG_NAMES[tgt])}</strong>
+                                <div class="translate-preview-title">${esc(result[tgt].title)}</div>
+                                <div class="translate-preview-text">${esc(result[tgt].text)}</div>
+                            </div>`).join("");
+                    translatePreviewEl.classList.add("show");
+                    translateBtn.textContent = t('entrySheet.translateDone', 'Übersetzung erstellt ✓');
+                } catch (err) {
+                    translatePreviewEl.innerHTML = `<div class="diary-error show">${esc(t('entrySheet.translateFailed', 'Übersetzung fehlgeschlagen: '))}${esc(err.message)}</div>`;
+                    translatePreviewEl.classList.add("show");
+                    translateBtn.textContent = defaultTranslateLabel;
+                } finally {
+                    translateBtn.disabled = false;
+                }
+            });
+
             div.querySelector("#entry-save").addEventListener("click", async () => {
-                const title = div.querySelector("#entry-title").value.trim();
-                const text = div.querySelector("#entry-text").value.trim();
+                const title = titleInput.value.trim();
+                const text = textArea.value.trim();
                 const errEl = div.querySelector("#entry-error");
                 const btn = div.querySelector("#entry-save");
                 if (!title) { errEl.textContent = t('entrySheet.titleRequired', 'Bitte gib dem Tag einen Titel.'); errEl.classList.add("show"); return; }
                 btn.disabled = true; btn.textContent = t('entrySheet.saving', 'Speichere …');
+                const source = writeLangSelect.value;
+                try { localStorage.setItem("diary-write-lang", source); } catch (e) { /* ignore */ }
+                const payload = { title, text, photos: draftPhotos.slice(), origLang: source };
+                payload["title_" + source] = title;
+                payload["text_" + source] = text;
+                if (translated && translatedKey === source + "::" + title + "::" + text) {
+                    for (const tgt of otherLangs(source)) {
+                        payload["title_" + tgt] = translated[tgt].title;
+                        payload["text_" + tgt] = translated[tgt].text;
+                    }
+                }
                 try {
                     if (existingEntry) {
-                        await updateDoc(doc(db, "entries", existingEntry.id), { title, text, photos: draftPhotos.slice() });
+                        await updateDoc(doc(db, "entries", existingEntry.id), payload);
                     } else {
-                        await addDoc(collection(db, "entries"), {
-                            title, text, photos: draftPhotos.slice(), createdAt: serverTimestamp()
-                        });
+                        payload.createdAt = serverTimestamp();
+                        await addDoc(collection(db, "entries"), payload);
                     }
                     closeBackdrop();
                 } catch (e) {
