@@ -258,7 +258,6 @@
 
         // ---- Translation (MyMemory: free, keyless, works on every device/browser) ----
         const ALL_LANGS = ["de", "en", "ru"];
-        function otherLangs(sourceLang) { return ALL_LANGS.filter((l) => l !== sourceLang); }
 
         async function translateChunk(text, source, target) {
             if (!text.trim()) return "";
@@ -752,10 +751,15 @@
                 const payload = { title, text, photos: draftPhotos.slice(), origLang: source };
                 // Any language not freshly (re-)translated for THIS exact text gets explicitly
                 // cleared rather than left stale — otherwise editing an entry without re-clicking
-                // translate would silently leave old, now-outdated translations behind.
+                // translate would silently leave old, now-outdated translations behind. This
+                // includes the source language itself: a same-language mirror is never stored,
+                // because detectLang works on the whole title+text and can call e.g. "ru" for a
+                // text that's mostly Russian with a German clause mixed in — storing that clause
+                // untranslated as the "trusted" ru field would permanently hide it from the
+                // per-word-run translation that runs on render/on-demand instead.
                 const freshKey = title + "::" + text;
-                for (const tgt of otherLangs(source)) {
-                    if (translatedFor === freshKey && translatedMap[tgt]) {
+                for (const tgt of ALL_LANGS) {
+                    if (tgt !== source && translatedFor === freshKey && translatedMap[tgt]) {
                         payload["title_" + tgt] = translatedMap[tgt].title;
                         payload["text_" + tgt] = translatedMap[tgt].text;
                     } else {
