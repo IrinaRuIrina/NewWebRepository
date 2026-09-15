@@ -403,28 +403,30 @@
             ).join("")}</div>`;
         }
 
-        const onDemandTranslateCache = {};
+        const onDemandTranslateCache = {}; // "<entryId>_<lang>_<field>" -> translated string
+
+        // Title and text are resolved independently — an entry can have a manual
+        // translation for one and not the other (e.g. text_ru filled in but title_ru left
+        // blank), and gating both on a single field's trust used to silently discard a
+        // perfectly good manual translation the moment the OTHER field wasn't trusted.
+        async function resolveTranslatedField(entry, field, targetLang) {
+            if (hasTrustedField(entry, field, targetLang)) return entry[field + "_" + targetLang];
+            const orig = entry[field] || "";
+            if (!orig) return "";
+            const cacheKey = entry.id + "_" + targetLang + "_" + field;
+            if (onDemandTranslateCache[cacheKey] != null) return onDemandTranslateCache[cacheKey];
+            const translated = await translateLongText(orig, targetLang);
+            onDemandTranslateCache[cacheKey] = translated;
+            return translated;
+        }
+
         async function switchEntryLang(entry, targetLang, titleEl, textEl, btn) {
-            if (hasTrustedField(entry, "title", targetLang)) {
-                if (titleEl) titleEl.textContent = entry["title_" + targetLang];
-                if (textEl) textEl.textContent = entry["text_" + targetLang] || "";
-                return;
-            }
-            const cacheKey = entry.id + "_" + targetLang;
-            if (onDemandTranslateCache[cacheKey]) {
-                if (titleEl) titleEl.textContent = onDemandTranslateCache[cacheKey].title;
-                if (textEl) textEl.textContent = onDemandTranslateCache[cacheKey].text;
-                return;
-            }
-            const origTitle = entry.title || "";
-            const origText = entry.text || "";
             const origLabel = btn.textContent;
             btn.disabled = true;
             btn.textContent = "…";
             try {
-                const title = origTitle ? await translateLongText(origTitle, targetLang) : "";
-                const text = origText ? await translateLongText(origText, targetLang) : "";
-                onDemandTranslateCache[cacheKey] = { title, text };
+                const title = await resolveTranslatedField(entry, "title", targetLang);
+                const text = await resolveTranslatedField(entry, "text", targetLang);
                 if (titleEl) titleEl.textContent = title;
                 if (textEl) textEl.textContent = text;
             } catch (err) {
