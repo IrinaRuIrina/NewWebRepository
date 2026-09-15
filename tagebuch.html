@@ -113,14 +113,12 @@
         .diary-btn-secondary { background: transparent; color: var(--text-soft); border-color: var(--line); }
         .diary-error { color: var(--danger); font-size: 0.82rem; margin-top: 0.6rem; display: none; }
         .diary-error.show { display: block; }
-        .translate-preview { margin-top: 0.9rem; display: none; flex-direction: column; gap: 0.7rem; }
-        .translate-preview.show { display: flex; }
-        .translate-preview-hint { font-size: 0.75rem; color: #948c7d; }
-        .translate-preview-block { background: #f6f1ea; border-radius: 10px; padding: 0.7rem 0.85rem; font-size: 0.88rem; }
-        .translate-preview-block strong { display: block; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--accent-dark); margin-bottom: 0.3rem; }
-        .translate-preview-title { font-weight: 600; margin-bottom: 0.2rem; }
-        .translate-preview-text { color: var(--text-soft); white-space: pre-wrap; line-height: 1.5; }
-        .diary-auto-badge { font-size: 0.68rem; color: #948c7d; border: 1px solid var(--line); border-radius: 999px; padding: 0.15rem 0.5rem; margin-left: 0.5rem; white-space: nowrap; }
+        .diary-translate-hint { font-size: 0.75rem; color: #948c7d; margin: -0.3rem 0 0.8rem; }
+        .diary-manual-translation-block { margin-bottom: 0.9rem; }
+        .diary-manual-translation-block:last-child { margin-bottom: 0; }
+        .diary-manual-translation-lang { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; color: var(--accent-dark); margin-bottom: 0.3rem; }
+        .diary-manual-translation-block input[type="text"] { margin-bottom: 0.4rem; }
+        .diary-manual-translation-block textarea { min-height: 4.5rem; }
         .diary-translate-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.6rem; }
         .diary-translate-inline {
             display: inline-flex; align-items: center; gap: 0.35rem;
@@ -271,6 +269,11 @@
         }
 
         // ---- Translation (MyMemory: free, keyless, works on every device/browser) ----
+        // Used only for the on-demand "translate this entry" buttons a reader sees when an
+        // entry has no prepared translation yet. The entry editor itself no longer auto-
+        // translates — the diary's author writes/pastes each language's text by hand there
+        // (see openEntrySheet), since machine translation quality (esp. grammatical gender
+        // into Russian) wasn't reliable enough to save unreviewed.
         const ALL_LANGS = ["de", "en", "ru"];
 
         async function translateChunk(text, source, target) {
@@ -391,15 +394,6 @@
             if (hasTrustedField(entry, field, lang)) return entry[field + "_" + lang];
             return entry[field] || "";
         }
-        function isAutoTranslated(entry, lang) {
-            if (!hasTrustedField(entry, "title", lang)) return false;
-            return detectLang(entry.title || entry.text || "") !== lang;
-        }
-        function autoBadge(entry, lang) {
-            return isAutoTranslated(entry, lang)
-                ? `<span class="diary-auto-badge">🌐 ${esc(t('entry.autoTranslated', 'automatisch übersetzt'))}</span>`
-                : "";
-        }
         // Always the same 3 buttons (DE/EN/RU), everywhere, regardless of the site's
         // current language — clicking one shows THIS entry in that language, on top of
         // whatever the site language happens to be.
@@ -451,7 +445,7 @@
                 <article class="diary-entry" data-open="${esc(entry.id)}">
                     <div class="diary-entry-head">
                         <div>
-                            <div class="diary-entry-title" data-title-el="${esc(entry.id)}">${esc(title)}${autoBadge(entry, lang)}</div>
+                            <div class="diary-entry-title" data-title-el="${esc(entry.id)}">${esc(title)}</div>
                             <div class="diary-entry-date">${esc(formatDate(entry.createdAt))}</div>
                         </div>
                         ${isLoggedIn ? `<div class="diary-entry-actions">
@@ -484,7 +478,7 @@
             const photos = (entry.photos || []).map(p =>
                 `<img src="${p}" alt="${esc(t('photo.alt', 'Foto zum Tagebucheintrag'))}">`).join("");
             const div = openBackdrop(`
-                <h2 id="detail-title">${esc(title)}${autoBadge(entry, lang)}</h2>
+                <h2 id="detail-title">${esc(title)}</h2>
                 <div class="diary-detail-date">${esc(formatDate(entry.createdAt))}</div>
                 ${langButtonsHtml(entry.id)}
                 ${text ? `<p class="diary-detail-text" id="detail-text">${esc(text)}</p>` : ""}
@@ -720,9 +714,15 @@
                     <label class="diary-photo-picker">${esc(t('entrySheet.addPhotos', '📷 Fotos hinzufügen'))}<input type="file" id="entry-photos" accept="image/*" multiple></label>
                     <div class="diary-preview-grid" id="entry-preview"></div>
                 </div>
-                <div class="diary-field">
-                    <div class="diary-translate-row">${ALL_LANGS.map((l) => `<button type="button" class="diary-translate-inline" data-target-lang="${l}">${l.toUpperCase()}</button>`).join("")}</div>
-                    <div class="translate-preview" id="translate-preview"></div>
+                <div class="diary-field diary-manual-translations">
+                    <label>${esc(t('entrySheet.translationsLabel', 'Übersetzungen (von dir vorbereitet)'))}</label>
+                    <p class="diary-translate-hint">${esc(t('entrySheet.translationsHint', 'Leer lassen, wenn der Text oben schon in dieser Sprache ist.'))}</p>
+                    ${ALL_LANGS.map((l) => `
+                        <div class="diary-manual-translation-block">
+                            <div class="diary-manual-translation-lang">${l.toUpperCase()}</div>
+                            <input type="text" class="diary-manual-title" data-lang="${l}" placeholder="${esc(t('entrySheet.titleLabel', 'Tag-Titel'))}" value="${existingEntry ? esc(existingEntry["title_" + l] || "") : ""}">
+                            <textarea class="diary-manual-text" data-lang="${l}" placeholder="${esc(t('entrySheet.textLabel', 'Wie war dein Tag?'))}">${existingEntry ? esc(existingEntry["text_" + l] || "") : ""}</textarea>
+                        </div>`).join("")}
                 </div>
                 <div class="diary-error" id="entry-error"></div>
                 <div class="diary-sheet-actions">
@@ -744,58 +744,6 @@
 
             const titleInput = div.querySelector("#entry-title");
             const textArea = div.querySelector("#entry-text");
-            const translatePreviewEl = div.querySelector("#translate-preview");
-            let translatedFor = null; // "title::text" these translations were generated from
-            let translatedMap = {}; // { de: {title,text}, ru: {...} } — only the langs actually fetched
-
-            function resetTranslateState() {
-                translatedFor = null;
-                translatedMap = {};
-                translatePreviewEl.classList.remove("show");
-                translatePreviewEl.innerHTML = "";
-            }
-            titleInput.addEventListener("input", resetTranslateState);
-            textArea.addEventListener("input", resetTranslateState);
-
-            function renderTranslatePreview() {
-                const langs = Object.keys(translatedMap);
-                if (!langs.length) { translatePreviewEl.classList.remove("show"); translatePreviewEl.innerHTML = ""; return; }
-                translatePreviewEl.innerHTML = `<div class="translate-preview-hint">${esc(t('entrySheet.translatePreviewHint', 'Bitte kurz prüfen:'))}</div>` +
-                    langs.map((l) => `
-                        <div class="translate-preview-block">
-                            <strong>${l.toUpperCase()}</strong>
-                            <div class="translate-preview-title">${esc(translatedMap[l].title)}</div>
-                            <div class="translate-preview-text">${esc(translatedMap[l].text)}</div>
-                        </div>`).join("");
-                translatePreviewEl.classList.add("show");
-            }
-
-            div.querySelectorAll(".diary-translate-row [data-target-lang]").forEach((btn) => {
-                btn.addEventListener("click", async () => {
-                    const title = titleInput.value.trim();
-                    const text = textArea.value.trim();
-                    if (!title && !text) return;
-                    const key = title + "::" + text;
-                    if (translatedFor !== key) { translatedFor = key; translatedMap = {}; }
-                    const targetLang = btn.getAttribute("data-target-lang");
-                    if (translatedMap[targetLang]) { renderTranslatePreview(); return; }
-                    const origLabel = btn.textContent;
-                    btn.disabled = true;
-                    btn.textContent = "…";
-                    try {
-                        const tTitle = title ? await translateLongText(title, targetLang) : "";
-                        const tText = text ? await translateLongText(text, targetLang) : "";
-                        translatedMap[targetLang] = { title: tTitle, text: tText };
-                        renderTranslatePreview();
-                    } catch (err) {
-                        translatePreviewEl.innerHTML = `<div class="diary-error show">${esc(t('entrySheet.translateFailed', 'Übersetzung fehlgeschlagen: '))}${esc(err.message)}</div>`;
-                        translatePreviewEl.classList.add("show");
-                    } finally {
-                        btn.disabled = false;
-                        btn.textContent = origLabel;
-                    }
-                });
-            });
 
             div.querySelector("#entry-save").addEventListener("click", async () => {
                 const title = titleInput.value.trim();
@@ -806,23 +754,13 @@
                 btn.disabled = true; btn.textContent = t('entrySheet.saving', 'Speichere …');
                 const source = detectLang(title + " " + text);
                 const payload = { title, text, photos: draftPhotos.slice(), origLang: source };
-                // Any language not freshly (re-)translated for THIS exact text gets explicitly
-                // cleared rather than left stale — otherwise editing an entry without re-clicking
-                // translate would silently leave old, now-outdated translations behind. This
-                // includes the source language itself: a same-language mirror is never stored,
-                // because detectLang works on the whole title+text and can call e.g. "ru" for a
-                // text that's mostly Russian with a German clause mixed in — storing that clause
-                // untranslated as the "trusted" ru field would permanently hide it from the
-                // per-word-run translation that runs on render/on-demand instead.
-                const freshKey = title + "::" + text;
+                // Translations are written by hand here (not machine-translated), so whatever
+                // is in each language block is simply saved as-is; left blank clears it.
                 for (const tgt of ALL_LANGS) {
-                    if (tgt !== source && translatedFor === freshKey && translatedMap[tgt]) {
-                        payload["title_" + tgt] = translatedMap[tgt].title;
-                        payload["text_" + tgt] = translatedMap[tgt].text;
-                    } else {
-                        payload["title_" + tgt] = null;
-                        payload["text_" + tgt] = null;
-                    }
+                    const tTitle = div.querySelector(`.diary-manual-title[data-lang="${tgt}"]`).value.trim();
+                    const tText = div.querySelector(`.diary-manual-text[data-lang="${tgt}"]`).value.trim();
+                    payload["title_" + tgt] = tTitle || null;
+                    payload["text_" + tgt] = tText || null;
                 }
                 try {
                     if (existingEntry) {
