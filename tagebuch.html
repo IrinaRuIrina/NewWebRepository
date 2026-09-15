@@ -44,6 +44,8 @@
         .diary-empty .shell { font-size: 2.2rem; display: block; margin-bottom: 0.8rem; }
 
         .diary-feed { display: flex; flex-direction: column; gap: 1.1rem; }
+        .diary-load-more { text-align: center; margin-top: 1.4rem; }
+        .diary-load-more .diary-btn { flex: none; padding: 0.7rem 1.6rem; }
         .diary-entry {
             background: var(--surface); border: 1px solid var(--line); border-radius: 14px;
             padding: 1.1rem 1.2rem 1.2rem; box-shadow: 0 2px 10px rgba(60,45,25,0.08); position: relative;
@@ -129,7 +131,7 @@
         .diary-translate-inline:disabled { opacity: 0.6; cursor: default; }
         .diary-lightbox { position: fixed; inset: 0; background: rgba(10,8,5,0.9); z-index: 1001; display: none; align-items: center; justify-content: center; padding: 1.5rem; touch-action: pan-y; }
         .diary-lightbox.show { display: flex; }
-        .diary-lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; user-select: none; -webkit-user-drag: none; }
+        .diary-lightbox img { width: auto; height: auto; max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 6px; user-select: none; -webkit-user-drag: none; }
         .lightbox-close, .lightbox-nav {
             position: absolute; background: rgba(255,255,255,0.15); color: #fff; border: none; border-radius: 50%;
             cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 41;
@@ -222,7 +224,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
         import {
             getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
-            onSnapshot, query, orderBy, serverTimestamp
+            onSnapshot, query, orderBy, limit, serverTimestamp, getCountFromServer
         } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
         import {
             getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -244,6 +246,18 @@
         let isLoggedIn = false;
         let entries = [];
         let draftPhotos = [];
+
+        // Entries carry their photos inline as base64 (see resizeImage()/payload.photos below),
+        // so fetching "all entries" in one go means downloading every photo ever posted on every
+        // page view. Paginating the live listener keeps the first paint fast; the accurate total
+        // comes from a separate lightweight aggregation query that never downloads entry bodies.
+        let entriesLoaded = false;
+        let totalCount = null;
+        let hasMore = false;
+        let loadingMore = false;
+        let pageSize = 15;
+        const PAGE_STEP = 15;
+        let unsubscribeEntries = null;
 
         function esc(s) {
             return String(s == null ? "" : s).replace(/[&<>"']/g, c =>
@@ -497,10 +511,34 @@
         function paint() {
             const feed = document.getElementById("diary-feed");
             const count = document.getElementById("diary-count");
-            count.textContent = entries.length + " " + pluralEntries(entries.length);
+
+            if (totalCount != null) count.textContent = totalCount + " " + pluralEntries(totalCount);
+            else if (entriesLoaded) count.textContent = entries.length + " " + pluralEntries(entries.length);
+            else count.textContent = t('count.loading', 'Lade Einträge …');
+
+            // Nothing rendered yet for the feed itself until the first page has actually
+            // arrived — otherwise the "no entries" empty state flashes before real data comes in.
+            if (!entriesLoaded) {
+                document.getElementById("diary-fab").classList.toggle("show", isLoggedIn);
+                renderAuthStatus();
+                return;
+            }
+
+            const loadMoreHtml = hasMore
+                ? `<div class="diary-load-more"><button type="button" class="diary-btn diary-btn-secondary" id="diary-load-more-btn" ${loadingMore ? "disabled" : ""}>${esc(loadingMore ? t('entries.loadingMore', 'Lade …') : t('entries.loadMore', 'Weitere Einträge laden'))}</button></div>`
+                : "";
             feed.innerHTML = entries.length
-                ? `<div class="diary-feed">${entries.map(renderEntry).join("")}</div>`
+                ? `<div class="diary-feed">${entries.map(renderEntry).join("")}</div>${loadMoreHtml}`
                 : `<div class="diary-empty"><span class="shell">🐚</span><p>${esc(t('empty.text', 'Noch keine Einträge. Der erste Tag auf dem Camino beginnt hier.'))}</p></div>`;
+
+            if (hasMore) {
+                feed.querySelector("#diary-load-more-btn").addEventListener("click", () => {
+                    pageSize += PAGE_STEP;
+                    loadingMore = true;
+                    paint();
+                    subscribeEntries();
+                });
+            }
 
             feed.querySelectorAll("[data-open]").forEach(card => {
                 card.addEventListener("click", (e) => {
@@ -556,13 +594,32 @@
             }
         }
 
-        onSnapshot(query(collection(db, "entries"), orderBy("createdAt", "desc")), (snap) => {
-            entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        function subscribeEntries() {
+            if (unsubscribeEntries) unsubscribeEntries();
+            unsubscribeEntries = onSnapshot(
+                query(collection(db, "entries"), orderBy("createdAt", "desc"), limit(pageSize)),
+                (snap) => {
+                    entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                    entriesLoaded = true;
+                    loadingMore = false;
+                    hasMore = totalCount != null ? entries.length < totalCount : entries.length >= pageSize;
+                    paint();
+                }, (err) => {
+                    loadingMore = false;
+                    document.getElementById("diary-count").textContent = t('count.error', 'Fehler beim Laden.');
+                    console.error(err);
+                }
+            );
+        }
+        subscribeEntries();
+
+        // Cheap aggregation query — returns just the number of documents, never their
+        // (photo-heavy) bodies — so the real total can show immediately regardless of pageSize.
+        getCountFromServer(collection(db, "entries")).then((snap) => {
+            totalCount = snap.data().count;
+            hasMore = entries.length < totalCount;
             paint();
-        }, (err) => {
-            document.getElementById("diary-count").textContent = t('count.error', 'Fehler beim Laden.');
-            console.error(err);
-        });
+        }).catch((err) => console.error(err));
 
         document.addEventListener("i18n:applied", () => { paint(); });
 
