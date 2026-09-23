@@ -56,6 +56,17 @@
         .pf-list { list-style: none; margin: 0; padding: 0; }
         .pf-list li { position: relative; padding: 0.5rem 0.85rem 0.5rem 1.6rem; border-bottom: 1px solid var(--line); font-size: 0.94rem; color: var(--text); }
         .pf-list li::before { content: "🐚"; position: absolute; left: 0.15rem; font-size: 0.75rem; }
+
+        .pf-gallery { margin-bottom: 2.6rem; }
+        .pf-gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
+        .pf-gallery-item { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 22px rgba(60,45,25,0.16); background: #eae5de; }
+        .pf-gallery-item img { width: 100%; height: 290px; object-fit: cover; display: block; transition: transform 0.5s ease; }
+        .pf-gallery-item:hover img { transform: scale(1.04); }
+        .pf-gallery-cap { margin-top: 0.55rem; text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.92rem; color: var(--text-soft); }
+        @media (max-width: 680px) {
+            .pf-gallery-grid { grid-template-columns: 1fr; gap: 1.4rem; }
+            .pf-gallery-item img { height: 220px; }
+        }
     </style>
 </head>
 <body>
@@ -93,6 +104,19 @@
     <div class="pf-wrap">
 
         <p class="pf-body-note">Durchgestrichene Sachen sind die, die ich während des Laufens entweder weglassen musste oder gar nicht auf die Reise mitgenommen habe.</p>
+
+        <div class="pf-gallery">
+            <div class="pf-gallery-grid">
+                <figure class="pf-gallery-item"><img src="images/jakobsweg/packliste-final-rucksack.jpg" alt="Angezogen und mit gepacktem Rucksack, startklar"></figure>
+                <figure class="pf-gallery-item"><img src="images/jakobsweg/packliste-final-waage.jpg" alt="Gepäckwaage zeigt 4,58 kg"></figure>
+                <figure class="pf-gallery-item"><img src="images/jakobsweg/packliste-final-ausgebreitet.jpg" alt="Alle Packliste-Gegenstände auf dem Tisch ausgebreitet"></figure>
+            </div>
+            <div class="pf-gallery-grid">
+                <p class="pf-gallery-cap" data-i18n="pf.foto.1">Angezogen und aufgeschnallt — startklar</p>
+                <p class="pf-gallery-cap" data-i18n="pf.foto.2">4,58 kg auf der Gepäckwaage</p>
+                <p class="pf-gallery-cap" data-i18n="pf.foto.3">Alles ausgebreitet, bevor es in den Rucksack wandert</p>
+            </div>
+        </div>
 
         <div class="pf-section">
             <h2 data-i18n="pf.h2.koerper">Am Körper / in der Hand</h2>
