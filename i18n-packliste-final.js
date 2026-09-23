@@ -23,6 +23,9 @@ window.I18N = {
         "pf.foto.3": "Alles ausgebreitet, bevor es in den Rucksack wandert",
 
         "pf.legend": "Durchgestrichene Sachen sind die, die ich während des Laufens entweder weglassen musste oder gar nicht auf die Reise mitgenommen habe.",
+        "pf.lightbox.prev": "Vorheriges Bild",
+        "pf.lightbox.close": "Schließen",
+        "pf.lightbox.next": "Nächstes Bild",
 
         "pf.h2.koerper": "Am Körper / in der Hand",
         "pf.koerper.1": "New Balance Nitrel V6 + Einlagen CURREX RunPro Dynamische Einlegesohle",
@@ -118,6 +121,9 @@ window.I18N = {
         "pf.foto.3": "Everything laid out before it went into the pack",
 
         "pf.legend": "Crossed-out items are the ones I either had to leave behind while walking or never took on the trip at all.",
+        "pf.lightbox.prev": "Previous image",
+        "pf.lightbox.close": "Close",
+        "pf.lightbox.next": "Next image",
 
         "pf.h2.koerper": "On the body / in hand",
         "pf.koerper.1": "New Balance Nitrel V6 + CURREX RunPro Dynamic insoles",
@@ -213,6 +219,9 @@ window.I18N = {
         "pf.foto.3": "Всё разложено перед укладкой в рюкзак",
 
         "pf.legend": "Зачёркнутые вещи — те, которые я либо оставила по пути, либо вообще не взяла с собой в поездку.",
+        "pf.lightbox.prev": "Предыдущее фото",
+        "pf.lightbox.close": "Закрыть",
+        "pf.lightbox.next": "Следующее фото",
 
         "pf.h2.koerper": "На теле / в руке",
         "pf.koerper.1": "Кроссовки New Balance Nitrel V6 + стельки CURREX RunPro Dynamic",

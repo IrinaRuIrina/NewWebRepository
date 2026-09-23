@@ -498,6 +498,12 @@
                 div.querySelector("#detail-edit").addEventListener("click", () => openEntrySheet(entry));
                 div.querySelector("#detail-del").addEventListener("click", (e) => deleteEntry(entry.id, e.target));
             }
+            if (lang !== "de" && !hasTrustedField(entry, "title", lang)) {
+                const detailTitleEl = div.querySelector("#detail-title");
+                resolveTranslatedField(entry, "title", lang).then((translated) => {
+                    if (translated && detailTitleEl.isConnected) detailTitleEl.textContent = translated;
+                }).catch(() => {});
+            }
             const detailImgs = Array.from(div.querySelectorAll(".diary-entry-photos img"));
             detailImgs.forEach((img, idx) => {
                 img.addEventListener("click", () => openLightbox(detailImgs.map((i) => i.src), idx));
@@ -574,6 +580,22 @@
                     });
                 });
             });
+            autoTranslateTitles(lang);
+        }
+
+        // Titles ("Tag 12" etc.) are short, so translating them automatically on render
+        // is cheap and doesn't need a reader click — unlike the full entry text, which
+        // stays behind the manual DE/EN/RU buttons (see translateLongText's comment above).
+        function autoTranslateTitles(lang) {
+            if (lang === "de") return;
+            for (const entry of entries) {
+                if (hasTrustedField(entry, "title", lang)) continue;
+                const titleEl = document.querySelector(`[data-title-el="${CSS.escape(entry.id)}"]`);
+                if (!titleEl) continue;
+                resolveTranslatedField(entry, "title", lang).then((translated) => {
+                    if (translated && titleEl.isConnected) titleEl.textContent = translated;
+                }).catch(() => {});
+            }
 
             document.getElementById("diary-fab").classList.toggle("show", isLoggedIn);
             renderAuthStatus();
