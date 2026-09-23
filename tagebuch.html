@@ -511,6 +511,7 @@
         }
 
         function paint() {
+            const lang = currentLang();
             const feed = document.getElementById("diary-feed");
             const count = document.getElementById("diary-count");
 
@@ -581,6 +582,9 @@
                 });
             });
             autoTranslateTitles(lang);
+
+            document.getElementById("diary-fab").classList.toggle("show", isLoggedIn);
+            renderAuthStatus();
         }
 
         // Titles ("Tag 12" etc.) are short, so translating them automatically on render
@@ -596,9 +600,6 @@
                     if (translated && titleEl.isConnected) titleEl.textContent = translated;
                 }).catch(() => {});
             }
-
-            document.getElementById("diary-fab").classList.toggle("show", isLoggedIn);
-            renderAuthStatus();
         }
 
         function renderAuthStatus() {
