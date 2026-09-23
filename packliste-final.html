@@ -53,6 +53,14 @@
         .pf-note { font-size: 0.9rem; color: var(--text-soft); text-align: center; margin-top: 1rem; font-style: italic; }
         .pf-body-note { font-size: 0.85rem; color: #6a655d; margin: -0.6rem 0 1rem; }
 
+        .pf-legend {
+            display: flex; align-items: center; gap: 0.6rem;
+            font-size: 0.85rem; color: #2f6b47; background: #eaf3ec;
+            border-left: 3px solid #4a9464; border-radius: 4px;
+            padding: 0.7rem 1rem; margin: 0 0 1.8rem;
+        }
+        .pf-legend s { color: #2f6b47; }
+
         .pf-list { list-style: none; margin: 0; padding: 0; }
         .pf-list li { position: relative; padding: 0.5rem 0.85rem 0.5rem 1.6rem; border-bottom: 1px solid var(--line); font-size: 0.94rem; color: var(--text); }
         .pf-list li::before { content: "🐚"; position: absolute; left: 0.15rem; font-size: 0.75rem; }
@@ -128,8 +136,6 @@
 
     <div class="pf-wrap">
 
-        <p class="pf-body-note">Durchgestrichene Sachen sind die, die ich während des Laufens entweder weglassen musste oder gar nicht auf die Reise mitgenommen habe.</p>
-
         <div class="pf-gallery">
             <div class="pf-gallery-grid">
                 <figure class="pf-gallery-item"><img src="images/jakobsweg/packliste-final-rucksack.jpg" alt="Angezogen und mit gepacktem Rucksack, startklar"></figure>
@@ -142,6 +148,8 @@
                 <p class="pf-gallery-cap" data-i18n="pf.foto.3">Alles ausgebreitet, bevor es in den Rucksack wandert</p>
             </div>
         </div>
+
+        <p class="pf-legend" data-i18n="pf.legend">Durchgestrichene Sachen sind die, die ich während des Laufens entweder weglassen musste oder gar nicht auf die Reise mitgenommen habe.</p>
 
         <div class="pf-section">
             <h2 data-i18n="pf.h2.koerper">Am Körper / in der Hand</h2>

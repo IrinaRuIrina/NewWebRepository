@@ -22,6 +22,8 @@ window.I18N = {
         "pf.foto.2": "4,58 kg auf der Gepäckwaage",
         "pf.foto.3": "Alles ausgebreitet, bevor es in den Rucksack wandert",
 
+        "pf.legend": "Durchgestrichene Sachen sind die, die ich während des Laufens entweder weglassen musste oder gar nicht auf die Reise mitgenommen habe.",
+
         "pf.h2.koerper": "Am Körper / in der Hand",
         "pf.koerper.1": "New Balance Nitrel V6 + Einlagen CURREX RunPro Dynamische Einlegesohle",
         "pf.koerper.2": "Funktions-Shirt Nr. 1",
@@ -115,6 +117,8 @@ window.I18N = {
         "pf.foto.2": "4.58 kg on the luggage scale",
         "pf.foto.3": "Everything laid out before it went into the pack",
 
+        "pf.legend": "Crossed-out items are the ones I either had to leave behind while walking or never took on the trip at all.",
+
         "pf.h2.koerper": "On the body / in hand",
         "pf.koerper.1": "New Balance Nitrel V6 + CURREX RunPro Dynamic insoles",
         "pf.koerper.2": "Technical shirt no. 1",
@@ -207,6 +211,8 @@ window.I18N = {
         "pf.foto.1": "Одета и рюкзак на плечах — готова в путь",
         "pf.foto.2": "4,58 кг на весах для багажа",
         "pf.foto.3": "Всё разложено перед укладкой в рюкзак",
+
+        "pf.legend": "Зачёркнутые вещи — те, которые я либо оставила по пути, либо вообще не взяла с собой в поездку.",
 
         "pf.h2.koerper": "На теле / в руке",
         "pf.koerper.1": "Кроссовки New Balance Nitrel V6 + стельки CURREX RunPro Dynamic",
