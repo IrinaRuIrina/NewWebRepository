@@ -59,13 +59,38 @@
 
         .pf-gallery { margin-bottom: 2.6rem; }
         .pf-gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
-        .pf-gallery-item { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 22px rgba(60,45,25,0.16); background: #eae5de; }
+        .pf-gallery-item { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 22px rgba(60,45,25,0.16); background: #eae5de; cursor: zoom-in; }
         .pf-gallery-item img { width: 100%; height: 290px; object-fit: cover; display: block; transition: transform 0.5s ease; }
         .pf-gallery-item:hover img { transform: scale(1.04); }
         .pf-gallery-cap { margin-top: 0.55rem; text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.92rem; color: var(--text-soft); }
         @media (max-width: 680px) {
             .pf-gallery-grid { grid-template-columns: 1fr; gap: 1.4rem; }
             .pf-gallery-item img { height: 220px; }
+        }
+
+        .pf-lightbox { position: fixed; inset: 0; background: rgba(10,9,6,0.92); z-index: 60; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
+        .pf-lightbox.show { display: flex; }
+        .pf-lightbox-figure { position: relative; max-width: 92vw; max-height: 88vh; display: flex; flex-direction: column; align-items: center; }
+        .pf-lightbox img { max-width: 92vw; max-height: 78vh; border-radius: 8px; object-fit: contain; display: block; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        .pf-lightbox-cap { margin-top: 0.9rem; color: #f2ede5; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.05rem; text-align: center; }
+        .pf-lightbox-close {
+            position: absolute; top: -2.6rem; right: -0.5rem; background: none; border: none; color: #f2ede5;
+            font-size: 2rem; line-height: 1; cursor: pointer; padding: 0.3rem 0.6rem; opacity: 0.85;
+        }
+        .pf-lightbox-close:hover { opacity: 1; }
+        .pf-lightbox-nav {
+            position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none;
+            color: #f2ede5; font-size: 1.8rem; line-height: 1; width: 3rem; height: 3rem; border-radius: 50%;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;
+        }
+        .pf-lightbox-nav:hover { background: rgba(255,255,255,0.22); }
+        .pf-lightbox-prev { left: 1rem; }
+        .pf-lightbox-next { right: 1rem; }
+        @media (max-width: 680px) {
+            .pf-lightbox-close { top: -2.4rem; right: 0; }
+            .pf-lightbox-nav { width: 2.5rem; height: 2.5rem; font-size: 1.5rem; }
+            .pf-lightbox-prev { left: 0.3rem; }
+            .pf-lightbox-next { right: 0.3rem; }
         }
     </style>
 </head>
@@ -248,6 +273,58 @@
         };
         window.addEventListener('scroll', onScroll);
         onScroll();
+    </script>
+
+    <div class="pf-lightbox" id="pf-lightbox">
+        <button class="pf-lightbox-nav pf-lightbox-prev" id="pf-lightbox-prev" aria-label="Vorheriges Bild">‹</button>
+        <div class="pf-lightbox-figure">
+            <button class="pf-lightbox-close" id="pf-lightbox-close" aria-label="Schließen">&times;</button>
+            <img id="pf-lightbox-img" alt="">
+            <p class="pf-lightbox-cap" id="pf-lightbox-cap"></p>
+        </div>
+        <button class="pf-lightbox-nav pf-lightbox-next" id="pf-lightbox-next" aria-label="Nächstes Bild">›</button>
+    </div>
+    <script>
+        (function () {
+            const items = Array.from(document.querySelectorAll('.pf-gallery-item'));
+            const caps = Array.from(document.querySelectorAll('.pf-gallery-cap'));
+            const lightbox = document.getElementById('pf-lightbox');
+            const lightboxImg = document.getElementById('pf-lightbox-img');
+            const lightboxCap = document.getElementById('pf-lightbox-cap');
+            let current = 0;
+
+            function show(index) {
+                current = (index + items.length) % items.length;
+                const img = items[current].querySelector('img');
+                lightboxImg.src = img.src;
+                lightboxImg.alt = img.alt;
+                lightboxCap.textContent = caps[current] ? caps[current].textContent : '';
+            }
+
+            function open(index) {
+                show(index);
+                lightbox.classList.add('show');
+            }
+
+            function close() {
+                lightbox.classList.remove('show');
+            }
+
+            items.forEach((item, index) => {
+                item.addEventListener('click', () => open(index));
+            });
+
+            document.getElementById('pf-lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); show(current - 1); });
+            document.getElementById('pf-lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); show(current + 1); });
+            document.getElementById('pf-lightbox-close').addEventListener('click', close);
+            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
+            document.addEventListener('keydown', (e) => {
+                if (!lightbox.classList.contains('show')) return;
+                if (e.key === 'Escape') close();
+                if (e.key === 'ArrowLeft') show(current - 1);
+                if (e.key === 'ArrowRight') show(current + 1);
+            });
+        })();
     </script>
 
 </body>
