@@ -1,3 +1,4 @@
+// Übersetzungen (DE/EN/RU) für notizen.html – wird von js/i18n.js verwendet.
 window.I18N = {
     de: {
         "doc.title": "Notizen",

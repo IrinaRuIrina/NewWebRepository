@@ -1,7 +1,18 @@
+// Mehrsprachigkeit (DE/EN/RU) für alle Seiten.
+// Die Texte stehen je Seite in js/uebersetzungen/<seite>.js (window.I18N).
+// Elemente werden über Attribute übersetzt:
+//   data-i18n             -> Textinhalt
+//   data-i18n-html        -> HTML-Inhalt
+//   data-i18n-placeholder -> Platzhalter von Eingabefeldern
+//   data-i18n-aria-label  -> aria-label
+//   data-i18n-alt         -> alt-Text von Bildern
+// Die gewählte Sprache wird im localStorage gemerkt. Nach jedem Wechsel wird das
+// Ereignis "i18n:applied" ausgelöst, damit dynamische Inhalte neu gezeichnet werden.
 (function () {
     "use strict";
     var STORAGE_KEY = "site-lang";
 
+    // Gespeicherte Sprache, sonst Deutsch
     function getLang() {
         var saved = null;
         try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
@@ -9,6 +20,7 @@
         return "de";
     }
 
+    // Übersetzt alle markierten Elemente der Seite in die angegebene Sprache
     function apply(lang) {
         if (!window.I18N || !window.I18N[lang]) return;
         var dict = window.I18N[lang];

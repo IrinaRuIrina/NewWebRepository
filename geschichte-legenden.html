@@ -4,65 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="doc.title">Geschichte &amp; Legenden — Camino Portugués | Barvenko</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="i18n-geschichte-legenden.js"></script>
-    <script src="i18n.js"></script>
-    <style>
-        :root { --accent: #8a5a38; --accent-dark: #6b452b; --line: #e3ddd5; --text: #33302c; --text-soft: #45413b; }
-        body { font-weight: 400; color: var(--text); }
-
-        .gl-back {
-            position: fixed; top: 84px; left: 1rem; z-index: 15;
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(255,255,255,0.92); color: var(--accent-dark);
-            padding: 0.6rem 1.1rem; border-radius: 999px; text-decoration: none;
-            font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 14px rgba(60,45,25,0.25);
-        }
-        .gl-back:hover { background: #fff; opacity: 1; }
-        .gl-back .arrow { font-size: 1.1rem; line-height: 1; }
-        @media (max-width: 700px) { .gl-back { top: 70px; } }
-
-        .gl-hero {
-            min-height: 38vh; display: flex; align-items: center; justify-content: center; text-align: center;
-            color: #fff; padding: 7rem 1.5rem 3rem; position: relative;
-            background: linear-gradient(135deg, rgba(70,50,35,0.72), rgba(120,90,60,0.55)), url('images/jakobsweg/deko-camino-schild.png');
-            background-size: cover; background-position: center 40%;
-        }
-        .gl-hero .kicker { font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.9; margin-bottom: 1rem; }
-        .gl-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: 0.02em; line-height: 1.25; }
-        .gl-hero .sub { margin-top: 0.8rem; font-size: 1rem; opacity: 0.92; max-width: 560px; margin-left: auto; margin-right: auto; }
-
-        .gl-wrap { max-width: 780px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
-
-        .gl-daynav { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 3rem; }
-        .gl-daynav a {
-            border: 1px solid var(--line); color: var(--accent-dark); font-weight: 500;
-            padding: 0.4rem 0.85rem; border-radius: 30px; font-size: 0.8rem; text-decoration: none;
-            transition: all 0.25s ease;
-        }
-        .gl-daynav a:hover { border-color: var(--accent); background: var(--accent); color: #fff; opacity: 1; }
-
-        .gl-intro { margin-bottom: 3rem; }
-        .gl-intro h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; color: var(--accent-dark); margin: 0 0 0.6rem; }
-        .gl-intro + .gl-intro { margin-top: -1.5rem; }
-
-        .gl-day { margin-bottom: 3.5rem; padding-bottom: 3.5rem; border-bottom: 1px solid var(--line); scroll-margin-top: 90px; }
-        .gl-day:last-of-type { border-bottom: none; }
-        .gl-day h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.65rem; color: var(--accent-dark); margin: 0 0 1.2rem; line-height: 1.3; }
-        .gl-day h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.6rem 0 0.5rem; }
-        .gl-day p { color: var(--text-soft); font-size: 1rem; line-height: 1.78; margin: 0 0 1rem; }
-        .gl-day em { color: var(--accent-dark); font-style: italic; }
-
-        .story-tip {
-            border-left: 3px solid var(--accent); background: #f5efe7; padding: 0.9rem 1.2rem; margin: 1.2rem 0 1.4rem;
-            font-size: 0.96rem; line-height: 1.7; color: var(--text-soft); border-radius: 0 6px 6px 0;
-        }
-
-        .gl-outro h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; color: var(--accent-dark); margin: 0 0 1rem; }
-    </style>
+    <script src="js/uebersetzungen/geschichte-legenden.js"></script>
+    <script src="js/i18n.js"></script>
+    <link rel="stylesheet" href="css/geschichte-legenden.css">
 </head>
 <body>
 
@@ -327,7 +275,7 @@
 
     </div>
 
-    <!-- Footer -->
+    <!-- Fußzeile -->
     <footer class="footer">
         <p data-i18n="footer.rights">&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
         <p><a href="index.html">barvenko.de</a></p>
@@ -335,27 +283,7 @@
 
     <a href="#top" class="back-to-top" data-i18n-aria-label="footer.top" aria-label="Nach oben">↑</a>
 
-    <script>
-        const toggle = document.querySelector('.nav-toggle');
-        const navLinks = document.querySelector('.nav-links');
-        toggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            toggle.classList.toggle('active');
-        });
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                toggle.classList.remove('active');
-            });
-        });
-        const navbar = document.querySelector('.navbar');
-        const onScroll = () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 50);
-            document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
-        };
-        window.addEventListener('scroll', onScroll);
-        onScroll();
-    </script>
+    <script src="js/navigation.js"></script>
 
 </body>
 </html>

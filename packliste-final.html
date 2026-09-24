@@ -4,103 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="doc.title">Endgültige Packliste — Camino Portugués | Barvenko</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
-    <script src="i18n-packliste-final.js"></script>
-    <script src="i18n.js"></script>
-    <style>
-        :root { --accent: #8a5a38; --accent-dark: #6b452b; --line: #e3ddd5; --text: #33302c; --text-soft: #45413b; }
-        body { font-weight: 400; color: var(--text); }
-
-        .pf-back {
-            position: fixed; top: 84px; left: 1rem; z-index: 15;
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            background: rgba(255,255,255,0.92); color: var(--accent-dark);
-            padding: 0.6rem 1.1rem; border-radius: 999px; text-decoration: none;
-            font-size: 0.85rem; font-weight: 500; box-shadow: 0 4px 14px rgba(60,45,25,0.25);
-        }
-        .pf-back:hover { background: #fff; opacity: 1; }
-        .pf-back .arrow { font-size: 1.1rem; line-height: 1; }
-        @media (max-width: 700px) { .pf-back { top: 70px; } }
-
-        .pf-hero {
-            min-height: 34vh; display: flex; align-items: center; justify-content: center; text-align: center;
-            color: #fff; padding: 7rem 1.5rem 3rem; position: relative;
-            background: linear-gradient(135deg, rgba(70,50,35,0.72), rgba(120,90,60,0.55)), url('images/jakobsweg/deko-bergpfad.png');
-            background-size: cover; background-position: center 30%;
-        }
-        .pf-hero .kicker { font-size: 0.8rem; letter-spacing: 0.35em; text-transform: uppercase; opacity: 0.9; margin-bottom: 1rem; }
-        .pf-hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.9rem, 4.5vw, 3rem); letter-spacing: 0.02em; line-height: 1.25; }
-        .pf-hero .sub { margin-top: 0.8rem; font-size: 0.95rem; opacity: 0.9; }
-
-        .pf-wrap { max-width: 760px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
-
-        .pf-section { margin-bottom: 3rem; }
-        .pf-section h2 { font-size: 1.5rem; color: var(--accent-dark); margin-bottom: 0.3rem; }
-        .pf-section .pf-h2-sub { font-size: 0.8rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 1.2rem; }
-
-        .guide-table-wrap { overflow-x: auto; margin: 0; }
-        table.guide-table { width: 100%; border-collapse: collapse; font-size: 0.94rem; min-width: 420px; color: var(--text); }
-        table.guide-table th, table.guide-table td { text-align: left; padding: 0.7rem 0.85rem; border-bottom: 1px solid var(--line); }
-        table.guide-table th { background: #eae5de; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; font-size: 0.74rem; color: var(--text); }
-        table.guide-table td:last-child, table.guide-table th:last-child { text-align: right; white-space: nowrap; }
-        table.guide-table tr:hover td { background: #faf7f3; }
-        table.guide-table tr.pf-sum td { font-weight: 600; background: #f5efe7; }
-        table.guide-table tr.pf-total td { font-weight: 700; background: #eae5de; }
-
-        .pf-note { font-size: 0.9rem; color: var(--text-soft); text-align: center; margin-top: 1rem; font-style: italic; }
-        .pf-body-note { font-size: 0.85rem; color: #6a655d; margin: -0.6rem 0 1rem; }
-
-        .pf-legend {
-            display: flex; align-items: center; gap: 0.6rem;
-            font-size: 0.85rem; color: #2f6b47; background: #eaf3ec;
-            border-left: 3px solid #4a9464; border-radius: 4px;
-            padding: 0.7rem 1rem; margin: 0 0 1.8rem;
-        }
-        .pf-legend s { color: #2f6b47; }
-
-        .pf-list { list-style: none; margin: 0; padding: 0; }
-        .pf-list li { position: relative; padding: 0.5rem 0.85rem 0.5rem 1.6rem; border-bottom: 1px solid var(--line); font-size: 0.94rem; color: var(--text); }
-        .pf-list li::before { content: "🐚"; position: absolute; left: 0.15rem; font-size: 0.75rem; }
-
-        .pf-gallery { margin-bottom: 2.6rem; }
-        .pf-gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.1rem; }
-        .pf-gallery-item { border-radius: 12px; overflow: hidden; box-shadow: 0 8px 22px rgba(60,45,25,0.16); background: #eae5de; cursor: zoom-in; }
-        .pf-gallery-item img { width: 100%; height: 290px; object-fit: cover; display: block; transition: transform 0.5s ease; }
-        .pf-gallery-item:hover img { transform: scale(1.04); }
-        .pf-gallery-cap { margin-top: 0.55rem; text-align: center; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.92rem; color: var(--text-soft); }
-        @media (max-width: 680px) {
-            .pf-gallery-grid { grid-template-columns: 1fr; gap: 1.4rem; }
-            .pf-gallery-item img { height: 220px; }
-        }
-
-        .pf-lightbox { position: fixed; inset: 0; background: rgba(10,9,6,0.92); z-index: 60; display: none; align-items: center; justify-content: center; padding: 1.5rem; }
-        .pf-lightbox.show { display: flex; }
-        .pf-lightbox-figure { position: relative; max-width: 92vw; max-height: 88vh; display: flex; flex-direction: column; align-items: center; }
-        .pf-lightbox img { max-width: 92vw; max-height: 78vh; border-radius: 8px; object-fit: contain; display: block; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
-        .pf-lightbox-cap { margin-top: 0.9rem; color: #f2ede5; font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.05rem; text-align: center; }
-        .pf-lightbox-close {
-            position: absolute; top: -2.6rem; right: -0.5rem; background: none; border: none; color: #f2ede5;
-            font-size: 2rem; line-height: 1; cursor: pointer; padding: 0.3rem 0.6rem; opacity: 0.85;
-        }
-        .pf-lightbox-close:hover { opacity: 1; }
-        .pf-lightbox-nav {
-            position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: none;
-            color: #f2ede5; font-size: 1.8rem; line-height: 1; width: 3rem; height: 3rem; border-radius: 50%;
-            cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s ease;
-        }
-        .pf-lightbox-nav:hover { background: rgba(255,255,255,0.22); }
-        .pf-lightbox-prev { left: 1rem; }
-        .pf-lightbox-next { right: 1rem; }
-        @media (max-width: 680px) {
-            .pf-lightbox-close { top: -2.4rem; right: 0; }
-            .pf-lightbox-nav { width: 2.5rem; height: 2.5rem; font-size: 1.5rem; }
-            .pf-lightbox-prev { left: 0.3rem; }
-            .pf-lightbox-next { right: 0.3rem; }
-        }
-    </style>
+    <script src="js/uebersetzungen/packliste-final.js"></script>
+    <script src="js/i18n.js"></script>
+    <link rel="stylesheet" href="css/packliste-final.css">
 </head>
 <body>
 
@@ -253,7 +163,7 @@
 
     </div>
 
-    <!-- Footer -->
+    <!-- Fußzeile -->
     <footer class="footer">
         <p data-i18n="footer.rights">&copy; 2026 Barvenko. Alle Rechte vorbehalten.</p>
         <p><a href="index.html">barvenko.de</a></p>
@@ -261,27 +171,7 @@
 
     <a href="#top" class="back-to-top" data-i18n-aria-label="footer.top" aria-label="Nach oben">↑</a>
 
-    <script>
-        const toggle = document.querySelector('.nav-toggle');
-        const navLinks = document.querySelector('.nav-links');
-        toggle.addEventListener('click', () => {
-            navLinks.classList.toggle('active');
-            toggle.classList.toggle('active');
-        });
-        document.querySelectorAll('.nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                navLinks.classList.remove('active');
-                toggle.classList.remove('active');
-            });
-        });
-        const navbar = document.querySelector('.navbar');
-        const onScroll = () => {
-            navbar.classList.toggle('scrolled', window.scrollY > 50);
-            document.querySelector('.back-to-top').classList.toggle('show', window.scrollY > 500);
-        };
-        window.addEventListener('scroll', onScroll);
-        onScroll();
-    </script>
+    <script src="js/navigation.js"></script>
 
     <div class="pf-lightbox" id="pf-lightbox">
         <button class="pf-lightbox-nav pf-lightbox-prev" id="pf-lightbox-prev" data-i18n-aria-label="pf.lightbox.prev" aria-label="Vorheriges Bild">‹</button>
@@ -292,48 +182,7 @@
         </div>
         <button class="pf-lightbox-nav pf-lightbox-next" id="pf-lightbox-next" data-i18n-aria-label="pf.lightbox.next" aria-label="Nächstes Bild">›</button>
     </div>
-    <script>
-        (function () {
-            const items = Array.from(document.querySelectorAll('.pf-gallery-item'));
-            const caps = Array.from(document.querySelectorAll('.pf-gallery-cap'));
-            const lightbox = document.getElementById('pf-lightbox');
-            const lightboxImg = document.getElementById('pf-lightbox-img');
-            const lightboxCap = document.getElementById('pf-lightbox-cap');
-            let current = 0;
-
-            function show(index) {
-                current = (index + items.length) % items.length;
-                const img = items[current].querySelector('img');
-                lightboxImg.src = img.src;
-                lightboxImg.alt = img.alt;
-                lightboxCap.textContent = caps[current] ? caps[current].textContent : '';
-            }
-
-            function open(index) {
-                show(index);
-                lightbox.classList.add('show');
-            }
-
-            function close() {
-                lightbox.classList.remove('show');
-            }
-
-            items.forEach((item, index) => {
-                item.addEventListener('click', () => open(index));
-            });
-
-            document.getElementById('pf-lightbox-prev').addEventListener('click', (e) => { e.stopPropagation(); show(current - 1); });
-            document.getElementById('pf-lightbox-next').addEventListener('click', (e) => { e.stopPropagation(); show(current + 1); });
-            document.getElementById('pf-lightbox-close').addEventListener('click', close);
-            lightbox.addEventListener('click', (e) => { if (e.target === lightbox) close(); });
-            document.addEventListener('keydown', (e) => {
-                if (!lightbox.classList.contains('show')) return;
-                if (e.key === 'Escape') close();
-                if (e.key === 'ArrowLeft') show(current - 1);
-                if (e.key === 'ArrowRight') show(current + 1);
-            });
-        })();
-    </script>
+    <script src="js/packliste-final.js"></script>
 
 </body>
 </html>

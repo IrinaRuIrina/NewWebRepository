@@ -1,4 +1,6 @@
-/* ===== Reset & Base ===== */
+/* Gemeinsame Styles aller öffentlichen Seiten (Navigation, Footer, Startseite, Sprachumschalter) */
+
+/* ===== Grundlagen & Reset ===== */
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -112,7 +114,7 @@ img {
     background: #2c2c2c;
 }
 
-/* ===== Hero ===== */
+/* ===== Titelbild (Hero) ===== */
 .hero {
     position: relative;
     height: 30vh;
@@ -174,7 +176,7 @@ img {
     60% { transform: translateY(-5px); }
 }
 
-/* ===== About ===== */
+/* ===== Über mich ===== */
 .about {
     padding: 8rem 3rem;
     max-width: 1200px;
@@ -229,7 +231,7 @@ img {
     margin-top: 1.5rem !important;
 }
 
-/* ===== Gallery ===== */
+/* ===== Galerie ===== */
 .gallery {
     padding: 6rem 3rem;
     background: #f0eeeb;
@@ -272,7 +274,7 @@ img {
     grid-column: span 2;
 }
 
-/* ===== Adventures ===== */
+/* ===== Abenteuer ===== */
 .adventures {
     padding: 8rem 3rem;
     max-width: 1200px;
@@ -337,7 +339,7 @@ img {
     letter-spacing: 0.02em;
 }
 
-/* ===== Adventure Feature (Jakobsweg) ===== */
+/* ===== Hervorgehobenes Abenteuer (Jakobsweg) ===== */
 .adventure-feature {
     display: block;
     margin-top: 2rem;
@@ -353,7 +355,7 @@ img {
 .adventure-feature--jakobsweg {
     background:
         linear-gradient(135deg, rgba(70,50,35,0.82), rgba(120,90,60,0.68)),
-        url('images/jakobsweg/deko-bergpfad.png');
+        url('../images/jakobsweg/deko-bergpfad.png');
     background-size: cover;
     background-position: center 25%;
 }
@@ -406,7 +408,7 @@ img {
     color: #5c4732;
 }
 
-/* ===== Contact ===== */
+/* ===== Kontakt ===== */
 .contact {
     padding: 8rem 3rem;
     text-align: center;
@@ -469,7 +471,7 @@ img {
     color: #999;
 }
 
-/* ===== Responsive ===== */
+/* ===== Mobile Ansicht (Responsive) ===== */
 @media (max-width: 900px) {
     .about-container {
         grid-template-columns: 1fr;
@@ -582,7 +584,7 @@ img {
     display: block;
 }
 
-/* ===== Language switcher ===== */
+/* ===== Sprachumschalter ===== */
 .lang-switch {
     display: flex;
     gap: 0.3rem;
